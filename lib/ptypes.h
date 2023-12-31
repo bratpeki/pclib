@@ -10,6 +10,16 @@
 /* A signed byte */ typedef signed char p_sbyte;
 /* An unsigned byte */ typedef unsigned char p_ubyte;
 
+/* === INTEGER NUMBER TYPES === */
+
+/* A signed integer number */ typedef signed int p_sint;
+/* A signed long integer number */ typedef long signed int p_lsint;
+/* A signed long long integer number */ typedef long long signed int p_llsint;
+
+/* An unsigned integer number */ typedef unsigned int p_uint;
+/* An unsigned long integer number */ typedef long unsigned int p_luint;
+/* An unsigned long long integer number */ typedef long long unsigned int p_lluint;
+
 /* === FLOATING POINT NUMBER TYPES === */
 
 /* A signed floating point number */ typedef float p_flt;
@@ -25,14 +35,7 @@
 /* An ASCII character */ typedef unsigned char p_chr;
 /* A C-style string */ typedef char* p_str;
 
-/* === INTEGER NUMBER TYPES === */
-
-/* A signed integer number */ typedef signed int p_sint;
-/* A signed long integer number */ typedef long signed int p_lsint;
-/* A signed long long integer number */ typedef long long signed int p_llsint;
-
-/* An unsigned integer number */ typedef unsigned int p_uint;
-/* An unsigned long integer number */ typedef long unsigned int p_luint;
-/* An unsigned long long integer number */ typedef long long unsigned int p_lluint;
+/* TODO: bools */
+/* TODO: remove the "TYPES" headers, level the code */
 
 #endif
