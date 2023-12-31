@@ -1,5 +1,12 @@
 Write for ANSI C (C89/C90).
 
+Fully use the standard libraries, only building upon them where deemed necessary.
+
+A valid reason to reinvent the wheel is because you don't need the overhead code of standard
+libraries.
+
 Don't write lines over 100 characters, unless deemed absolutely necessary.
+
+/* Always use C style comments. */
 
 If using GCC, any tests or examples should be compiled using -ansi, -Wall, -Wpedantic and -Werror.
