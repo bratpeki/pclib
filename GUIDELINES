@@ -1,1 +1,3 @@
-Write for C89.
+Write for ANSI C (C89/C90).
+
+If using GCC, any tests or examples should be compiled using -ansi, -Wall, -Wpedantic and -Werror.
