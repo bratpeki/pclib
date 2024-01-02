@@ -1,5 +1,6 @@
-If adding features relating to C99, it is important to note the following:
+If adding features relating to C99, or switching to C99, it is important to note the following:
 - C99 introduced the "long long" types for signed and unsigned integers
 - GCC compilation would be done using the --std=c99 flag instead of -ansi
+- Variadic macros would be useful for pDebugPrintf
 
 In ptypes.h, it might be useful to add p_on and p_off, as altertive Boolean values
