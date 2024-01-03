@@ -17,12 +17,12 @@
 /* A signed byte */ typedef signed char p_sbyte;
 /* An unsigned byte */ typedef unsigned char p_ubyte;
 
-/* A Boolean value */ typedef enum { p_false, p_true } p_bool;
+/* A Boolean value */ typedef enum { p_false = 0, p_true, p_off = 0, p_on } p_bool;
 
 /* A signed integer number */ typedef signed int p_sint;
-/* A signed long integer number */ typedef long signed int p_lsint;
+/* A signed long integer number */ typedef signed long int p_slint;
 /* An unsigned integer number */ typedef unsigned int p_uint;
-/* An unsigned long integer number */ typedef long unsigned int p_luint;
+/* An unsigned long integer number */ typedef unsigned long int p_ulint;
 
 /* A signed floating point number */ typedef float p_flt;
 /* A signed double-precision floating point number */ typedef double p_dbl;
