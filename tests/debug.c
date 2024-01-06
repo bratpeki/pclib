@@ -13,7 +13,8 @@ int main() {
 
 	p_sbyte a = 2;
 
-	pDebugSet(p_true);
+	/* Not actually necessary */
+	pDebugSet(p_on);
 
 	/* "DEBUG: Starting up..." */
 	pDebugPrintf(dmsg "Starting up...\n");
@@ -26,7 +27,7 @@ int main() {
 	/* "ERROR: The expected"... */
 	if (a != 2) pDebugPrintf(emsg "The expected value of 'a' was 2!\n");
 
-	pDebugSet(p_false);
+	pDebugSet(p_off);
 
 	/* Nothing */
 	pDebugPrintf(dmsg "This won't print.\n");

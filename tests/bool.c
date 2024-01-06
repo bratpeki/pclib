@@ -9,10 +9,8 @@
 
 int main() {
 
-	printf("%d\n", p_true);  /* 1 */
-	printf("%d\n", p_false); /* 0 */
-
-	printf("%d\n", p_true == !p_false); /* 1 */
+	printf("%d %d\n", p_true,  p_on ); /* 1 1 */
+	printf("%d %d\n", p_false, p_off); /* 0 0 */
 
 	return 0;
 

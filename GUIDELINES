@@ -15,3 +15,5 @@ Types are snake_case.
 Functions, preprocessor functions and variables are camelCase.
 
 Preprocessor variables are CAPITAL_SNAKE_CASE.
+
+Files are non-capitalized and without any spacing.
