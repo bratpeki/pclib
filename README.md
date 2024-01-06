@@ -3,8 +3,9 @@ Peki's C Library
 
 | File | Description | Status |
 | - | - | - |
-| pdebug.h | Printing debugging messages to STDOUT | Made |
-| pdict.h | Dictionary | Not started |
-| pcodes.h | Exit codes | Not started |
-| pdynarr.h | Dynamic array | Not started |
-| ptypes.h | Datatypes | Made |
+| pcodes.h | Exit code macros | Not started |
+| pdebug.h | Printing debugging messages | Made |
+| pdict.h | Implementation of a dictionary | Not started |
+| pdynarr.h | Implementation of a dynamic array | Started |
+| plimits.h | Compiler-independent tool for finding datatype limits | Not started |
+| ptypes.h | Custom datatypes | Made |
