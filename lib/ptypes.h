@@ -4,14 +4,17 @@
 /*
  * pytpes.h - The definitions of various datatypes
  *
- * The order the segments is:
- * - bytes
- * - booleans
- * - integer numbers
- * - floating point numbers
- * - characters
- * - strings
- * - pointers
+ * The order the segments, written with their abbreviation, is:
+ * - bytes (byte)
+ * - booleans (bool)
+ * - integer numbers (int)
+ * - floating point numbers (flt, dbl)
+ * - characters (chr)
+ * - strings (str)
+ * - pointers (ptr)
+ *
+ * The order in which the types are named is:
+ *   p_ + l(ong) + s(igned)/u(nsigned) + base type abbreviation
  */
 
 /* A signed byte */ typedef signed char p_sbyte;
