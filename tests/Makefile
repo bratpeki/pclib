@@ -5,7 +5,8 @@ OUT=$(shell find . -name '*.out')
 all:
 	$(CC) bool.c -o bool.out $(FLAGS)
 	$(CC) debug.c -o debug.out $(FLAGS)
-	$(CC) dynarr.c -o dynarr.out $(FLAGS)
+	#$(CC) dynarr.c -o dynarr.out $(FLAGS)
+	$(CC) limits.c -o limits.out $(FLAGS)
 
 clean:
 	rm $(OUT)

@@ -11,7 +11,7 @@
 
 int main() {
 
-	p_sbyte a = 2;
+	p_sint a = 2;
 
 	/* Not actually necessary */
 	pDebugSet(p_on);

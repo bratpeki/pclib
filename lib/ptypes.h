@@ -5,20 +5,22 @@
  * pytpes.h - The definitions of various datatypes
  *
  * The order the segments, written with their abbreviation, is:
- * - bytes (byte)
+ * - character types (chr)
  * - booleans (bool)
  * - integer numbers (int)
  * - floating point numbers (flt, dbl)
- * - characters (chr)
+ * - ASCII characters (ascii)
  * - strings (str)
  * - pointers (ptr)
  *
  * The order in which the types are named is:
- *   p_ + l(ong) + s(igned)/u(nsigned) + base type abbreviation
+ *   p_ + SIGN + LONG VARIANT + BASE TYPE
+ *
+ * All floating-point numbers are signed, so it's not included.
  */
 
-/* A signed byte */ typedef signed char p_sbyte;
-/* An unsigned byte */ typedef unsigned char p_ubyte;
+/* A signed character type */ typedef signed char p_schr;
+/* An unsigned character type */ typedef unsigned char p_uchr;
 
 /* A Boolean value */ typedef enum { p_false = 0, p_true, p_off = 0, p_on } p_bool;
 
@@ -27,13 +29,13 @@
 /* An unsigned integer number */ typedef unsigned int p_uint;
 /* An unsigned long integer number */ typedef unsigned long int p_ulint;
 
-/* A signed floating point number */ typedef float p_flt;
-/* A signed double-precision floating point number */ typedef double p_dbl;
-/* A signed double-precision floating point number */ typedef double p_lflt;
-/* A signed long double-precision floating point number */ typedef long double p_llflt;
-/* A signed long double-precision floating point number */ typedef long double p_ldbl;
+/* A signed floating-point number */ typedef float p_flt;
+/* A signed double-precision floating-point number */ typedef double p_dbl;
+/* A signed double-precision floating-point number */ typedef double p_lflt;
+/* A signed long double-precision floating-point number */ typedef long double p_llflt;
+/* A signed long double-precision floating-point number */ typedef long double p_ldbl;
 
-/* An ASCII character */ typedef unsigned char p_chr;
+/* An ASCII character */ typedef unsigned char p_ascii;
 
 /* A C-style string */ typedef unsigned char* p_str;
 

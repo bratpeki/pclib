@@ -4,8 +4,8 @@
 /*
  * pdynarr.h - A simple implementation of a dynamic array
  *
- * The implementation uses a standard optimization technique which includes doubling and halving the
- * capacity, according to the number of elements in the array
+ * The implementation uses a standard optimization technique which includes
+ * doubling and halving the capacity, according to the number of elements in the array
  */
 
 #include "ptypes.h"
