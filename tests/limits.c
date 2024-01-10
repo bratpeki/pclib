@@ -10,21 +10,18 @@ int main() {
 
 	pGetLimits();
 
-	printf(
-		"pUIntMax:   %u\n"
-		"pULIntMax:  %lu\n"
-		"pSIntMax:   %d\n"
-		"pSIntMin:  %d\n"
-		"pSLIntMax:  %ld\n"
-		"pSLIntMin: %ld\n"
-		,
-		pUIntMax,
-		pULIntMax,
-		pSIntMax,
-		pSIntMin,
-		pSLIntMax,
-		pSLIntMin
-	);
+	printf("pSCMax:  %d\n", pSCMax);
+	printf("pSCMin: %d\n",  pSCMin);
+
+	printf("pSIMax:  %d\n", pSIMax);
+	printf("pSIMin: %d\n",  pSIMin);
+
+	printf("pSLMax:  %ld\n", pSLMax);
+	printf("pSLMin: %ld\n",  pSLMin);
+
+	printf("pUCMax:  %u\n",  pUCMax);
+	printf("pUIMax:  %u\n",  pUIMax);
+	printf("pULMax:  %lu\n", pULMax);
 
 	return 0;
 

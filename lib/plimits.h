@@ -13,37 +13,43 @@
  *
  * The following values are provided by the header, once pGetLimits is run:
  *
- * pSIntMax  - The maximum signed int
- * pSIntMin  - The minimum signed int
+ * pSCMax - The maximum signed character
+ * pSCMin - The minimum signed character
  *
- * pSLIntMax - The maximum signed long int
- * pSLIntMin - The minimum signed long int
+ * pSIMax - The maximum signed int
+ * pSIMin - The minimum signed int
  *
- * pUIntMax  - The maximum unsigned int
- * pULIntMin - The maximum unsigned long int
+ * pSLMax - The maximum signed long int
+ * pSLMin - The minimum signed long int
+ *
+ * pUCMax - The maximum unsigned character
+ * pUIMax - The maximum unsigned int
+ * pULMax - The maximum unsigned long
  */
 
 #include "ptypes.h"
 
-p_sint  pSIntMax,  pSIntMin;
-p_slint pSLIntMax, pSLIntMin;
-
-p_uint  pUIntMax;
-p_ulint pULIntMax;
+p_sint  pSIMax, pSIMin; p_uint  pUIMax;
+p_slint pSLMax, pSLMin; p_ulint pULMax;
+p_schr  pSCMax, pSCMin; p_uchr  pUCMax;
 
 void pGetLimits() {
 
-	p_sint  siMinusOne  = -1;
-	p_slint sliMinusOne = -1;
+	p_sint  siMinOne = -1;
+	p_slint slMinOne = -1;
+	p_schr  scMinOne = -1;
 
-	pUIntMax  = *(p_uint*)(&siMinusOne);
-	pULIntMax = *(p_ulint*)(&sliMinusOne);
+	pUIMax = *(p_uint*) (&siMinOne);
+	pULMax = *(p_ulint*)(&slMinOne);
+	pUCMax = *(p_uchr*) (&scMinOne);
 
-	pSIntMax  = pUIntMax/2;
-	pSLIntMax = pULIntMax/2;
+	pSIMax = pUIMax/2;
+	pSLMax = pULMax/2;
+	pSCMax = pUCMax/2;
 
-	pSIntMin  = -pSIntMax - 1;
-	pSLIntMin = -pSLIntMax - 1;
+	pSIMin = -pSIMax - 1;
+	pSLMin = -pSLMax - 1;
+	pSCMin = -pSCMax - 1;
 
 }
 
