@@ -1,7 +1,7 @@
 Language:
-- Write from ANSI C (C89/C90)
-- Fully use the standard library, only building upon them where deemed necessary
-- A valid reason to reinvent the wheel is because you don't need the overhead of standard libraries
+- Write for ANSI C (C89/C90)
+- Fully use the standard library, only building upon it where deemed necessary
+- A valid reason to reinvent the wheel is because you don't need the overhead of standard headers
 - Don't write lines over 100 characters, unless deemed absolutely necessary
 - /* Always use C-style comments. */
 
