@@ -6,7 +6,7 @@ Each header file aims to be sufficiently documented and has minimal dependencies
 library, PCLib headers, or other neccessary libraries.
 
 | File | Description |
-| - | - | - |
+| - | - |
 | ptypes.h | Custom datatypes |
 | pcodes.h | Exit code macros |
 | pdebug.h | Printing debugging messages |
