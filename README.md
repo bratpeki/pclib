@@ -7,5 +7,4 @@ Peki's C Library
 | pdebug.h | Printing debugging messages | Made |
 | pdict.h | Implementation of a dictionary | Not started |
 | pdynarr.h | Implementation of a dynamic array | Started |
-| plimits.h | Compiler-independent tool for finding datatype limits | Not started |
 | ptypes.h | Custom datatypes | Made |
