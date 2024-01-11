@@ -8,16 +8,25 @@
  * doubling and halving the capacity, according to the number of elements in the array
  */
 
+/* TODO: Verify if all libraries are needed, stdio is useless */
+
 #include "ptypes.h"
 
-typedef struct {
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
-	p_uint sizeElem; /* Size of a single element */
-	p_vptr data;     /* An array of all elements */
+#define p_dynarr(type) struct { \
+	type*  data;     /* An array of all elements */ \
+	p_uint size;     /* The number of elements currently in the dynamic array */ \
+	p_uint capacity; /* The number of elements that can fit in the dynamic array */ \
+}
 
-	p_uint size;     /* The number of elements currently in the dynamic array */
-	p_uint capacity; /* The number of elements that can fit in the dynamic array */
+#define pDynArrInit(retArr) \
+	retArr.data = NULL; \
+	retArr.size = 0; \
+	retArr.capacity = 0;
 
-} p_dynarr;
+#define pDynArrCleanup(retArr) free(retArr.data);
 
 #endif
