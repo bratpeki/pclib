@@ -8,25 +8,59 @@
  * doubling and halving the capacity, according to the number of elements in the array
  */
 
-/* TODO: Verify if all libraries are needed, stdio is useless */
-
 #include "ptypes.h"
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include <stdlib.h> /* malloc, realloc, free */
 
+/* The dynamic array macro */
 #define p_dynarr(type) struct { \
-	type*  data;     /* An array of all elements */ \
-	p_uint size;     /* The number of elements currently in the dynamic array */ \
-	p_uint capacity; /* The number of elements that can fit in the dynamic array */ \
+	type*  data; /* An array of all elements */ \
+	p_uint size; /* The number of elements currently in the dynamic array */ \
+	p_uint cap;  /* The number of elements that can fit in the dynamic array */ \
 }
 
-#define pDynArrInit(retArr) \
-	retArr.data = NULL; \
-	retArr.size = 0; \
-	retArr.capacity = 0;
+/* Initiazes the array defined with the p_dynarr macro */
+#define pDynArrInit(arr) \
+	do { \
+		(arr).data = NULL; \
+		(arr).size = 0; \
+		(arr).cap = 0; \
+	} while (p_false);
 
-#define pDynArrCleanup(retArr) free(retArr.data);
+/* Clears the memory of the array,
+ * and set the variables back to their initial state
+ */
+#define pDynArrCleanup(arr) \
+	do { \
+		free(arr.data); \
+		(arr).data = NULL; \
+		(arr).size = 0; \
+		(arr).cap = 0; \
+	} while (p_false);
+
+/* TODO: Allocation NULL-checking */
+
+/*
+ * Adds the element 'el' to the dynamic array 'arr'
+ *
+ * If needed, doubles the capacity of the array
+ */
+#define pDynArrAdd(arr, el) \
+	do { \
+		if ( arr.data == NULL ) { \
+			(arr).data = malloc(sizeof(*((arr).data))); \
+			((arr).data)[0] = el; \
+			(arr).size = 1; \
+			(arr).cap = 1; \
+		} \
+		else { \
+			if ( (arr).size == (arr).cap ) { \
+				(arr).data = realloc((arr).data, sizeof(*((arr).data))*2); \
+				(arr).cap *= 2; \
+			} \
+			(arr).data[(arr).size] = el; \
+			(arr).size++; \
+		} \
+	} while (p_false);
 
 #endif

@@ -14,7 +14,7 @@
  * - pointers (ptr)
  *
  * The order in which the types are named is:
- *   p_ + SIGN + LONG VARIANT + BASE TYPE
+ *   p_ + SIGN + SHORT/LONG VARIANT + BASE TYPE
  *
  * All floating-point numbers are signed, so it's not included.
  */
@@ -26,8 +26,10 @@
 
 /* A signed integer number */ typedef signed int p_sint;
 /* A signed long integer number */ typedef signed long int p_slint;
+/* A signed short integer number */ typedef signed short int p_ssint;
 /* An unsigned integer number */ typedef unsigned int p_uint;
 /* An unsigned long integer number */ typedef unsigned long int p_ulint;
+/* An unsigned short integer number */ typedef unsigned short int p_usint;
 
 /* A signed floating-point number */ typedef float p_flt;
 /* A signed double-precision floating-point number */ typedef double p_dbl;
