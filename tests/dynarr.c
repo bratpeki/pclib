@@ -4,6 +4,14 @@
 
 #include <stdio.h>
 
+/*
+ * Since the user is responsible for checking the memory
+ */
+
+#define arrAddAndCheck(arr, el) \
+	pDynArrAdd(arr, el); \
+	if ((arr).data == NULL) return 1;
+
 int main() {
 
 	int i;
@@ -13,25 +21,25 @@ int main() {
 	pDynArrInit(arrInt);
 	pDynArrInit(arrSrt);
 
-	pDynArrAdd(arrInt, 1);
-	pDynArrAdd(arrInt, 2);
-	pDynArrAdd(arrInt, 3);
+	arrAddAndCheck(arrInt, 1);
+	arrAddAndCheck(arrInt, 2);
+	arrAddAndCheck(arrInt, 3);
 
-	pDynArrAdd(arrSrt, 10);
-	pDynArrAdd(arrSrt, 20);
-	pDynArrAdd(arrSrt, 30);
-	pDynArrAdd(arrSrt, 40);
-	pDynArrAdd(arrSrt, 50);
+	arrAddAndCheck(arrSrt, 10);
+	arrAddAndCheck(arrSrt, 20);
+	arrAddAndCheck(arrSrt, 30);
+	arrAddAndCheck(arrSrt, 40);
+	arrAddAndCheck(arrSrt, 50);
 
 	printf("%lu\n", sizeof(*arrInt.data));
 	printf("%lu\n", sizeof(*arrSrt.data));
 
 	for (i = 0; i < arrInt.size; i++)
-		printf("%d (%u) ", (arrInt.data)[i], arrInt.cap);
+		printf("%d ", (arrInt.data)[i]);
 	printf("\n");
 
 	for (i = 0; i < arrSrt.size; i++)
-		printf("%hd (%u) ", (arrSrt.data)[i], arrSrt.cap);
+		printf("%hd ", (arrSrt.data)[i]);
 	printf("\n");
 
 	pDynArrCleanup(arrInt);

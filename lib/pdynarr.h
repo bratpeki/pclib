@@ -38,8 +38,6 @@
 		(arr).cap = 0; \
 	} while (p_false);
 
-/* TODO: Allocation NULL-checking */
-
 /*
  * Adds the element 'el' to the dynamic array 'arr'
  *
@@ -48,18 +46,21 @@
 #define pDynArrAdd(arr, el) \
 	do { \
 		if ( arr.data == NULL ) { \
-			(arr).data = malloc(sizeof(*((arr).data))); \
-			((arr).data)[0] = el; \
-			(arr).size = 1; \
-			(arr).cap = 1; \
+			arr.data = malloc(sizeof(*((arr).data))); \
+			if ( arr.data != NULL ) { \
+				(arr.data)[0] = el; \
+				arr.size = 1; \
+				arr.cap = 1; \
+			} \
 		} \
 		else { \
 			if ( (arr).size == (arr).cap ) { \
-				(arr).data = realloc((arr).data, sizeof(*((arr).data))*2); \
-				(arr).cap *= 2; \
+				arr.data = realloc((arr).data, sizeof(*((arr).data))*2); \
+				if ( arr.data != NULL ) arr.cap *= 2; \
+				else pDynArrCleanup(arr); \
 			} \
-			(arr).data[(arr).size - 1] = el; \
-			(arr).size++; \
+			(arr.size)++; \
+			(arr.data)[arr.size - 1] = el; \
 		} \
 	} while (p_false);
 
