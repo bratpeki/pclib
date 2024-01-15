@@ -58,7 +58,7 @@
 				(arr).data = realloc((arr).data, sizeof(*((arr).data))*2); \
 				(arr).cap *= 2; \
 			} \
-			(arr).data[(arr).size] = el; \
+			(arr).data[(arr).size - 1] = el; \
 			(arr).size++; \
 		} \
 	} while (p_false);
