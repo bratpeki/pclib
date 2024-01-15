@@ -6,6 +6,9 @@
  *
  * The implementation uses a standard optimization technique which includes
  * doubling and halving the capacity, according to the number of elements in the array
+ *
+ * Assisting variables:
+ *   pDynArrIter
  */
 
 #include "ptypes.h"
@@ -22,9 +25,9 @@
 /* Initiazes the array defined with the p_dynarr macro */
 #define pDynArrInit(arr) \
 	do { \
-		(arr).data = NULL; \
-		(arr).size = 0; \
-		(arr).cap = 0; \
+		arr.data = NULL; \
+		arr.size = 0; \
+		arr.cap = 0; \
 	} while (p_false);
 
 /* Clears the memory of the array,
@@ -33,9 +36,9 @@
 #define pDynArrCleanup(arr) \
 	do { \
 		free(arr.data); \
-		(arr).data = NULL; \
-		(arr).size = 0; \
-		(arr).cap = 0; \
+		arr.data = NULL; \
+		arr.size = 0; \
+		arr.cap = 0; \
 	} while (p_false);
 
 /*
@@ -46,7 +49,7 @@
 #define pDynArrAdd(arr, el) \
 	do { \
 		if ( arr.data == NULL ) { \
-			arr.data = malloc(sizeof(*((arr).data))); \
+			arr.data = malloc(sizeof(*(arr.data))); \
 			if ( arr.data != NULL ) { \
 				(arr.data)[0] = el; \
 				arr.size = 1; \
@@ -54,8 +57,8 @@
 			} \
 		} \
 		else { \
-			if ( (arr).size == (arr).cap ) { \
-				arr.data = realloc((arr).data, sizeof(*((arr).data))*2); \
+			if ( arr.size == arr.cap ) { \
+				arr.data = realloc(arr.data, sizeof(*(arr.data))*2); \
 				if ( arr.data != NULL ) arr.cap *= 2; \
 				else pDynArrCleanup(arr); \
 			} \
@@ -65,3 +68,23 @@
 	} while (p_false);
 
 #endif
+
+/*
+ * Removes an element at the given index from the given array
+ */
+
+#define pDynArrRemove(arr, index) \
+	do { \
+		p_uint pDynArrIter; \
+		if ( (arr.data != NULL) && ((index) < arr.size) && ((index) >= 0) ) { \
+			for (pDynArrIter = (index); pDynArrIter < arr.size - 1; pDynArrIter++) { \
+				(arr.data)[pDynArrIter] = (arr.data)[pDynArrIter + 1]; \
+			} \
+			(arr.size)--; \
+			if (arr.size < ((arr.cap)/2)) { \
+				arr.data = realloc(arr.data, sizeof(*(arr.data)) * (arr.cap / 2)); \
+				if (arr.data != NULL) { arr.cap /= 2; } \
+				else pDynArrCleanup(arr); \
+			} \
+		} \
+	} while (p_false);

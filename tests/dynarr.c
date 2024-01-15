@@ -4,13 +4,11 @@
 
 #include <stdio.h>
 
-/*
- * Since the user is responsible for checking the memory
- */
+/* The user is responsible for checking the allocation success */
 
 #define arrAddAndCheck(arr, el) \
 	pDynArrAdd(arr, el); \
-	if ((arr).data == NULL) return 1;
+	if (arr.data == NULL) return 1;
 
 int main() {
 
@@ -33,6 +31,17 @@ int main() {
 
 	printf("%lu\n", sizeof(*arrInt.data));
 	printf("%lu\n", sizeof(*arrSrt.data));
+
+	for (i = 0; i < arrInt.size; i++)
+		printf("%d ", (arrInt.data)[i]);
+	printf("\n");
+
+	for (i = 0; i < arrSrt.size; i++)
+		printf("%hd ", (arrSrt.data)[i]);
+	printf("\n");
+
+	pDynArrRemove(arrInt, 1); /* Removes 2 */
+	pDynArrRemove(arrSrt, 0); /* Removes 10 */
 
 	for (i = 0; i < arrInt.size; i++)
 		printf("%d ", (arrInt.data)[i]);
