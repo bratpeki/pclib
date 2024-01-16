@@ -28,9 +28,10 @@
 		arr.data = NULL; \
 		arr.size = 0; \
 		arr.cap = 0; \
-	} while (p_false);
+	} while (0);
 
-/* Clears the memory of the array,
+/*
+ * Clears the memory of the array,
  * and set the variables back to their initial state
  */
 #define pDynArrCleanup(arr) \
@@ -39,11 +40,10 @@
 		arr.data = NULL; \
 		arr.size = 0; \
 		arr.cap = 0; \
-	} while (p_false);
+	} while (0);
 
 /*
  * Adds the element 'el' to the dynamic array 'arr'
- *
  * If needed, doubles the capacity of the array
  */
 #define pDynArrAdd(arr, el) \
@@ -65,14 +65,11 @@
 			(arr.size)++; \
 			(arr.data)[arr.size - 1] = el; \
 		} \
-	} while (p_false);
+	} while (0);
 
 #endif
 
-/*
- * Removes an element at the given index from the given array
- */
-
+/* Removes an element at the given index from the given array */
 #define pDynArrRemove(arr, index) \
 	do { \
 		p_uint pDynArrIter; \
@@ -87,4 +84,4 @@
 				else pDynArrCleanup(arr); \
 			} \
 		} \
-	} while (p_false);
+	} while (0);
