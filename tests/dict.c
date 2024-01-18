@@ -1,9 +1,13 @@
 
+#include "../lib/pcodes.h"
 #include "../lib/pdict.h"
-
 #include "../lib/ptypes.h"
 
 #include <stdio.h>
+
+#define dictAddAndCheck(dict, k, v) \
+	pDictAdd(dict, k, v) \
+	if ( (dict.keys == NULL) || (dict.vals == NULL) ) return P_BADALLOC;
 
 int main() {
 
@@ -29,7 +33,7 @@ int main() {
 
 	pDictCleanup(nicknames);
 
-	return 0;
+	return P_SUCCESS;
 
 }
 

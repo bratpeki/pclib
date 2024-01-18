@@ -2,7 +2,7 @@
 #define PCLIB_DICT
 
 /*
- * pdict.h - A simple implementation of a dictionary
+ * pdict.h - A simple implementation of a type-generic dictionary/hashmap
  */
 
 #include "ptypes.h"

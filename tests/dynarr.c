@@ -1,6 +1,7 @@
 
 #include "../lib/pdynarr.h"
 #include "../lib/ptypes.h"
+#include "../lib/pcodes.h"
 
 #include <stdio.h>
 
@@ -8,7 +9,7 @@
 
 #define arrAddAndCheck(arr, el) \
 	pDynArrAdd(arr, el); \
-	if (arr.data == NULL) return 1;
+	if (arr.data == NULL) return P_BADALLOC;
 
 int main() {
 
@@ -54,7 +55,7 @@ int main() {
 	pDynArrCleanup(arrInt);
 	pDynArrCleanup(arrSrt);
 
-	return 0;
+	return P_SUCCESS;
 
 }
 
