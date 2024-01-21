@@ -2,13 +2,48 @@
 #define PCLIB_DYNARR
 
 /*
- * pdynarr.h - A simple implementation of a dynamic array
+ * pdynarr.h
  *
- * The implementation uses a standard optimization technique which includes
- * doubling and halving the capacity, according to the number of elements in the array
+ * A simple implementation of a type-generic dynamic array
  *
- * Assisting variables:
- *   pDynArrIter
+ * ==================================================
+ *
+ * The dynamic array consists of the data array, and size and capacity integer values.
+ *
+ * The dynamic array uses the following optimization technique:
+ *   Once the size of the dynamic array is equal to the capacity, the capacity is doubled
+ *   Once the size of the dynamic array is equal to half the capacity, the capacity is halved
+ *
+ * THE USER IS RESPONSIBLE FOR HANDLING THE MEMORY AFTER EACH RE-EVALUATION OF THE CAPACITY!
+ * So, every time malloc or realloc is called, the user should check if the pointer isn't NULL.
+ *
+ * ==================================================
+ *
+ * Usage:
+ *
+ * p_dynarr(p_sint) array1;
+ * Creates a dynamic array called array1.
+ *
+ * pDynArrInit(array1);
+ * Initiazes array1.
+ *
+ * pDynArrCleanup(array1);
+ * Cleans up the allocated memory of arrayy1.
+ * Sets all the values of array1 back to zeros and NULL.
+ * Makes array1 reusable, since it can be initiazed again, with new values.
+ *
+ * pDynArrAdd(array1, 4);
+ * Adds the integer constant '4' to the end of array1.
+ *
+ * pDynArrAdd(array1, 0);
+ * Removes the integer element at index 0 from array1.
+ *
+ * ==================================================
+ *
+ * Taken variables:
+ *
+ * pDynArrIter
+ * Used for the for-loop in pDynArrRemove
  */
 
 #include "ptypes.h"
