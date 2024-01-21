@@ -1,5 +1,5 @@
 CC=gcc
-FLAGS=-ansi -Wall -Wpedantic -Werror
+FLAGS=-ansi -Wall -Wpedantic -Werror -g
 OUT=$(shell find . -name '*.out')
 
 all:

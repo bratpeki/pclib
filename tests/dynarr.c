@@ -1,11 +1,11 @@
 
 #include "../lib/pdynarr.h"
-#include "../lib/ptypes.h"
 #include "../lib/pcodes.h"
+#include "../lib/ptypes.h"
 
 #include <stdio.h>
 
-/* The user is responsible for checking the allocation success */
+/* The user is responsible for checking the allocation successfulness */
 
 #define arrAddAndCheck(arr, el) \
 	pDynArrAdd(arr, el); \
@@ -30,13 +30,15 @@ int main() {
 	arrAddAndCheck(arrSrt, 40);
 	arrAddAndCheck(arrSrt, 50);
 
-	printf("%lu\n", sizeof(*arrInt.data));
-	printf("%lu\n", sizeof(*arrSrt.data));
+	printf("Size of one p_sint: %lu\n", sizeof(*arrInt.data));
+	printf("Size of one p_ssint: %lu\n", sizeof(*arrSrt.data));
 
+	printf("arrInt: ");
 	for (i = 0; i < arrInt.size; i++)
 		printf("%d ", (arrInt.data)[i]);
 	printf("\n");
 
+	printf("arrSrt: ");
 	for (i = 0; i < arrSrt.size; i++)
 		printf("%hd ", (arrSrt.data)[i]);
 	printf("\n");
@@ -44,10 +46,12 @@ int main() {
 	pDynArrRemove(arrInt, 1); /* Removes 2 */
 	pDynArrRemove(arrSrt, 0); /* Removes 10 */
 
+	printf("arrInt: ");
 	for (i = 0; i < arrInt.size; i++)
 		printf("%d ", (arrInt.data)[i]);
 	printf("\n");
 
+	printf("arrSrt: ");
 	for (i = 0; i < arrSrt.size; i++)
 		printf("%hd ", (arrSrt.data)[i]);
 	printf("\n");
