@@ -9,6 +9,9 @@
 
 #include <stdlib.h> /* malloc, realloc, free */
 
+p_vptr pDictKeyPtr;
+p_vptr pDictValPtr;
+
 /* The dynamic array macro */
 #define p_dict(ktype, vtype) struct { \
 	ktype* keys; /* An array of all keys */ \
@@ -19,10 +22,10 @@
 
 #define pDictInit(dict) \
 	do { \
-		(dict).keys = NULL; \
-		(dict).vals = NULL; \
-		(dict).size = 0; \
-		(dict).cap = 0; \
+		dict.keys = NULL; \
+		dict.vals = NULL; \
+		dict.size = 0; \
+		dict.cap = 0; \
 	} while (0)
 
 #define pDictCleanup(dict) \
@@ -49,9 +52,13 @@
 		} \
 		else { \
 			if ( dict.size == dict.cap ) { \
-				dict.keys = realloc(dict.keys, sizeof(*(dict.keys))*2); \
-				dict.vals = realloc(dict.vals, sizeof(*(dict.vals))*2); \
-				if ( (dict.keys != NULL) && (dict.vals != NULL) ) dict.cap *= 2; \
+				pDictKeyPtr = realloc(dict.keys, sizeof(*(dict.keys)) * dict.cap * 2); \
+				pDictValPtr = realloc(dict.vals, sizeof(*(dict.vals)) * dict.cap * 2); \
+				if ( (pDictKeyPtr != NULL) && (pDictValPtr != NULL) ) { \
+					dict.cap *= 2; \
+					dict.keys = pDictKeyPtr; \
+					dict.vals = pDictValPtr; \
+				} \
 				else pDictCleanup(dict); \
 			} \
 			(dict.size)++; \
@@ -72,9 +79,13 @@
 			} \
 			(dict.size)--; \
 			if (dict.size < ((dict.cap)/2)) { \
-				dict.keys = realloc(dict.keys, sizeof(*(dict.keys)) * (dict.cap / 2)); \
-				dict.vals = realloc(dict.vals, sizeof(*(dict.vals)) * (dict.cap / 2)); \
-				if ( (dict.keys != NULL) && (dict.vals != NULL) ) { dict.cap /= 2; } \
+				pDictKeyPtr = realloc(dict.keys, sizeof(*(dict.keys)) * (dict.cap / 2)); \
+				pDictValPtr = realloc(dict.vals, sizeof(*(dict.vals)) * (dict.cap / 2)); \
+				if ( (pDictKeyPtr != NULL) && (pDictValPtr != NULL) ) { \
+					dict.cap /= 2; \
+					dict.keys = pDictKeyPtr; \
+					dict.vals = pDictValPtr; \
+				} \
 				else pDictCleanup(dict); \
 			} \
 		} \
