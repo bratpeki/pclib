@@ -8,7 +8,7 @@
  *
  * ==================================================
  *
- * The dynamic array consists of the data array, and size and capacity integer values.
+ * The dynamic array struct consists of the data array, and size and capacity integer values.
  *
  * The dynamic array uses the following optimization technique:
  *   Once the size of the dynamic array is equal to the capacity, the capacity is doubled
@@ -21,21 +21,34 @@
  *
  * Usage:
  *
- * p_dynarr(p_sint) array1;
- * Creates a dynamic array called array1.
+ * -------------------------
  *
+ * p_dynarr(p_sint) array1;
  * pDynArrInit(array1);
- * Initiazes array1.
+ *
+ * Declares, defines and initiazes an integer array called array1.
+ *
+ * -------------------------
  *
  * pDynArrCleanup(array1);
+ *
  * Cleans up the allocated memory of arrayy1.
  * Sets all the values of array1 back to zeros and NULL.
- * Makes array1 reusable, since it can be initiazed again, with new values.
+ * Makes array1 reusable, since it can be used again, with new values.
+ *
+ * -------------------------
  *
  * pDynArrAdd(array1, 4);
+ * if (array1.data == NULL) return P_BADALLOC;
+ *
  * Adds the integer constant 4 to the end of array1.
+ * Checks that the reallocation of memory, if one was necessary, was successful.
+ * If it wasn't, P_BADALLOC (from pcodes.h), is returned.
+ *
+ * -------------------------
  *
  * pDynArrAdd(array1, 0);
+ *
  * Removes the integer element at index 0 from array1.
  *
  * ==================================================
@@ -63,7 +76,7 @@ p_vptr pDynArrTmpPtr;
 	p_uint cap;  /* The number of elements that can fit in the dynamic array */ \
 }
 
-/* Initiazes the array defined with the p_dynarr macro */
+/* Initiazes the array defined with the p_dynarr macro. */
 #define pDynArrInit(arr) \
 	do { \
 		arr.data = NULL; \
@@ -73,7 +86,7 @@ p_vptr pDynArrTmpPtr;
 
 /*
  * Clears the memory of the array,
- * and sets the variables back to NULL and 0
+ * and sets the variables back to NULLs and zeros.
  */
 #define pDynArrCleanup(arr) \
 	do { \
@@ -84,8 +97,8 @@ p_vptr pDynArrTmpPtr;
 	} while (0);
 
 /*
- * Adds the element 'el' to the end of the dynamic array 'arr'
- * If needed, doubles the capacity of the array
+ * Adds the element 'el' to the end of the dynamic array 'arr'.
+ * If needed, doubles the capacity of the array.
  */
 #define pDynArrAdd(arr, el) \
 	do { \
@@ -111,7 +124,7 @@ p_vptr pDynArrTmpPtr;
 #endif
 
 /*
- * Removes an element at the given index from the given array
+ * Removes an element at the given index from the given array.
  * If needed, halves the capacity of the array.
  */
 #define pDynArrRemove(arr, index) \

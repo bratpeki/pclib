@@ -2,7 +2,55 @@
 #define PCLIB_DICT
 
 /*
- * pdict.h - A simple implementation of a type-generic dictionary/hashmap
+ * pdict.h
+ *
+ * A simple implementation of a type-generic dictionary/hashmap
+ *
+ * ==================================================
+ *
+ * The dictionary struct contains the arrays for keys and values,
+ * the size of the dictionary and its capacity
+ *
+ * The dictonary uses the following optimization technique:
+ *   Once the size of the dictonary is equal to the capacity, the capacity is doubled
+ *   Once the size of the dictonary is equal to half the capacity, the capacity is halved
+ *
+ * THE USER IS RESPONSIBLE FOR HANDLING THE MEMORY AFTER EACH RE-EVALUATION OF THE CAPACITY!
+ * So, every time malloc or realloc is called, the user should check if the pointer isn't NULL.
+ *
+ * ==================================================
+ *
+ * Usage:
+ *
+ * -------------------------
+ *
+ * p_dict(p_sint, p_str) dict1;
+ * pDictInit(dict1);
+ *
+ * Declares, defines and initiazes a dictionary of (p_sint, p_str) pairs called dict1.
+ *
+ * -------------------------
+ *
+ * pDictCleanup(dict1);
+ *
+ * Cleans up the allocated memory of arrayy1.
+ * Sets all the values of dict1 back to zeros and NULLs.
+ * Makes dict1 reusable, since it can be used again, with new values.
+ *
+ * -------------------------
+ *
+ * pDictAdd(dict1, 123, "test");
+ * if ( (dict1.keys == NULL) || (dict1.vals == NULL) ) return P_BADALLOC;
+ *
+ * Adds the (p_sint, p_str) pair (123, "test") to the end of dict1.
+ * Checks that the reallocation of memory, if one was necessary, was successful.
+ * If it wasn't, P_BADALLOC (from pcodes.h), is returned.
+ *
+ * -------------------------
+ *
+ * pDictAdd(dict1, 0);
+ *
+ * Removes the pair at index 0 from dict1.
  */
 
 #include "ptypes.h"
@@ -12,7 +60,7 @@
 p_vptr pDictKeyPtr;
 p_vptr pDictValPtr;
 
-/* The dynamic array macro */
+/* The dictonary macro */
 #define p_dict(ktype, vtype) struct { \
 	ktype* keys; /* An array of all keys */ \
 	vtype* vals; /* An array of all values */ \
@@ -20,6 +68,7 @@ p_vptr pDictValPtr;
 	p_uint cap;  /* The number of elements that can fit in the dictionary */ \
 }
 
+/* Initiazes the array defined with the p_dict macro. */
 #define pDictInit(dict) \
 	do { \
 		dict.keys = NULL; \
@@ -28,6 +77,10 @@ p_vptr pDictValPtr;
 		dict.cap = 0; \
 	} while (0)
 
+/*
+ * Clears the memory of the array,
+ * and sets the variables back to NULLs and zeros.
+ */
 #define pDictCleanup(dict) \
 	do { \
 		free(dict.keys); \
@@ -38,6 +91,10 @@ p_vptr pDictValPtr;
 		dict.cap = 0; \
 	} while (0);
 
+/*
+ * Adds the pair (key, val) to the end of the dictionary 'dict'.
+ * If needed, doubles the capacity of the dictionary.
+ */
 #define pDictAdd(dict, key, val) \
 	do { \
 		if ( (dict.keys == NULL) || (dict.vals == NULL) ) { \
@@ -69,6 +126,10 @@ p_vptr pDictValPtr;
 
 #endif
 
+/*
+ * Removes a pair at the given index from the given dictionary.
+ * If needed, halves the capacity of the dictionary.
+ */
 #define pDictRemove(dict, index) \
 	do { \
 		p_uint pDictIter; \
