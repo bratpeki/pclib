@@ -1,4 +1,3 @@
-
 #include "../lib/pcodes.h"
 #include "../lib/pdict.h"
 #include "../lib/ptypes.h"
@@ -36,4 +35,3 @@ int main() {
 	return P_SUCCESS;
 
 }
-

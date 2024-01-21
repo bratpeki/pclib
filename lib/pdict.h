@@ -51,14 +51,24 @@
  * pDictAdd(dict1, 0);
  *
  * Removes the pair at index 0 from dict1.
+ *
+ * ==================================================
+ *
+ * Taken variables:
+ *
+ * pDictIter
+ * Used for the for-loop in pDictRemove
+ *
+ * pDictKeyPtr, pDictValPtr
+ * Used for safely checking realloc successfulness
  */
 
 #include "ptypes.h"
 
 #include <stdlib.h> /* malloc, realloc, free */
 
-p_vptr pDictKeyPtr;
-p_vptr pDictValPtr;
+p_uint pDictIter;
+p_vptr pDictKeyPtr, pDictValPtr;
 
 /* The dictonary macro */
 #define p_dict(ktype, vtype) struct { \
@@ -124,15 +134,12 @@ p_vptr pDictValPtr;
 		} \
 	} while (0);
 
-#endif
-
 /*
  * Removes a pair at the given index from the given dictionary.
  * If needed, halves the capacity of the dictionary.
  */
 #define pDictRemove(dict, index) \
 	do { \
-		p_uint pDictIter; \
 		if ( (dict.size > 0) && ((index) < dict.size) && ((index) >= 0) ) { \
 			for (pDictIter = (index); pDictIter < dict.size - 1; pDictIter++) { \
 				(dict.keys)[pDictIter] = (dict.keys)[pDictIter + 1]; \
@@ -151,3 +158,5 @@ p_vptr pDictValPtr;
 			} \
 		} \
 	} while (0);
+
+#endif

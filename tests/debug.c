@@ -1,4 +1,3 @@
-
 /*
  * debug.c - Testing the behaviour of the pdebug.h header file
  */
@@ -19,20 +18,19 @@ int main() {
 	/* "DEBUG: Starting up..." */
 	pDebugPrintf(dmsg "Starting up...\n");
 
-	/* Nothing */
-	if (a != 2) pDebugPrintf(emsg "The expected value of 'a' was 2!\n");
+	/* Nothing, since 'a' is 2 */
+	if (a != 2) pDebugPrintf(emsg "'a' should have been 2, but is %d!\n", a);
 
 	a = 3;
 
-	/* "ERROR: The expected"... */
-	if (a != 2) pDebugPrintf(emsg "The expected value of 'a' was 2!\n");
+	/* "ERROR: 'a' should"... */
+	if (a != 2) pDebugPrintf(emsg "'a' should have been 2, but is %d!\n", a);
 
 	pDebugSet(p_off);
 
-	/* Nothing */
+	/* Nothing, since the debug ouput is off */
 	pDebugPrintf(dmsg "This won't print.\n");
 
 	return 0;
 
 }
-

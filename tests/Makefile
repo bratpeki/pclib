@@ -10,4 +10,3 @@ all:
 
 clean:
 	rm $(OUT)
-

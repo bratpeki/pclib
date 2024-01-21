@@ -1,4 +1,3 @@
-
 /*
  * bool.c - Testing the behaviour of the Boolean type
  */
@@ -15,4 +14,3 @@ int main() {
 	return 0;
 
 }
-

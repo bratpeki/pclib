@@ -1,15 +1,15 @@
 Language:
-- Write for ANSI C (C89/C90)
+- Write for ANSI C (C89/C90/ISO C)
 - Fully use the standard library, only building upon it where deemed necessary
 - A valid reason to reinvent the wheel is because you don't need the overhead of standard headers
-- Don't write lines over 100 characters, unless deemed absolutely necessary
-- /* Always use C-style comments. */
 
 Compiler:
 - If using GCC, any tests or examples should be compiled using -ansi, -Wall, -Wpedantic and -Werror
 
 Code:
-- Types are snake_case
+- /* Always use C-style comments. */
+- Don't write lines over 100 characters, unless deemed absolutely necessary
+- Files are non-capitalized and without any spacing
 - Functions, preprocessor functions and variables are camelCase
 - Preprocessor variables are CAPITAL_SNAKE_CASE
-- Files are non-capitalized and without any spacing
+- Types are snake_case

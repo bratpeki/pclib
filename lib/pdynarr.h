@@ -59,7 +59,7 @@
  * Used for the for-loop in pDynArrRemove
  *
  * pDynArrTmpPtr
- * Used for safely checking realloc success
+ * Used for safely checking realloc successfulness
  */
 
 #include "ptypes.h"
