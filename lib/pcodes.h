@@ -2,7 +2,9 @@
 #define PCLIB_CODES
 
 /*
- * pcodes.h - Exit codes for common situations
+ * pcodes.h
+ *
+ * Exit codes for common situations
  */
 
 #define P_SUCCESS     0 /* Successful exit */

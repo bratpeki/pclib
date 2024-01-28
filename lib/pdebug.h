@@ -4,22 +4,7 @@
 /*
  * pdebug.h
  *
- * Variables and functions for debug output
- *
- * ==================================================
- *
- * "Debug output" refers to the output of debugging messages to STDOUT.
- *
- * ==================================================
- *
- * Usage is demonstrated in the test file debug.c.
- *
- * ==================================================
- *
- * Taken variables:
- *
- * pDebugToggle
- * Used for toggling the debug output
+ * Variables and functions for printf-ing debug messages
  */
 
 #include "ptypes.h"
@@ -28,7 +13,7 @@
 #include <stdarg.h>
 
 /*
- * The Boolean value which enables debug output
+ * The Boolean value which enables pDebugPrintf output
  * True by default
  */
 p_bool pDebugToggle = p_on;

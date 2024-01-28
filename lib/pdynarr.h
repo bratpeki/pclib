@@ -6,8 +6,6 @@
  *
  * A simple implementation of a type-generic dynamic array
  *
- * ==================================================
- *
  * The dynamic array struct consists of the data array, and size and capacity unsigned integer values.
  *
  * The dynamic array uses the following optimization technique:
@@ -17,56 +15,21 @@
  * THE USER IS RESPONSIBLE FOR HANDLING THE MEMORY AFTER EACH RE-EVALUATION OF THE CAPACITY!
  * So, every time malloc or realloc is called, the user should check if the pointer isn't NULL.
  *
- * ==================================================
- *
- * Functionality:
- *
- * -------------------------
- *
- * p_dynarr(p_sint) array1;
- * pDynArrInit(array1);
- *
- * Declares, defines and initiazes an integer array called array1.
- *
- * -------------------------
- *
- * pDynArrCleanup(array1);
- *
- * Cleans up the allocated memory of arrayy1.
- * Sets all the values of array1 back to zeros and NULL.
- * Makes array1 reusable, since it can be used again, with new values.
- *
- * -------------------------
- *
- * pDynArrAdd(array1, 4);
- * if (array1.data == NULL) return P_BADALLOC;
- *
- * Adds the integer constant 4 to the end of array1.
- * Checks that the reallocation of memory, if one was necessary, was successful.
- * If it wasn't, P_BADALLOC (from pcodes.h), is returned.
- *
- * -------------------------
- *
- * pDynArrAdd(array1, 0);
- *
- * Removes the integer element at index 0 from array1.
- *
- * ==================================================
- *
  * Taken variables:
  *
  * pDynArrIter
- * Used for the for-loop in pDynArrRemove
  *
  * pDynArrTmpPtr
- * Used for safely checking realloc successfulness
  */
 
 #include "ptypes.h"
 
 #include <stdlib.h> /* malloc, realloc, free */
 
+/* Used for the for-loop in pDynArrRemove */
 p_uint pDynArrIter;
+
+/* Used for safely checking realloc successfulness */
 p_vptr pDynArrTmpPtr;
 
 /* The dynamic array macro */

@@ -6,8 +6,6 @@
  *
  * A simple implementation of a type-generic dictionary/hashmap
  *
- * ==================================================
- *
  * The dictionary struct contains the arrays for keys and values,
  * the size of the dictionary and its capacity
  *
@@ -17,57 +15,16 @@
  *
  * THE USER IS RESPONSIBLE FOR HANDLING THE MEMORY AFTER EACH RE-EVALUATION OF THE CAPACITY!
  * So, every time malloc or realloc is called, the user should check if the pointer isn't NULL.
- *
- * ==================================================
- *
- * Usage:
- *
- * -------------------------
- *
- * p_dict(p_sint, p_str) dict1;
- * pDictInit(dict1);
- *
- * Declares, defines and initiazes a dictionary of (p_sint, p_str) pairs called dict1.
- *
- * -------------------------
- *
- * pDictCleanup(dict1);
- *
- * Cleans up the allocated memory of arrayy1.
- * Sets all the values of dict1 back to zeros and NULLs.
- * Makes dict1 reusable, since it can be used again, with new values.
- *
- * -------------------------
- *
- * pDictAdd(dict1, 123, "test");
- * if ( (dict1.keys == NULL) || (dict1.vals == NULL) ) return P_BADALLOC;
- *
- * Adds the (p_sint, p_str) pair (123, "test") to the end of dict1.
- * Checks that the reallocation of memory, if one was necessary, was successful.
- * If it wasn't, P_BADALLOC (from pcodes.h), is returned.
- *
- * -------------------------
- *
- * pDictAdd(dict1, 0);
- *
- * Removes the pair at index 0 from dict1.
- *
- * ==================================================
- *
- * Taken variables:
- *
- * pDictIter
- * Used for the for-loop in pDictRemove
- *
- * pDictKeyPtr, pDictValPtr
- * Used for safely checking realloc successfulness
  */
 
 #include "ptypes.h"
 
 #include <stdlib.h> /* malloc, realloc, free */
 
+/* Used for the for-loop in pDictRemove */
 p_uint pDictIter;
+
+/* Used for safely checking realloc successfulness */
 p_vptr pDictKeyPtr, pDictValPtr;
 
 /* The dictonary macro */
