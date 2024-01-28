@@ -8,7 +8,7 @@
  *
  * ==================================================
  *
- * The dynamic array struct consists of the data array, and size and capacity integer values.
+ * The dynamic array struct consists of the data array, and size and capacity unsigned integer values.
  *
  * The dynamic array uses the following optimization technique:
  *   Once the size of the dynamic array is equal to the capacity, the capacity is doubled
@@ -19,7 +19,7 @@
  *
  * ==================================================
  *
- * Usage:
+ * Functionality:
  *
  * -------------------------
  *
@@ -134,7 +134,7 @@ p_vptr pDynArrTmpPtr;
 				(arr.data)[pDynArrIter] = (arr.data)[pDynArrIter + 1]; \
 			} \
 			(arr.size)--; \
-			if (arr.size < ((arr.cap)/2)) { \
+			if (arr.size <= ((arr.cap)/2)) { \
 				pDynArrTmpPtr = realloc(arr.data, sizeof(*(arr.data)) * (arr.cap / 2)); \
 				if (pDynArrTmpPtr != NULL) { arr.cap /= 2; arr.data = pDynArrTmpPtr; } \
 				else pDynArrCleanup(arr); \

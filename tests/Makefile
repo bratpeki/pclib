@@ -7,6 +7,7 @@ all:
 	$(CC) debug.c -o debug.out $(FLAGS)
 	$(CC) dict.c -o dict.out $(FLAGS)
 	$(CC) dynarr.c -o dynarr.out $(FLAGS)
+	$(CC) idynarr.c -o idynarr.out $(FLAGS)
 
 clean:
 	rm $(OUT)
