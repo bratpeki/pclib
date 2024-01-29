@@ -54,6 +54,14 @@ int pBigNumInit( p_bignum* bignum ) {
 }
 
 /*
+ * Clears the memory of the bignum,
+ * and sets the variables back to NULL and p_false.
+ */
+void pBigNumCleanup( p_bignum bignum ) {
+	pIDynArrCleanup(bignum.dig);
+}
+
+/*
  * Adds the integer addend to the bignum
  *
  * The bignum is changed directly
