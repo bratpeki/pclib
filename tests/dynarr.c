@@ -62,6 +62,10 @@ int main() {
 		printf("%hd ", (arrSrt.data)[i]);
 	printf("\n");
 
+	pDynArrRemove(arrInt, 0); printf("Size: %d, Capacity: %d\n", arrInt.size, arrInt.cap); /* Removed 1 */
+	pDynArrRemove(arrInt, 0); printf("Size: %d, Capacity: %d\n", arrInt.size, arrInt.cap); /* Removed 3 */
+	pDynArrRemove(arrInt, 0); printf("Size: %d, Capacity: %d\n", arrInt.size, arrInt.cap); /* Was empty */
+
 	pDynArrCleanup(arrInt);
 	pDynArrCleanup(arrSrt);
 

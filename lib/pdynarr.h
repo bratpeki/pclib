@@ -2,7 +2,7 @@
 #define PCLIB_DYNARR
 
 /*
- * pdynarr.h
+ * pdynaFIXMErr.h
  *
  * A simple implementation of a type-generic dynamic array
  *
@@ -42,9 +42,9 @@ p_vptr pDynArrTmpPtr;
 /* Initiazes the array defined with the p_dynarr macro. */
 #define pDynArrInit(arr) \
 	do { \
-		arr.data = NULL; \
-		arr.size = 0; \
-		arr.cap = 0; \
+		(arr).data = NULL; \
+		(arr).size = 0; \
+		(arr).cap = 0; \
 	} while (0);
 
 /*
@@ -53,10 +53,10 @@ p_vptr pDynArrTmpPtr;
  */
 #define pDynArrCleanup(arr) \
 	do { \
-		free(arr.data); \
-		arr.data = NULL; \
-		arr.size = 0; \
-		arr.cap = 0; \
+		free((arr).data); \
+		(arr).data = NULL; \
+		(arr).size = 0; \
+		(arr).cap = 0; \
 	} while (0);
 
 /*
@@ -65,22 +65,22 @@ p_vptr pDynArrTmpPtr;
  */
 #define pDynArrAdd(arr, el) \
 	do { \
-		if ( arr.data == NULL ) { \
-			arr.data = malloc(sizeof(*(arr.data))); \
-			if ( arr.data != NULL ) { \
-				(arr.data)[0] = el; \
-				arr.size = 1; \
-				arr.cap = 1; \
+		if ( (arr).data == NULL ) { \
+			(arr).data = malloc(sizeof(*((arr).data))); \
+			if ( (arr).data != NULL ) { \
+				((arr).data)[0] = el; \
+				(arr).size = 1; \
+				(arr).cap = 1; \
 			} \
 		} \
 		else { \
-			if ( arr.size == arr.cap ) { \
-				pDynArrTmpPtr = realloc(arr.data, sizeof(*(arr.data)) * arr.cap * 2); \
-				if ( pDynArrTmpPtr != NULL ) { arr.cap *= 2; arr.data = pDynArrTmpPtr; } \
+			if ( (arr).size == (arr).cap ) { \
+				pDynArrTmpPtr = realloc((arr).data, sizeof(*((arr).data)) * (arr).cap * 2); \
+				if ( pDynArrTmpPtr != NULL ) { (arr).cap *= 2; (arr).data = pDynArrTmpPtr; } \
 				else pDynArrCleanup(arr); \
 			} \
-			(arr.size)++; \
-			(arr.data)[arr.size - 1] = el; \
+			((arr).size)++; \
+			((arr).data)[(arr).size - 1] = el; \
 		} \
 	} while (0);
 
@@ -89,18 +89,21 @@ p_vptr pDynArrTmpPtr;
 /*
  * Removes an element at the given index from the given array.
  * If needed, halves the capacity of the array.
+ * If the index is not right, nothing is done.
  */
 #define pDynArrRemove(arr, index) \
 	do { \
-		if ( (arr.data != NULL) && ((index) < arr.size) && ((index) >= 0) ) { \
-			for (pDynArrIter = (index); pDynArrIter < arr.size - 1; pDynArrIter++) { \
-				(arr.data)[pDynArrIter] = (arr.data)[pDynArrIter + 1]; \
-			} \
-			(arr.size)--; \
-			if (arr.size <= ((arr.cap)/2)) { \
-				pDynArrTmpPtr = realloc(arr.data, sizeof(*(arr.data)) * (arr.cap / 2)); \
-				if (pDynArrTmpPtr != NULL) { arr.cap /= 2; arr.data = pDynArrTmpPtr; } \
-				else pDynArrCleanup(arr); \
+		if ( ((arr).data != NULL) && ((index) < (arr).size) && ((index) >= 0) ) { \
+			for (pDynArrIter = (index); pDynArrIter < (arr).size - 1; pDynArrIter++) \
+				((arr).data)[pDynArrIter] = ((arr).data)[pDynArrIter + 1]; \
+			((arr).size)--; \
+			if ((arr).size <= (((arr).cap)/2)) { \
+				pDynArrTmpPtr = realloc((arr).data, sizeof(*((arr).data)) * ((arr).cap / 2)); \
+				if (pDynArrTmpPtr != NULL) { (arr).cap /= 2; (arr).data = pDynArrTmpPtr; } \
+				else { \
+					if ( (arr).cap == 1 ) (arr).data = NULL; \
+					pDynArrCleanup(arr); \
+				} \
 			} \
 		} \
 	} while (0);
