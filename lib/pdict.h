@@ -38,10 +38,10 @@ p_vptr pDictKeyPtr, pDictValPtr;
 /* Initiazes the array defined with the p_dict macro. */
 #define pDictInit(dict) \
 	do { \
-		dict.keys = NULL; \
-		dict.vals = NULL; \
-		dict.size = 0; \
-		dict.cap = 0; \
+		(dict).keys = NULL; \
+		(dict).vals = NULL; \
+		(dict).size = 0; \
+		(dict).cap = 0; \
 	} while (0)
 
 /*
@@ -50,12 +50,12 @@ p_vptr pDictKeyPtr, pDictValPtr;
  */
 #define pDictCleanup(dict) \
 	do { \
-		free(dict.keys); \
-		free(dict.vals); \
-		dict.keys = NULL; \
-		dict.vals = NULL; \
-		dict.size = 0; \
-		dict.cap = 0; \
+		free((dict).keys); \
+		free((dict).vals); \
+		(dict).keys = NULL; \
+		(dict).vals = NULL; \
+		(dict).size = 0; \
+		(dict).cap = 0; \
 	} while (0);
 
 /*
@@ -64,54 +64,58 @@ p_vptr pDictKeyPtr, pDictValPtr;
  */
 #define pDictAdd(dict, key, val) \
 	do { \
-		if ( (dict.keys == NULL) || (dict.vals == NULL) ) { \
-			dict.keys = malloc(sizeof(*(dict.keys))); \
-			dict.vals = malloc(sizeof(*(dict.vals))); \
-			if ( (dict.keys != NULL) && (dict.vals != NULL) ) { \
-				(dict.keys)[0] = key; \
-				(dict.vals)[0] = val; \
-				dict.size = 1; \
-				dict.cap = 1; \
+		if ( ((dict).keys == NULL) || ((dict).vals == NULL) ) { \
+			(dict).keys = malloc(sizeof(*((dict).keys))); \
+			(dict).vals = malloc(sizeof(*((dict).vals))); \
+			if ( ((dict).keys != NULL) && ((dict).vals != NULL) ) { \
+				((dict).keys)[0] = key; \
+				((dict).vals)[0] = val; \
+				(dict).size = 1; \
+				(dict).cap = 1; \
 			} \
 		} \
 		else { \
-			if ( dict.size == dict.cap ) { \
-				pDictKeyPtr = realloc(dict.keys, sizeof(*(dict.keys)) * dict.cap * 2); \
-				pDictValPtr = realloc(dict.vals, sizeof(*(dict.vals)) * dict.cap * 2); \
+			if ( (dict).size == (dict).cap ) { \
+				pDictKeyPtr = realloc((dict).keys, sizeof(*((dict).keys)) * (dict).cap * 2); \
+				pDictValPtr = realloc((dict).vals, sizeof(*((dict).vals)) * (dict).cap * 2); \
 				if ( (pDictKeyPtr != NULL) && (pDictValPtr != NULL) ) { \
-					dict.cap *= 2; \
-					dict.keys = pDictKeyPtr; \
-					dict.vals = pDictValPtr; \
+					(dict).cap *= 2; \
+					(dict).keys = pDictKeyPtr; \
+					(dict).vals = pDictValPtr; \
 				} \
 				else pDictCleanup(dict); \
 			} \
-			(dict.size)++; \
-			(dict.keys)[dict.size - 1] = key; \
-			(dict.vals)[dict.size - 1] = val; \
+			((dict).size)++; \
+			((dict).keys)[(dict).size - 1] = key; \
+			((dict).vals)[(dict).size - 1] = val; \
 		} \
 	} while (0);
 
 /*
  * Removes a pair at the given index from the given dictionary.
  * If needed, halves the capacity of the dictionary.
+ * If the index is not right, nothing is done.
  */
 #define pDictRemove(dict, index) \
 	do { \
-		if ( (dict.size > 0) && ((index) < dict.size) && ((index) >= 0) ) { \
-			for (pDictIter = (index); pDictIter < dict.size - 1; pDictIter++) { \
-				(dict.keys)[pDictIter] = (dict.keys)[pDictIter + 1]; \
-				(dict.vals)[pDictIter] = (dict.vals)[pDictIter + 1]; \
+		if ( ((dict).size > 0) && ((index) < (dict).size) && ((index) >= 0) ) { \
+			for (pDictIter = (index); pDictIter < (dict).size - 1; pDictIter++) { \
+				((dict).keys)[pDictIter] = ((dict).keys)[pDictIter + 1]; \
+				((dict).vals)[pDictIter] = ((dict).vals)[pDictIter + 1]; \
 			} \
-			(dict.size)--; \
-			if (dict.size < ((dict.cap)/2)) { \
-				pDictKeyPtr = realloc(dict.keys, sizeof(*(dict.keys)) * (dict.cap / 2)); \
-				pDictValPtr = realloc(dict.vals, sizeof(*(dict.vals)) * (dict.cap / 2)); \
+			((dict).size)--; \
+			if ((dict).size < (((dict).cap)/2)) { \
+				pDictKeyPtr = realloc((dict).keys, sizeof(*((dict).keys)) * ((dict).cap / 2)); \
+				pDictValPtr = realloc((dict).vals, sizeof(*((dict).vals)) * ((dict).cap / 2)); \
 				if ( (pDictKeyPtr != NULL) && (pDictValPtr != NULL) ) { \
-					dict.cap /= 2; \
-					dict.keys = pDictKeyPtr; \
-					dict.vals = pDictValPtr; \
+					(dict).cap /= 2; \
+					(dict).keys = pDictKeyPtr; \
+					(dict).vals = pDictValPtr; \
 				} \
-				else pDictCleanup(dict); \
+				else { \
+					if ( (dict).size == 0 ) { (dict).keys = (dict).vals = NULL; } \
+					pDictCleanup(dict); \
+				} \
 			} \
 		} \
 	} while (0);

@@ -2,7 +2,7 @@
 #define PCLIB_DYNARR
 
 /*
- * pdynaFIXMErr.h
+ * pdynarr.h
  *
  * A simple implementation of a type-generic dynamic array
  *

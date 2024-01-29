@@ -30,6 +30,10 @@ int main() {
 	for (i = 0; i < nicknames.size; i++)
 		printf("%s : %s\n", (nicknames.keys)[i], (nicknames.vals)[i]);
 
+	pDictRemove(nicknames, 0); /* Removes "Markus:Mark" */
+	pDictRemove(nicknames, 0); /* Removes "Agnes:Nessa" */
+	pDictRemove(nicknames, 0); /* Dictionary is empty */
+
 	pDictCleanup(nicknames);
 
 	return P_SUCCESS;
