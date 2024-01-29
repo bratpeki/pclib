@@ -58,8 +58,6 @@ int main() {
 		printf("%hd ", (arrSrt.data)[i]);
 	printf("\n");
 
-	/* Let's test what happens when an array is emptied */
-
 	pIDynArrRemove(arrInt, 0); printf("Size: %d\n", arrInt.size); /* Removed 1, size is 1 */
 	pIDynArrRemove(arrInt, 0); printf("Size: %d\n", arrInt.size); /* Removed 3, size is 0 */
 	pIDynArrRemove(arrInt, 0); printf("Size: %d\n", arrInt.size); /* Was empty, size is 0 */

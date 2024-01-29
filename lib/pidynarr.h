@@ -34,8 +34,8 @@ p_vptr pIDynArrTmpPtr;
 /* Initializes the array defined with the p_idynarr macro. */
 #define pIDynArrInit(arr) \
 	do { \
-		arr.data = NULL; \
-		arr.size = 0; \
+		(arr).data = NULL; \
+		(arr).size = 0; \
 	} while (0);
 
 /*
@@ -44,9 +44,9 @@ p_vptr pIDynArrTmpPtr;
  */
 #define pIDynArrCleanup(arr) \
 	do { \
-		free(arr.data); \
-		arr.data = NULL; \
-		arr.size = 0; \
+		free((arr).data); \
+		(arr).data = NULL; \
+		(arr).size = 0; \
 	} while (0);
 
 /*
@@ -55,11 +55,11 @@ p_vptr pIDynArrTmpPtr;
  */
 #define pIDynArrAdd(arr, el) \
 	do { \
-		pIDynArrTmpPtr = realloc(arr.data, sizeof(*(arr.data)) * (arr.size + 1)); \
+		pIDynArrTmpPtr = realloc((arr).data, sizeof(*((arr).data)) * ((arr).size + 1)); \
 		if (pIDynArrTmpPtr != NULL) { \
-			arr.data = pIDynArrTmpPtr; \
-			(arr.data)[arr.size] = el; \
-			(arr.size)++; \
+			(arr).data = pIDynArrTmpPtr; \
+			((arr).data)[(arr).size] = el; \
+			((arr).size)++; \
 		} \
 		else pIDynArrCleanup(arr); \
 	} while (0);
@@ -67,16 +67,19 @@ p_vptr pIDynArrTmpPtr;
 /*
  * Removes an element at the given index from the incremental dynamic array 'arr'.
  * Reallocates memory for each removal.
+ * If the index is not right, nothing is done.
  */
 #define pIDynArrRemove(arr, index) \
 	do { \
-		if (arr.size > 0 && index < arr.size) { \
-			for (pIDynArrIter = index; pIDynArrIter < arr.size - 1; pIDynArrIter++) { \
-				(arr.data)[pIDynArrIter] = (arr.data)[pIDynArrIter + 1]; \
+		if ((arr).size > 0 && index < (arr).size) { \
+			for (pIDynArrIter = index; pIDynArrIter < (arr).size - 1; pIDynArrIter++) \
+				((arr).data)[pIDynArrIter] = ((arr).data)[pIDynArrIter + 1]; \
+			pIDynArrTmpPtr = realloc((arr).data, sizeof(*((arr).data)) * ((arr).size - 1)); \
+			if (pIDynArrTmpPtr != NULL) { (arr).data = pIDynArrTmpPtr; ((arr).size)--; } \
+			else { \
+				if ( (arr).size == 1 ) (arr).data = NULL; \
+				pIDynArrCleanup(arr); \
 			} \
-			pIDynArrTmpPtr = realloc(arr.data, sizeof(*(arr.data)) * (arr.size - 1)); \
-			if (pIDynArrTmpPtr != NULL) { arr.data = pIDynArrTmpPtr; (arr.size)--; } \
-			else pIDynArrCleanup(arr); \
 		} \
 	} while (0);
 
