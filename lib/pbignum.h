@@ -16,7 +16,7 @@
  * THERE IS A NEED TO CHECK THE MEMORY REALLOCATION SUCCESS!
  */
 
-#include <cstdlib>
+#include <stdlib.h>
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -34,8 +34,8 @@
 
 /* String-like bignum struct */
 typedef struct {
-	p_idynarr(p_uchr) dig;
-	p_bool negative;
+	p_idynarr(p_uchr) dig; /* Digits incremental dynamic array */
+	p_bool negative; /* A bool denoting if the number is negative */
 } p_bignum;
 
 /* Initializes the bignum to 0 */
@@ -47,9 +47,9 @@ int pBigNumInit( p_bignum* bignum ) {
 	}
 
 	pIDynArrInit(bignum->dig);
-	/* TODO: This is erronous */
-	pIDynArrAdd(bignum->dig, 0);
 	bignum->negative = p_false;
+
+	return P_SUCCESS;
 
 }
 

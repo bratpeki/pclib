@@ -70,7 +70,7 @@ p_vptr pIDynArrTmpPtr;
  */
 #define pIDynArrRemove(arr, index) \
 	do { \
-		if (arr.size > 0 && index >= 0 && index < arr.size) { \
+		if (arr.size > 0 && index < arr.size) { \
 			for (pIDynArrIter = index; pIDynArrIter < arr.size - 1; pIDynArrIter++) { \
 				(arr.data)[pIDynArrIter] = (arr.data)[pIDynArrIter + 1]; \
 			} \

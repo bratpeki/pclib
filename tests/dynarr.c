@@ -35,13 +35,13 @@ int main() {
 
 	printf("arrInt: ");
 	for (i = 0; i < arrInt.size; i++)
-		printf("%d ", (arrInt.data)[i]);
-	printf(" (Capacity: %d)\n", arrInt.cap);
+		printf("%d ", (arrInt.data)[i]); /* 1 2 3 */
+	printf(" (Capacity: %d)\n", arrInt.cap); /* The capaity doubles, so 4 */
 
 	printf("arrSrt: ");
 	for (i = 0; i < arrSrt.size; i++)
-		printf("%hd ", (arrSrt.data)[i]);
-	printf(" (Capacity: %d)\n", arrSrt.cap);
+		printf("%hd ", (arrSrt.data)[i]); /* 10 20 30 40 50 60 */
+	printf(" (Capacity: %d)\n", arrSrt.cap); /* 8 */
 
 	pDynArrRemove(arrInt, 1); /* Removes 2 */
 	pDynArrRemove(arrSrt, 0); /* Removes 10 */

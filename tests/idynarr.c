@@ -34,13 +34,13 @@ int main() {
 
 	printf("arrInt: ");
 	for (i = 0; i < arrInt.size; i++)
-		printf("%d ", (arrInt.data)[i]);
-	printf(" (Size: %d)\n", arrInt.size);
+		printf("%d ", (arrInt.data)[i]); /* 1 2 3 */
+	printf(" (Size: %d)\n", arrInt.size); /* 3 */
 
 	printf("arrSrt: ");
 	for (i = 0; i < arrSrt.size; i++)
-		printf("%hd ", (arrSrt.data)[i]);
-	printf(" (Size: %d)\n", arrSrt.size);
+		printf("%hd ", (arrSrt.data)[i]); /* 10 20 30 40 50 */
+	printf(" (Size: %d)\n", arrSrt.size); /* 5 */
 
 	pIDynArrRemove(arrInt, 1); /* Removes 2 */
 	pIDynArrRemove(arrSrt, 0); /* Removes 10 */
@@ -57,6 +57,12 @@ int main() {
 	for (i = 0; i < arrSrt.size; i++)
 		printf("%hd ", (arrSrt.data)[i]);
 	printf("\n");
+
+	/* Let's test what happens when an array is emptied */
+
+	pIDynArrRemove(arrInt, 0); printf("Size: %d\n", arrInt.size); /* Removed 1, size is 1 */
+	pIDynArrRemove(arrInt, 0); printf("Size: %d\n", arrInt.size); /* Removed 3, size is 0 */
+	pIDynArrRemove(arrInt, 0); printf("Size: %d\n", arrInt.size); /* Was empty, size is 0 */
 
 	pIDynArrCleanup(arrInt);
 	pIDynArrCleanup(arrSrt);

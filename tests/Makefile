@@ -3,6 +3,7 @@ FLAGS=-ansi -Wall -Wpedantic -Werror -g
 OUT=$(shell find . -name '*.out')
 
 all:
+	$(CC) bignum.c -o bignum.out $(FLAGS)
 	$(CC) bool.c -o bool.out $(FLAGS)
 	$(CC) debug.c -o debug.out $(FLAGS)
 	$(CC) dict.c -o dict.out $(FLAGS)
