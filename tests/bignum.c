@@ -4,6 +4,8 @@ void pBigNumPrint( p_bignum bignum ) {
 
 	p_sint i = bignum.dig.size - 1;
 
+	if ( bignum.negative ) printf("-");
+
 	for ( ; i >= 0 ; i--)
 		printf("%d", ((bignum.dig).data)[i]);
 	printf("\n");
