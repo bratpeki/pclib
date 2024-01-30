@@ -1,8 +1,11 @@
 #include "../lib/pbignum.h"
+#include "../lib/ptypes.h"
 
 void pBigNumPrint( p_bignum bignum ) {
 
 	p_sint i = bignum.dig.size - 1;
+
+	if ( (bignum.dig).size == 0 ) return;
 
 	if ( bignum.negative ) printf("-");
 
@@ -17,9 +20,19 @@ int main() {
 	p_bignum a;
 	pBigNumInit(&a);
 
-	pBigNumAddNum(&a, 17);
+	pBigNumAddNum(&a, 106); /* 106 */
+	pBigNumAddNum(&a, 12); /* 118 */
 
-	pBigNumPrint(a);
+	a.negative = p_true; /* -118 */
+
+	printf("%d\n", pBigNumCompNum(a, 32)); /* 2, the second arg is bigger */
+
+	a.negative = p_false; /* 118 */
+
+	printf("%d\n", pBigNumCompNum(a, 32)); /* 1 */
+	printf("%d\n", pBigNumCompNum(a, 117)); /* 1 */
+
+	/* pBigNumPrint(a); */
 
 	pBigNumCleanup(a);
 

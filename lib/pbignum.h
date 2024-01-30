@@ -56,6 +56,53 @@ int pBigNumInit( p_bignum* bignum ) {
 }
 
 /*
+ * Compares the two numbers
+ *
+ * Returns 0 if they're equal,
+ * and the number of the argument which is greater if they're not
+ */
+int pBigNumCompNum( p_bignum bignum, p_bignumOpType num ) {
+
+	p_sint pNumDigitCount = 0;
+	p_bignumOpType numTmp = num;
+	p_sint pCompIter;
+	p_idynarr(p_uchr) numFlipped;
+
+	/* If both the bignum and num are 0, return 0 */
+	if ( (bignum.dig).size == 0 && num == 0 ) return 0;
+
+	/* If the bignum is negative, it's smaller */
+	if ( bignum.negative ) return 2;
+
+	/* Counting the number of digits in num */
+	while ( numTmp != 0 ) { pNumDigitCount++; numTmp /= 10; }
+
+	/* If bignum has more digits, it's bigger, and vice-versa */
+	if ( (bignum.dig).size > pNumDigitCount ) return 1;
+	if ( (bignum.dig).size < pNumDigitCount ) return 2;
+
+	numFlipped.data = (p_uchr*)calloc(3, sizeof(p_uchr));
+	numFlipped.size = pNumDigitCount;
+
+	numTmp = num;
+
+	for ( pCompIter = 0; pCompIter < pNumDigitCount; pCompIter++ ) {
+		(numFlipped.data)[pCompIter] = numTmp % 10;
+		numTmp /= 10;
+	}
+
+	for ( pCompIter = (bignum.dig).size - 1; pCompIter >= 0; pCompIter-- ) {
+
+		if ( ((bignum.dig).data)[pCompIter] > (numFlipped.data)[pCompIter] ) return 1;
+		if ( ((bignum.dig).data)[pCompIter] < (numFlipped.data)[pCompIter] ) return 2;
+
+	}
+
+	return 0;
+
+}
+
+/*
  * Clears the memory of the bignum,
  * and sets the variables back to NULL and p_false.
  */
@@ -77,38 +124,42 @@ void pBigNumAddNum( p_bignum* bignum, p_bignumOpType addend ) {
 
 	p_usint i;
 
-	for ( i = 0; pAddendIter != 0; i++ ) {
+	/*
+	 * The number is negative
+	 */
 
-		printf("loop i = %d, pAddendIter = %d\n", i, pAddendIter);
-		printf("  dig.size = %d\n", (bignum->dig).size);
+	if ( bignum->negative ) {
 
-		if ( i == (bignum->dig).size ) {
-			pIDynArrAdd(bignum->dig, 0);
-			if ( (bignum->dig).data == NULL ) return;
-		}
 
-		printf(
-			"  pTmp = ((bignum->dig).data)[i] + ( pAddendIter %% 10 ) + carry\n"
-			"             = %d + %d + %d\n",
-			((bignum->dig).data)[i], pAddendIter % 10, pCarry
-		);
-		pTmp = ((bignum->dig).data)[i] + ( pAddendIter % 10 ) + pCarry;
-
-		printf("  bignum dig data [i] = %d\n", pTmp % 10);
-		((bignum->dig).data)[i] = pTmp % 10;
-
-		printf("  carry = %d\n", pTmp % 10);
-		pCarry = pTmp / 10;
-
-		pAddendIter /= 10;
-
-		printf("loop end\n\n");
 
 	}
 
-	if ( pCarry != 0 ) {
-		pIDynArrAdd(bignum->dig, pCarry);
-		if ( (bignum->dig).data == NULL ) return;
+	/* The number is positive, we do basic addition with carrying over */
+
+	else {
+
+		for ( i = 0; pAddendIter != 0; i++ ) {
+
+			if ( i == (bignum->dig).size ) {
+				pIDynArrAdd(bignum->dig, 0);
+				if ( (bignum->dig).data == NULL ) return;
+			}
+
+			pTmp = ((bignum->dig).data)[i] + ( pAddendIter % 10 ) + pCarry;
+
+			((bignum->dig).data)[i] = pTmp % 10;
+
+			pCarry = pTmp / 10;
+
+			pAddendIter /= 10;
+
+		}
+
+		if ( pCarry != 0 ) {
+			pIDynArrAdd(bignum->dig, pCarry);
+			if ( (bignum->dig).data == NULL ) return;
+		}
+
 	}
 
 }
