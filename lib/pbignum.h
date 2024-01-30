@@ -6,7 +6,7 @@
  *
  * Implementation of a string-like integer bignum
  *
- * As it is VERY apparent, this implementation is VERY wasteful,
+ * As is VERY apparent, this implementation is VERY wasteful,
  * due to it using one byte per digit. Sadly, ISO C doesn't specify
  * headers like stdint.h, which would let us have data with a specified
  * size. However, I still wanted to implement something regarding this,
@@ -30,7 +30,9 @@
  *
  * If you need great precision, use p_ulint.
  */
+#ifndef p_bignumOpType
 #define p_bignumOpType p_uint
+#endif
 
 /* String-like bignum struct */
 typedef struct {
@@ -59,6 +61,7 @@ int pBigNumInit( p_bignum* bignum ) {
  */
 void pBigNumCleanup( p_bignum bignum ) {
 	pIDynArrCleanup(bignum.dig);
+	bignum.negative = p_false;
 }
 
 /*
@@ -67,6 +70,46 @@ void pBigNumCleanup( p_bignum bignum ) {
  * The bignum is changed directly
  */
 void pBigNumAddNum( p_bignum* bignum, p_bignumOpType addend ) {
+
+	p_bignumOpType pAddendIter = addend;
+	p_uchr pCarry = 0;
+	p_uchr pTmp;
+
+	p_usint i;
+
+	for ( i = 0; pAddendIter != 0; i++ ) {
+
+		printf("loop i = %d, pAddendIter = %d\n", i, pAddendIter);
+		printf("  dig.size = %d\n", (bignum->dig).size);
+
+		if ( i == (bignum->dig).size ) {
+			pIDynArrAdd(bignum->dig, 0);
+			if ( (bignum->dig).data == NULL ) return;
+		}
+
+		printf(
+			"  pTmp = ((bignum->dig).data)[i] + ( pAddendIter %% 10 ) + carry\n"
+			"             = %d + %d + %d\n",
+			((bignum->dig).data)[i], pAddendIter % 10, pCarry
+		);
+		pTmp = ((bignum->dig).data)[i] + ( pAddendIter % 10 ) + pCarry;
+
+		printf("  bignum dig data [i] = %d\n", pTmp % 10);
+		((bignum->dig).data)[i] = pTmp % 10;
+
+		printf("  carry = %d\n", pTmp % 10);
+		pCarry = pTmp / 10;
+
+		pAddendIter /= 10;
+
+		printf("loop end\n\n");
+
+	}
+
+	if ( pCarry != 0 ) {
+		pIDynArrAdd(bignum->dig, pCarry);
+		if ( (bignum->dig).data == NULL ) return;
+	}
 
 }
 
