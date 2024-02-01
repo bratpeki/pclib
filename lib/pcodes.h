@@ -12,8 +12,8 @@
 #define P_BADALLOC    2 /* Allocation error */
 #define P_OUTOFBOUNDS 3 /* Array indexing error */
 #define P_EMPTYOUTPUT 4 /* The function didn't output anything */
-#define P_GREATER     5 /* Comparison */
-#define P_SMALLER     6 /* Comparison */
-#define P_EQUAL       7 /* Comparison */
+#define P_GREATER     5 /* Comparison, first is greater */
+#define P_SMALLER     6 /* Comparison, first is smaller */
+#define P_EQUAL       7 /* Comparison, both equal */
 
 #endif

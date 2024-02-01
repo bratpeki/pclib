@@ -66,39 +66,47 @@ int pBigNumCompNum( p_bignum bignum, p_bignumOpType num ) {
 	p_sint pNumDigitCount = 0;
 	p_bignumOpType numTmp = num;
 	p_sint pCompIter;
-	p_idynarr(p_uchr) numFlipped;
+	p_uchr* numFlipped;
 
 	/* If both the bignum and num are 0, return 0 */
-	if ( (bignum.dig).size == 0 && num == 0 ) return 0;
+	if ( (bignum.dig).size == 0 && num == 0 ) return P_EQUAL;
 
 	/* If the bignum is negative, it's smaller */
-	if ( bignum.negative ) return 2;
+	if ( bignum.negative ) return P_SMALLER;
 
 	/* Counting the number of digits in num */
 	while ( numTmp != 0 ) { pNumDigitCount++; numTmp /= 10; }
 
 	/* If bignum has more digits, it's bigger, and vice-versa */
-	if ( (bignum.dig).size > pNumDigitCount ) return 1;
-	if ( (bignum.dig).size < pNumDigitCount ) return 2;
+	if ( (bignum.dig).size > pNumDigitCount ) return P_GREATER;
+	if ( (bignum.dig).size < pNumDigitCount ) return P_SMALLER;
 
-	numFlipped.data = (p_uchr*)calloc(3, sizeof(p_uchr));
-	numFlipped.size = pNumDigitCount;
+	numFlipped = (p_uchr*)calloc(pNumDigitCount, sizeof(p_uchr));
+	if ( numFlipped == NULL ) return P_BADALLOC;
 
 	numTmp = num;
 
 	for ( pCompIter = 0; pCompIter < pNumDigitCount; pCompIter++ ) {
-		(numFlipped.data)[pCompIter] = numTmp % 10;
+		numFlipped[pCompIter] = numTmp % 10;
 		numTmp /= 10;
 	}
 
 	for ( pCompIter = (bignum.dig).size - 1; pCompIter >= 0; pCompIter-- ) {
 
-		if ( ((bignum.dig).data)[pCompIter] > (numFlipped.data)[pCompIter] ) return 1;
-		if ( ((bignum.dig).data)[pCompIter] < (numFlipped.data)[pCompIter] ) return 2;
+		if ( ((bignum.dig).data)[pCompIter] > numFlipped[pCompIter] ) {
+			free(numFlipped);
+			return P_GREATER;
+		}
+
+		if ( ((bignum.dig).data)[pCompIter] < numFlipped[pCompIter] ) {
+			free(numFlipped);
+			return P_SMALLER;
+		}
 
 	}
 
-	return 0;
+	free(numFlipped);
+	return P_EQUAL;
 
 }
 
