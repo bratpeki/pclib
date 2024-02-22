@@ -25,12 +25,12 @@ int main() {
 
 	a.negative = p_true; /* -118 */
 
-	printf("%d\n", pBigNumCompNum(a, 32)); /* 2, the second arg is bigger */
+	printf("%d\n", pBigNumCompNum(a, 32) ); /* 6, the second arg is bigger */
 
 	a.negative = p_false; /* 118 */
 
-	printf("%d\n", pBigNumCompNum(a, 32)); /* 1 */
-	printf("%d\n", pBigNumCompNum(a, 117)); /* 1 */
+	printf("%d\n", pBigNumCompNum(a, 32)); /* 5 */
+	printf("%d\n", pBigNumCompNum(a, 117)); /* 5 */
 
 	/* pBigNumPrint(a); */
 

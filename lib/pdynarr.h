@@ -84,8 +84,6 @@ p_vptr pDynArrTmpPtr;
 		} \
 	} while (0);
 
-#endif
-
 /*
  * Removes an element at the given index from the given array.
  * If needed, halves the capacity of the array.
@@ -107,3 +105,5 @@ p_vptr pDynArrTmpPtr;
 			} \
 		} \
 	} while (0);
+
+#endif

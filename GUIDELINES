@@ -9,7 +9,8 @@ Compiler:
 Code:
 - /* Always use C-style comments. */
 - Don't write lines over 100 characters, unless deemed absolutely necessary
-- Files are non-capitalized and without any spacing
-- Functions, preprocessor functions and variables are camelCase
-- Preprocessor variables are CAPITAL_SNAKE_CASE
-- Types are snake_case
+- The following, without listing cases and capitalization, are how I write code:
+  - P_EXIT_CODE_EXAMPLE, P_PREPROCESSOR_VARIABLE_EXAMPLE
+  - pFunctionExample, variableExample, preprocessorFunctionExample
+  - pfilenameexample
+  - p_type_example
