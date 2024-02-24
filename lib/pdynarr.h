@@ -6,7 +6,8 @@
  *
  * A simple implementation of a type-generic dynamic array
  *
- * The dynamic array struct consists of the data array, and size and capacity unsigned integer values.
+ * The dynamic array struct consists of the data array, and size and capacity unsigned
+ * integer values.
  *
  * The dynamic array uses the following optimization technique:
  *   Once the size of the dynamic array is equal to the capacity, the capacity is doubled

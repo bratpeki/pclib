@@ -17,7 +17,6 @@
  */
 
 #include <stdlib.h>
-#include <stdlib.h>
 #include <stdio.h>
 
 #include "./pidynarr.h"
@@ -47,7 +46,6 @@ int pBigNumInit( p_bignum* bignum ) {
 		bignum = (p_bignum*)malloc(sizeof(p_bignum));
 		if ( bignum == NULL ) return P_BADALLOC;
 	}
-
 	pIDynArrInit(bignum->dig);
 	bignum->negative = p_false;
 
@@ -86,6 +84,10 @@ int pBigNumCompNum( p_bignum bignum, p_bignumOpType num ) {
 
 	numTmp = num;
 
+	/*
+	 * We're flipping the 'num' argument, so that the greatest digit is at index 0.
+	 * This way, we can compare the digits, greatest to weakest
+	 */
 	for ( pCompIter = 0; pCompIter < pNumDigitCount; pCompIter++ ) {
 		numFlipped[pCompIter] = numTmp % 10;
 		numTmp /= 10;

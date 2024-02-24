@@ -7,10 +7,14 @@ Compiler:
 - If using GCC, any tests or examples should be compiled using -ansi, -Wall, -Wpedantic and -Werror
 
 Code:
-- /* Always use C-style comments. */
 - Don't write lines over 100 characters, unless deemed absolutely necessary
 - The following, without listing cases and capitalization, are how I write code:
+  - /* Single-line comment example */
+  - /*
+     * Multi-line
+     * comment example
+     */
   - P_EXIT_CODE_EXAMPLE, P_PREPROCESSOR_VARIABLE_EXAMPLE
-  - pFunctionExample, variableExample, preprocessorFunctionExample
-  - pfilenameexample
+  - pFunctionExample, preprocessorFunctionExample, variableExample
   - p_type_example
+  - pfilenameexample

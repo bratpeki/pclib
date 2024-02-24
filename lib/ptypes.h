@@ -12,11 +12,12 @@
  * - ASCII characters (ascii)
  * - strings (str)
  * - pointers (ptr)
+ * - void (noret)
  *
  * The order in which the types are named is:
  *   p_ + SIGN + SHORT/LONG VARIANT + BASE TYPE
  *
- * All floating-point numbers are signed, so it's not included.
+ * All floating-point numbers are signed.
  */
 
 /* A signed character type */ typedef signed char p_schr;
@@ -42,5 +43,7 @@
 /* A C-style string */ typedef unsigned char* p_str;
 
 /* A void pointer */ typedef void* p_vptr;
+
+/* A void type, no return value in functions */ typedef void p_noret;
 
 #endif
