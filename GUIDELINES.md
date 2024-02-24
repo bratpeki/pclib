@@ -17,7 +17,7 @@ Code:
 | - | - | - |
 | Single-line comment | `/* Example comment */` | Classic C-Style comment |
 | Multi-line comment | `/*` <br> ` * Example`  <br> ` * comment` <br> ` */` | |
-| Exit code | `P_EXITCODE` | <!-- TODO: These are defined in pcodes.h --> |
+| Enumerator values | `P_ENUMVALUE` | Used for exit codes and Boolean values |
 | Macro variable | `P_MACROVAR` | |
 | Macro guard | `PCLIB_FILE` | |
 | Function | `pfile_desc()` | |

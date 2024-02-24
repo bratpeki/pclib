@@ -4,6 +4,7 @@
 
 #include <stdio.h>
 
+/* The user is responsible for checking the allocation successfulness */
 #define addNCheck(dict, k, v) \
 	pdict_add(dict, k, v) \
 	if ( (dict.keys == NULL) || (dict.vals == NULL) ) return P_BADALLOC;
@@ -12,12 +13,12 @@ int main() {
 
 	int i;
 
-	pdict(p_str, p_str) nicknames;
+	pdict(pstr, pstr) nicknames;
 	pdict_init(nicknames);
 
-	addNCheck(nicknames, (p_str)"Marcus", (p_str)"Mark");
-	addNCheck(nicknames, (p_str)"Michael", (p_str)"Mike");
-	addNCheck(nicknames, (p_str)"Agnes", (p_str)"Nessa");
+	addNCheck(nicknames, (pstr)"Marcus", (pstr)"Mark");
+	addNCheck(nicknames, (pstr)"Michael", (pstr)"Mike");
+	addNCheck(nicknames, (pstr)"Agnes", (pstr)"Nessa");
 
 	printf("Capacity: %u\n\n", nicknames.cap); /* 4 */
 

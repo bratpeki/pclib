@@ -22,16 +22,16 @@
 #include <stdlib.h> /* malloc, realloc, free */
 
 /* Used for the for-loop in pDynArrRemove */
-p_uint _pdarr_iter;
+puint _pdarr_iter;
 
 /* Used for safely checking realloc successfulness */
-p_vptr _pdarr_tmp;
+pvptr _pdarr_tmp;
 
 /* The dynamic array macro */
 #define pdarr(type) struct { \
 	type*  data; /* An array of all elements */ \
-	p_uint size; /* The number of elements currently in the dynamic array */ \
-	p_uint cap;  /* The number of elements that can fit in the dynamic array */ \
+	puint size; /* The number of elements currently in the dynamic array */ \
+	puint cap;  /* The number of elements that can fit in the dynamic array */ \
 }
 
 /* Initiazes the array defined with the p_dynarr macro. */

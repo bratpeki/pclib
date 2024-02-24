@@ -5,7 +5,6 @@
 #include <stdio.h>
 
 /* The user is responsible for checking the allocation successfulness */
-
 #define addNCheck(arr, el) \
 	pdarr_add(arr, el); \
 	if (arr.data == NULL) return P_BADALLOC;
@@ -14,8 +13,8 @@ int main() {
 
 	int i;
 
-	pdarr(p_sint) arrInt;
-	pdarr(p_ssint) arrSrt;
+	pdarr(psint) arrInt;
+	pdarr(pssint) arrSrt;
 	pdarr_init(arrInt);
 	pdarr_init(arrSrt);
 

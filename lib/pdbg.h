@@ -16,7 +16,7 @@
  * The Boolean value which enables pdbg_printf output
  * True by default
  */
-p_bool _pdbg_toggle = p_on;
+pbool _pdbg_toggle = P_ON;
 
 /*
  * If debugging is enabled,

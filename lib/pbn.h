@@ -20,8 +20,8 @@
 #include <stdio.h>
 
 #include "./pidarr.h"
-#include "./ptypes.h"
-#include "./pcodes.h"
+#include "./ptype.h"
+#include "./pcode.h"
 
 /*
  * This defines what type we are adding, subtracting,
@@ -29,25 +29,25 @@
  *
  * If you need great precision, use p_ulint.
  */
-#ifndef p_bignumOpType
-#define p_bignumOpType p_uint
+#ifndef P_BIGNUM_OP_TYPE
+#define P_BIGNUM_OP_TYPE puint
 #endif
 
 /* String-like bignum struct */
 typedef struct {
-	p_idynarr(p_uchr) dig; /* Digits incremental dynamic array */
-	p_bool negative; /* A bool denoting if the number is negative */
-} p_bignum;
+	pidarr(puchr) dig; /* Digits incremental dynamic array */
+	pbool negative; /* A bool denoting if the number is negative */
+} pbn;
 
 /* Initializes the bignum to 0 */
-int pBigNumInit( p_bignum* bignum ) {
+int pbn_init( pbn* bignum ) {
 
 	if ( bignum == NULL ) {
-		bignum = (p_bignum*)malloc(sizeof(p_bignum));
+		bignum = (pbn*)malloc(sizeof(pbn));
 		if ( bignum == NULL ) return P_BADALLOC;
 	}
-	pIDynArrInit(bignum->dig);
-	bignum->negative = p_false;
+	pidarr_init(bignum->dig);
+	bignum->negative = P_FALSE;
 
 	return P_SUCCESS;
 
@@ -59,12 +59,12 @@ int pBigNumInit( p_bignum* bignum ) {
  * Returns 0 if they're equal,
  * and the number of the argument which is greater if they're not
  */
-int pBigNumCompNum( p_bignum bignum, p_bignumOpType num ) {
+int pbn_cmpN( pbn bignum, P_BIGNUM_OP_TYPE num ) {
 
-	p_sint pNumDigitCount = 0;
-	p_bignumOpType numTmp = num;
-	p_sint pCompIter;
-	p_uchr* numFlipped;
+	psint pNumDigitCount = 0;
+	psint pCompIter;
+	puchr* numFlipped;
+	P_BIGNUM_OP_TYPE numTmp = num;
 
 	/* If both the bignum and num are 0, return 0 */
 	if ( (bignum.dig).size == 0 && num == 0 ) return P_EQUAL;
@@ -79,7 +79,7 @@ int pBigNumCompNum( p_bignum bignum, p_bignumOpType num ) {
 	if ( (bignum.dig).size > pNumDigitCount ) return P_GREATER;
 	if ( (bignum.dig).size < pNumDigitCount ) return P_SMALLER;
 
-	numFlipped = (p_uchr*)calloc(pNumDigitCount, sizeof(p_uchr));
+	numFlipped = (puchr*)calloc(pNumDigitCount, sizeof(puchr));
 	if ( numFlipped == NULL ) return P_BADALLOC;
 
 	numTmp = num;
@@ -116,9 +116,9 @@ int pBigNumCompNum( p_bignum bignum, p_bignumOpType num ) {
  * Clears the memory of the bignum,
  * and sets the variables back to NULL and p_false.
  */
-void pBigNumCleanup( p_bignum bignum ) {
-	pIDynArrCleanup(bignum.dig);
-	bignum.negative = p_false;
+void pbn_clean( pbn bignum ) {
+	pidarr_clean(bignum.dig);
+	bignum.negative = P_FALSE;
 }
 
 /*
@@ -126,13 +126,13 @@ void pBigNumCleanup( p_bignum bignum ) {
  *
  * The bignum is changed directly
  */
-void pBigNumAddNum( p_bignum* bignum, p_bignumOpType addend ) {
+void pbn_addN( pbn* bignum, P_BIGNUM_OP_TYPE addend ) {
 
-	p_bignumOpType pAddendIter = addend;
-	p_uchr pCarry = 0;
-	p_uchr pTmp;
+	P_BIGNUM_OP_TYPE pAddendIter = addend;
+	puchr pCarry = 0;
+	puchr pTmp;
 
-	p_usint i;
+	pusint i;
 
 	/*
 	 * The number is negative
@@ -151,7 +151,7 @@ void pBigNumAddNum( p_bignum* bignum, p_bignumOpType addend ) {
 		for ( i = 0; pAddendIter != 0; i++ ) {
 
 			if ( i == (bignum->dig).size ) {
-				pIDynArrAdd(bignum->dig, 0);
+				pidarr_add(bignum->dig, 0);
 				if ( (bignum->dig).data == NULL ) return;
 			}
 
@@ -166,7 +166,7 @@ void pBigNumAddNum( p_bignum* bignum, p_bignumOpType addend ) {
 		}
 
 		if ( pCarry != 0 ) {
-			pIDynArrAdd(bignum->dig, pCarry);
+			pidarr_add(bignum->dig, pCarry);
 			if ( (bignum->dig).data == NULL ) return;
 		}
 
@@ -179,7 +179,7 @@ void pBigNumAddNum( p_bignum* bignum, p_bignumOpType addend ) {
  *
  * The first bignum is changed directly
  */
-void pBigNumAddBignum( p_bignum* bignum, p_bignum addend ) {
+void pbn_add( pbn* bignum, pbn addend ) {
 
 }
 

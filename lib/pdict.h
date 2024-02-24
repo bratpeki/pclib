@@ -22,17 +22,17 @@
 #include <stdlib.h> /* malloc, realloc, free */
 
 /* Used for the for-loop in pdict_rem */
-p_uint _pdict_iter;
+puint _pdict_iter;
 
 /* Used for safely checking realloc successfulness */
-p_vptr _pdict_kp, _pdict_vp;
+pvptr _pdict_kp, _pdict_vp;
 
 /* The dictonary macro */
 #define pdict(ktype, vtype) struct { \
 	ktype* keys; /* An array of all keys */ \
 	vtype* vals; /* An array of all values */ \
-	p_uint size; /* The number of elements currently in the dictionary */ \
-	p_uint cap;  /* The number of elements that can fit in the dictionary */ \
+	puint size; /* The number of elements currently in the dictionary */ \
+	puint cap;  /* The number of elements that can fit in the dictionary */ \
 }
 
 /* Initiazes the array defined with the pdict macro. */

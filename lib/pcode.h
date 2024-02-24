@@ -18,6 +18,6 @@ typedef enum {
 	P_SMALLER,     /* Comparison, first is smaller */
 	P_EQUAL        /* Comparison, both equal */
 
-} p_code;
+} pcode;
 
 #endif

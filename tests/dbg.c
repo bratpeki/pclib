@@ -1,7 +1,3 @@
-/*
- * debug.c - Testing the behaviour of the pdebug.h header file
- */
-
 #include "../lib/pdbg.h"
 #include "../lib/ptype.h"
 
@@ -10,10 +6,10 @@
 
 int main() {
 
-	p_sint a = 2;
+	psint a = 2;
 
 	/* Not actually necessary */
-	pdbg_set(p_on);
+	pdbg_set(P_ON);
 
 	/* "DEBUG: Starting up..." */
 	pdbg_printf(dmsg "Starting up...\n");
@@ -26,7 +22,7 @@ int main() {
 	/* "ERROR: 'a' should"... */
 	if (a != 2) pdbg_printf(emsg "'a' should have been 2, but is %d!\n", a);
 
-	pdbg_set(p_off);
+	pdbg_set(P_OFF);
 
 	/* Nothing, since the debug ouput is off */
 	pdbg_printf(dmsg "This won't print.\n");

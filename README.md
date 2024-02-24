@@ -6,14 +6,14 @@ Each header file aims to be sufficiently documented and has minimal dependencies
 
 ## Headers
 
-| File | Description | Include guard |
-| - | - | - |
-| `pcode.h` | Exit code macros | `PCLIB_CODE` |
-| `pdarr.h` | Dynamic, type-generic array, efficient memory reallocation | `PCLIB_DARR` |
-| `pdbg.h` | Functions for debug output | `PCLIB_DBG` |
-| `pdict.h` | Dynamic, type-generic dictionary/hashmap | `PCLIB_DICT` |
-| `pidarr.h` | Dynamic, type-generic array, incremental memory allocation | `PCLIB_IDARR` |
-| `ptype.h` | Custom datatypes | `PCLIB_TYPE` |
+| File | Description |
+| - | - |
+| `pcode.h` | Exit code macros |
+| `pdarr.h` | Dynamic, type-generic array, efficient memory reallocation |
+| `pdbg.h` | Functions for debug output |
+| `pdict.h` | Dynamic, type-generic dictionary/hashmap |
+| `pidarr.h` | Dynamic, type-generic array, incremental memory allocation |
+| `ptype.h` | Custom datatypes |
 
 ## Why ANSI C?
 

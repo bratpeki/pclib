@@ -20,15 +20,15 @@
 #include <stdlib.h> /* malloc, realloc, free */
 
 /* Used for the for-loop in pidarr_rem */
-p_uint _pidarr_iter;
+puint _pidarr_iter;
 
 /* Used for safely checking realloc successfulness */
-p_vptr _pidarr_tmp;
+pvptr _pidarr_tmp;
 
 /* The incremental dynamic array macro */
 #define pidarr(type) struct { \
 	type*  data; /* An array of all elements */ \
-	p_uint size; /* The number of elements currently in the incremental dynamic array */ \
+	puint size; /* The number of elements currently in the incremental dynamic array */ \
 }
 
 /* Initializes the array defined with the p_idynarr macro. */

@@ -1,9 +1,9 @@
-#include "../lib/pbignum.h"
-#include "../lib/ptypes.h"
+#include "../lib/pbn.h"
+#include "../lib/ptype.h"
 
-void pBigNumPrint( p_bignum bignum ) {
+void pBigNumPrint( pbn bignum ) {
 
-	p_sint i = bignum.dig.size - 1;
+	psint i = bignum.dig.size - 1;
 
 	if ( (bignum.dig).size == 0 ) return;
 
@@ -17,24 +17,24 @@ void pBigNumPrint( p_bignum bignum ) {
 
 int main() {
 
-	p_bignum a;
-	pBigNumInit(&a);
+	pbn a;
+	pbn_init(&a);
 
-	pBigNumAddNum(&a, 106); /* 106 */
-	pBigNumAddNum(&a, 12); /* 118 */
+	pbn_addN(&a, 106); /* 106 */
+	pbn_addN(&a, 12); /* 118 */
 
-	a.negative = p_true; /* -118 */
+	a.negative = P_TRUE; /* -118 */
 
-	printf("%d\n", pBigNumCompNum(a, 32) ); /* 6, the second arg is bigger */
+	printf("%d\n", pbn_cmpN(a, 32) ); /* 6, the second arg is bigger */
 
-	a.negative = p_false; /* 118 */
+	a.negative = P_FALSE; /* 118 */
 
-	printf("%d\n", pBigNumCompNum(a, 32)); /* 5 */
-	printf("%d\n", pBigNumCompNum(a, 117)); /* 5 */
+	printf("%d\n", pbn_cmpN(a, 32)); /* 5 */
+	printf("%d\n", pbn_cmpN(a, 117)); /* 5 */
 
 	/* pBigNumPrint(a); */
 
-	pBigNumCleanup(a);
+	pbn_clean(a);
 
 	return 0;
 
