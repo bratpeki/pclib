@@ -1,8 +1,8 @@
-#ifndef PCLIB_DYNARR
-#define PCLIB_DYNARR
+#ifndef PCLIB_DARR
+#define PCLIB_DARR
 
 /*
- * pdynarr.h
+ * pdarr.h
  *
  * A simple implementation of a type-generic dynamic array
  *
@@ -15,33 +15,27 @@
  *
  * THE USER IS RESPONSIBLE FOR HANDLING THE MEMORY AFTER EACH RE-EVALUATION OF THE CAPACITY!
  * So, every time malloc or realloc is called, the user should check if the pointer isn't NULL.
- *
- * Taken variables:
- *
- * pDynArrIter
- *
- * pDynArrTmpPtr
  */
 
-#include "ptypes.h"
+#include "ptype.h"
 
 #include <stdlib.h> /* malloc, realloc, free */
 
 /* Used for the for-loop in pDynArrRemove */
-p_uint pDynArrIter;
+p_uint _pdarr_iter;
 
 /* Used for safely checking realloc successfulness */
-p_vptr pDynArrTmpPtr;
+p_vptr _pdarr_tmp;
 
 /* The dynamic array macro */
-#define p_dynarr(type) struct { \
+#define pdarr(type) struct { \
 	type*  data; /* An array of all elements */ \
 	p_uint size; /* The number of elements currently in the dynamic array */ \
 	p_uint cap;  /* The number of elements that can fit in the dynamic array */ \
 }
 
 /* Initiazes the array defined with the p_dynarr macro. */
-#define pDynArrInit(arr) \
+#define pdarr_init(arr) \
 	do { \
 		(arr).data = NULL; \
 		(arr).size = 0; \
@@ -52,7 +46,7 @@ p_vptr pDynArrTmpPtr;
  * Clears the memory of the array,
  * and sets the variables back to NULLs and zeros.
  */
-#define pDynArrCleanup(arr) \
+#define pdarr_clean(arr) \
 	do { \
 		free((arr).data); \
 		(arr).data = NULL; \
@@ -64,7 +58,7 @@ p_vptr pDynArrTmpPtr;
  * Adds the element 'el' to the end of the dynamic array 'arr'.
  * If needed, doubles the capacity of the array.
  */
-#define pDynArrAdd(arr, el) \
+#define pdarr_add(arr, el) \
 	do { \
 		if ( (arr).data == NULL ) { \
 			(arr).data = malloc(sizeof(*((arr).data))); \
@@ -76,9 +70,9 @@ p_vptr pDynArrTmpPtr;
 		} \
 		else { \
 			if ( (arr).size == (arr).cap ) { \
-				pDynArrTmpPtr = realloc((arr).data, sizeof(*((arr).data)) * (arr).cap * 2); \
-				if ( pDynArrTmpPtr != NULL ) { (arr).cap *= 2; (arr).data = pDynArrTmpPtr; } \
-				else pDynArrCleanup(arr); \
+				_pdarr_tmp = realloc((arr).data, sizeof(*((arr).data)) * (arr).cap * 2); \
+				if ( _pdarr_tmp != NULL ) { (arr).cap *= 2; (arr).data = _pdarr_tmp; } \
+				else pdarr_clean(arr); \
 			} \
 			((arr).size)++; \
 			((arr).data)[(arr).size - 1] = el; \
@@ -90,18 +84,18 @@ p_vptr pDynArrTmpPtr;
  * If needed, halves the capacity of the array.
  * If the index is not right, nothing is done.
  */
-#define pDynArrRemove(arr, index) \
+#define pdarr_rem(arr, index) \
 	do { \
 		if ( ((arr).data != NULL) && ((index) < (arr).size) && ((index) >= 0) ) { \
-			for (pDynArrIter = (index); pDynArrIter < (arr).size - 1; pDynArrIter++) \
-				((arr).data)[pDynArrIter] = ((arr).data)[pDynArrIter + 1]; \
+			for (_pdarr_iter = (index); _pdarr_iter < (arr).size - 1; _pdarr_iter++) \
+				((arr).data)[_pdarr_iter] = ((arr).data)[_pdarr_iter + 1]; \
 			((arr).size)--; \
 			if ((arr).size <= (((arr).cap)/2)) { \
-				pDynArrTmpPtr = realloc((arr).data, sizeof(*((arr).data)) * ((arr).cap / 2)); \
-				if (pDynArrTmpPtr != NULL) { (arr).cap /= 2; (arr).data = pDynArrTmpPtr; } \
+				_pdarr_tmp = realloc((arr).data, sizeof(*((arr).data)) * ((arr).cap / 2)); \
+				if (_pdarr_tmp != NULL) { (arr).cap /= 2; (arr).data = _pdarr_tmp; } \
 				else { \
 					if ( (arr).cap == 1 ) (arr).data = NULL; \
-					pDynArrCleanup(arr); \
+					pdarr_clean(arr); \
 				} \
 			} \
 		} \

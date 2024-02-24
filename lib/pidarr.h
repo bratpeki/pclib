@@ -1,5 +1,5 @@
-#ifndef PCLIB_IDYNARR
-#define PCLIB_IDYNARR
+#ifndef PCLIB_IDARR
+#define PCLIB_IDARR
 
 /*
  * pidynarr.h
@@ -15,24 +15,24 @@
  * So, every time malloc or realloc is called, the user should check if the pointer isn't NULL.
  */
 
-#include "ptypes.h"
+#include "ptype.h"
 
 #include <stdlib.h> /* malloc, realloc, free */
 
-/* Used for the for-loop in pIDynArrRemove */
-p_uint pIDynArrIter;
+/* Used for the for-loop in pidarr_rem */
+p_uint _pidarr_iter;
 
 /* Used for safely checking realloc successfulness */
-p_vptr pIDynArrTmpPtr;
+p_vptr _pidarr_tmp;
 
 /* The incremental dynamic array macro */
-#define p_idynarr(type) struct { \
+#define pidarr(type) struct { \
 	type*  data; /* An array of all elements */ \
 	p_uint size; /* The number of elements currently in the incremental dynamic array */ \
 }
 
 /* Initializes the array defined with the p_idynarr macro. */
-#define pIDynArrInit(arr) \
+#define pidarr_init(arr) \
 	do { \
 		(arr).data = NULL; \
 		(arr).size = 0; \
@@ -42,7 +42,7 @@ p_vptr pIDynArrTmpPtr;
  * Clears the memory of the array,
  * and sets the variables back to NULLs and zeros.
  */
-#define pIDynArrCleanup(arr) \
+#define pidarr_clean(arr) \
 	do { \
 		free((arr).data); \
 		(arr).data = NULL; \
@@ -53,15 +53,15 @@ p_vptr pIDynArrTmpPtr;
  * Adds the element 'el' to the incremental dynamic array 'arr'.
  * Reallocates memory for each addition.
  */
-#define pIDynArrAdd(arr, el) \
+#define pidarr_add(arr, el) \
 	do { \
-		pIDynArrTmpPtr = realloc((arr).data, sizeof(*((arr).data)) * ((arr).size + 1)); \
-		if (pIDynArrTmpPtr != NULL) { \
-			(arr).data = pIDynArrTmpPtr; \
+		_pidarr_tmp = realloc((arr).data, sizeof(*((arr).data)) * ((arr).size + 1)); \
+		if (_pidarr_tmp != NULL) { \
+			(arr).data = _pidarr_tmp; \
 			((arr).data)[(arr).size] = el; \
 			((arr).size)++; \
 		} \
-		else pIDynArrCleanup(arr); \
+		else pidarr_clean(arr); \
 	} while (0);
 
 /*
@@ -69,16 +69,16 @@ p_vptr pIDynArrTmpPtr;
  * Reallocates memory for each removal.
  * If the index is not right, nothing is done.
  */
-#define pIDynArrRemove(arr, index) \
+#define pidarr_rem(arr, index) \
 	do { \
 		if ((arr).size > 0 && index < (arr).size) { \
-			for (pIDynArrIter = index; pIDynArrIter < (arr).size - 1; pIDynArrIter++) \
-				((arr).data)[pIDynArrIter] = ((arr).data)[pIDynArrIter + 1]; \
-			pIDynArrTmpPtr = realloc((arr).data, sizeof(*((arr).data)) * ((arr).size - 1)); \
-			if (pIDynArrTmpPtr != NULL) { (arr).data = pIDynArrTmpPtr; ((arr).size)--; } \
+			for (_pidarr_iter = index; _pidarr_iter < (arr).size - 1; _pidarr_iter++) \
+				((arr).data)[_pidarr_iter] = ((arr).data)[_pidarr_iter + 1]; \
+			_pidarr_tmp = realloc((arr).data, sizeof(*((arr).data)) * ((arr).size - 1)); \
+			if (_pidarr_tmp != NULL) { (arr).data = _pidarr_tmp; ((arr).size)--; } \
 			else { \
 				if ( (arr).size == 1 ) (arr).data = NULL; \
-				pIDynArrCleanup(arr); \
+				pidarr_clean(arr); \
 			} \
 		} \
 	} while (0);

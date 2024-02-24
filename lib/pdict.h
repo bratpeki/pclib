@@ -17,26 +17,26 @@
  * So, every time malloc or realloc is called, the user should check if the pointer isn't NULL.
  */
 
-#include "ptypes.h"
+#include "ptype.h"
 
 #include <stdlib.h> /* malloc, realloc, free */
 
-/* Used for the for-loop in pDictRemove */
-p_uint pDictIter;
+/* Used for the for-loop in pdict_rem */
+p_uint _pdict_iter;
 
 /* Used for safely checking realloc successfulness */
-p_vptr pDictKeyPtr, pDictValPtr;
+p_vptr _pdict_kp, _pdict_vp;
 
 /* The dictonary macro */
-#define p_dict(ktype, vtype) struct { \
+#define pdict(ktype, vtype) struct { \
 	ktype* keys; /* An array of all keys */ \
 	vtype* vals; /* An array of all values */ \
 	p_uint size; /* The number of elements currently in the dictionary */ \
 	p_uint cap;  /* The number of elements that can fit in the dictionary */ \
 }
 
-/* Initiazes the array defined with the p_dict macro. */
-#define pDictInit(dict) \
+/* Initiazes the array defined with the pdict macro. */
+#define pdict_init(dict) \
 	do { \
 		(dict).keys = NULL; \
 		(dict).vals = NULL; \
@@ -48,7 +48,7 @@ p_vptr pDictKeyPtr, pDictValPtr;
  * Clears the memory of the array,
  * and sets the variables back to NULLs and zeros.
  */
-#define pDictCleanup(dict) \
+#define pdict_clean(dict) \
 	do { \
 		free((dict).keys); \
 		free((dict).vals); \
@@ -62,7 +62,7 @@ p_vptr pDictKeyPtr, pDictValPtr;
  * Adds the pair (key, val) to the end of the dictionary 'dict'.
  * If needed, doubles the capacity of the dictionary.
  */
-#define pDictAdd(dict, key, val) \
+#define pdict_add(dict, key, val) \
 	do { \
 		if ( ((dict).keys == NULL) || ((dict).vals == NULL) ) { \
 			(dict).keys = malloc(sizeof(*((dict).keys))); \
@@ -76,14 +76,14 @@ p_vptr pDictKeyPtr, pDictValPtr;
 		} \
 		else { \
 			if ( (dict).size == (dict).cap ) { \
-				pDictKeyPtr = realloc((dict).keys, sizeof(*((dict).keys)) * (dict).cap * 2); \
-				pDictValPtr = realloc((dict).vals, sizeof(*((dict).vals)) * (dict).cap * 2); \
-				if ( (pDictKeyPtr != NULL) && (pDictValPtr != NULL) ) { \
+				_pdict_kp = realloc((dict).keys, sizeof(*((dict).keys)) * (dict).cap * 2); \
+				_pdict_vp = realloc((dict).vals, sizeof(*((dict).vals)) * (dict).cap * 2); \
+				if ( (_pdict_kp != NULL) && (_pdict_vp != NULL) ) { \
 					(dict).cap *= 2; \
-					(dict).keys = pDictKeyPtr; \
-					(dict).vals = pDictValPtr; \
+					(dict).keys = _pdict_kp; \
+					(dict).vals = _pdict_vp; \
 				} \
-				else pDictCleanup(dict); \
+				else pdict_clean(dict); \
 			} \
 			((dict).size)++; \
 			((dict).keys)[(dict).size - 1] = key; \
@@ -96,25 +96,25 @@ p_vptr pDictKeyPtr, pDictValPtr;
  * If needed, halves the capacity of the dictionary.
  * If the index is not right, nothing is done.
  */
-#define pDictRemove(dict, index) \
+#define pdict_rem(dict, index) \
 	do { \
 		if ( ((dict).size > 0) && ((index) < (dict).size) && ((index) >= 0) ) { \
-			for (pDictIter = (index); pDictIter < (dict).size - 1; pDictIter++) { \
-				((dict).keys)[pDictIter] = ((dict).keys)[pDictIter + 1]; \
-				((dict).vals)[pDictIter] = ((dict).vals)[pDictIter + 1]; \
+			for (_pdict_iter = (index); _pdict_iter < (dict).size - 1; _pdict_iter++) { \
+				((dict).keys)[_pdict_iter] = ((dict).keys)[_pdict_iter + 1]; \
+				((dict).vals)[_pdict_iter] = ((dict).vals)[_pdict_iter + 1]; \
 			} \
 			((dict).size)--; \
 			if ((dict).size < (((dict).cap)/2)) { \
-				pDictKeyPtr = realloc((dict).keys, sizeof(*((dict).keys)) * ((dict).cap / 2)); \
-				pDictValPtr = realloc((dict).vals, sizeof(*((dict).vals)) * ((dict).cap / 2)); \
-				if ( (pDictKeyPtr != NULL) && (pDictValPtr != NULL) ) { \
+				_pdict_kp = realloc((dict).keys, sizeof(*((dict).keys)) * ((dict).cap / 2)); \
+				_pdict_vp = realloc((dict).vals, sizeof(*((dict).vals)) * ((dict).cap / 2)); \
+				if ( (_pdict_kp != NULL) && (_pdict_vp != NULL) ) { \
 					(dict).cap /= 2; \
-					(dict).keys = pDictKeyPtr; \
-					(dict).vals = pDictValPtr; \
+					(dict).keys = _pdict_kp; \
+					(dict).vals = _pdict_vp; \
 				} \
 				else { \
 					if ( (dict).size == 0 ) { (dict).keys = (dict).vals = NULL; } \
-					pDictCleanup(dict); \
+					pdict_clean(dict); \
 				} \
 			} \
 		} \

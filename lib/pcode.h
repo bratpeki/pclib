@@ -1,8 +1,8 @@
-#ifndef PCLIB_CODES
-#define PCLIB_CODES
+#ifndef PCLIB_CODE
+#define PCLIB_CODE
 
 /*
- * pcodes.h
+ * pcode.h
  *
  * Exit codes for common situations
  */
@@ -18,6 +18,6 @@ typedef enum {
 	P_SMALLER,     /* Comparison, first is smaller */
 	P_EQUAL        /* Comparison, both equal */
 
-} p_codes;
+} p_code;
 
 #endif

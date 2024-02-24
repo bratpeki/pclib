@@ -8,14 +8,20 @@ Each header file aims to be sufficiently documented and has minimal dependencies
 
 | File | Description | Include guard |
 | - | - | - |
-| `ptypes.h` | Custom datatypes | `PCLIB_TYPES` |
-| `pcodes.h` | Exit code macros | `PCLIB_CODES` |
-| `pdebug.h` | Functions for debug output | `PCLIB_DEBUG` |
-| `pdynarr.h` | Dynamic, type-generic array, efficient memory reallocation | `PCLIB_DYNARR` |
-| `pidynarr.h` | Dynamic, type-generic array, incremental memory allocation | `PCLIB_IDYNARR` |
+| `pcode.h` | Exit code macros | `PCLIB_CODE` |
+| `pdarr.h` | Dynamic, type-generic array, efficient memory reallocation | `PCLIB_DARR` |
+| `pdbg.h` | Functions for debug output | `PCLIB_DBG` |
 | `pdict.h` | Dynamic, type-generic dictionary/hashmap | `PCLIB_DICT` |
+| `pidarr.h` | Dynamic, type-generic array, incremental memory allocation | `PCLIB_IDARR` |
+| `ptype.h` | Custom datatypes | `PCLIB_TYPE` |
 
 ## Why ANSI C?
 
 I chose ANSI C (C89, C90, ISO C, however you call it!) due to it being the very first C standard.
 This, in turn, ensures that it is the most supported.
+
+## Other documents
+
+[`FUTURE.md`](./FUTURE.md) contains all notes relating to future revisions of PCLib.
+
+[`GUIDELINES.md`](./GUIDELINES.md) contains the guidelines to writing and compiling the PCLib code.

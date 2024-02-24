@@ -19,7 +19,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#include "./pidynarr.h"
+#include "./pidarr.h"
 #include "./ptypes.h"
 #include "./pcodes.h"
 

@@ -1,5 +1,5 @@
-#ifndef PCLIB_DEBUG
-#define PCLIB_DEBUG
+#ifndef PCLIB_DBG
+#define PCLIB_DBG
 
 /*
  * pdebug.h
@@ -7,16 +7,16 @@
  * Variables and functions for printf-ing debug messages
  */
 
-#include "ptypes.h"
+#include "ptype.h"
 
 #include <stdio.h>
 #include <stdarg.h>
 
 /*
- * The Boolean value which enables pDebugPrintf output
+ * The Boolean value which enables pdbg_printf output
  * True by default
  */
-p_bool pDebugToggle = p_on;
+p_bool _pdbg_toggle = p_on;
 
 /*
  * If debugging is enabled,
@@ -24,7 +24,7 @@ p_bool pDebugToggle = p_on;
  */
 void pdbg_printf(const char *format, ...) {
 
-	if (pDebugToggle) {
+	if (_pdbg_toggle) {
 		va_list args;
 		va_start(args, format);
 		vprintf(format, args);
@@ -34,6 +34,6 @@ void pdbg_printf(const char *format, ...) {
 }
 
 /* Set whether or not debug output is on */
-#define pDebugSet(x) pDebugToggle = x
+#define pdbg_set(x) _pdbg_toggle = x
 
 #endif

@@ -6,23 +6,25 @@ Language:
 
 Compiler:
 
-- If using GCC, any tests or examples should be compiled using -ansi, -Wall, -Wpedantic and -Werror
+- If using GCC, any tests or examples should be compiled using `-ansi -Wall -Wpedantic -Werror`
 
 Code:
 
 - Don't write lines over 100 characters, unless deemed absolutely necessary
 - The naming convention is as follows:
 
-| Element | Description | Example |
+| Element | Example | Description |
 | - | - | - |
-| Single-line comment | Classic C-Style comment | `/* Example comment */` |
-| Multi-line comment | | `/*` <br> ` * Example`  <br> ` * comment` <br> ` */` |
-| Exit code | <!-- TODO: These are defined in pcodes.h --> | `P_EXITCODE` |
-| Macro variable | | `P_MACROVAR` |
-| Macro guard | | `PCLIB_GUARDNAME` |
-| Function | | `pfile_desc()` |
-| Macro function | Same as functions | `pfile_desc()` |
-| Local variables | | `pfile_desc` |
-| Type | | `p_typename` |
-| Header | | `pfile.h`
-| Test file | Same as headers, but without the `p`, and with the `.c` extension | `file.c` |
+| Single-line comment | `/* Example comment */` | Classic C-Style comment |
+| Multi-line comment | `/*` <br> ` * Example`  <br> ` * comment` <br> ` */` | |
+| Exit code | `P_EXITCODE` | <!-- TODO: These are defined in pcodes.h --> |
+| Macro variable | `P_MACROVAR` | |
+| Macro guard | `PCLIB_FILE` | |
+| Function | `pfile_desc()` | |
+| Macro function | `pfile_desc()` | Same as functions |
+| Local variables | `pfile_desc` | |
+| Type | `p_typename` | |
+| Header | `pfile.h` | |
+| Test file | `file.c` | Same as headers, but without the `p`, and with the `.c` extension |
+
+Any element that shouldn't be accessed by the user is prefixed with a `_`.

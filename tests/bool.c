@@ -2,7 +2,7 @@
  * bool.c - Testing the behaviour of the Boolean type
  */
 
-#include "../lib/ptypes.h"
+#include "../lib/ptype.h"
 
 #include <stdio.h>
 
