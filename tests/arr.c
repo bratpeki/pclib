@@ -1,4 +1,4 @@
-#include "../lib/pdarr.h"
+#include "../lib/parr.h"
 #include "../lib/pcode.h"
 #include "../lib/ptype.h"
 
@@ -6,17 +6,17 @@
 
 /* The user is responsible for checking the allocation successfulness */
 #define addNCheck(arr, el) \
-	pdarr_add(arr, el); \
+	parr_add(arr, el); \
 	if (arr.data == NULL) return P_BADALLOC;
 
 int main() {
 
 	int i;
 
-	pdarr(psint) arrInt;
-	pdarr(pssint) arrSrt;
-	pdarr_init(arrInt);
-	pdarr_init(arrSrt);
+	parr(psint) arrInt;
+	parr(pssint) arrSrt;
+	parr_init(arrInt);
+	parr_init(arrSrt);
 
 	addNCheck(arrInt, 1);
 	addNCheck(arrInt, 2);
@@ -29,8 +29,8 @@ int main() {
 	addNCheck(arrSrt, 50);
 	addNCheck(arrSrt, 60);
 
-	printf("Size of one p_sint: %lu\n", sizeof(*arrInt.data));
-	printf("Size of one p_ssint: %lu\n", sizeof(*arrSrt.data));
+	printf("Size of one psint: %lu\n", sizeof(*arrInt.data));
+	printf("Size of one pssint: %lu\n", sizeof(*arrSrt.data));
 
 	printf("arrInt: ");
 	for (i = 0; i < arrInt.size; i++)
@@ -42,8 +42,8 @@ int main() {
 		printf("%hd ", (arrSrt.data)[i]); /* 10 20 30 40 50 60 */
 	printf("(Capacity: %d)\n", arrSrt.cap); /* 8 */
 
-	pdarr_rem(arrInt, 1); /* Removes 2 */
-	pdarr_rem(arrSrt, 0); /* Removes 10 */
+	parr_rem(arrInt, 1); /* Removes 2 */
+	parr_rem(arrSrt, 0); /* Removes 10 */
 
 	printf("arrInt capacity after removal: %d\n", arrInt.cap); /* 2 */
 	printf("arrSrt capacity after removal: %d\n", arrSrt.cap); /* 8 */
@@ -61,17 +61,17 @@ int main() {
 		printf("%hd ", (arrSrt.data)[i]); /* 20 30 40 50 60 */
 	printf("\n");
 
-	pdarr_rem(arrInt, 0);
+	parr_rem(arrInt, 0);
 	printf("Size: %d, Capacity: %d\n", arrInt.size, arrInt.cap); /* Removed 1, output is 1 and 1 */
 
-	pdarr_rem(arrInt, 0);
+	parr_rem(arrInt, 0);
 	printf("Size: %d, Capacity: %d\n", arrInt.size, arrInt.cap); /* Removed 3, output is 0 and 0 */
 
-	pdarr_rem(arrInt, 0);
+	parr_rem(arrInt, 0);
 	printf("Size: %d, Capacity: %d\n", arrInt.size, arrInt.cap); /* Was empty, output is 0 and 0 */
 
-	pdarr_clean(arrInt);
-	pdarr_clean(arrSrt);
+	parr_clean(arrInt);
+	parr_clean(arrSrt);
 
 	return P_SUCCESS;
 

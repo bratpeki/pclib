@@ -2,7 +2,7 @@
 #define PCLIB_DBG
 
 /*
- * pdebug.h
+ * pdbg.h
  *
  * Variables and functions for printf-ing debug messages
  */

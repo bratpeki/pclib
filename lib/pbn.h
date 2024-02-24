@@ -2,7 +2,7 @@
 #define PCLIB_BIGNUM
 
 /*
- * pbignum.h
+ * pbn.h
  *
  * Implementation of a string-like integer bignum
  *
@@ -19,7 +19,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#include "./pidarr.h"
+#include "./piarr.h"
 #include "./ptype.h"
 #include "./pcode.h"
 
@@ -35,7 +35,7 @@
 
 /* String-like bignum struct */
 typedef struct {
-	pidarr(puchr) dig; /* Digits incremental dynamic array */
+	piarr(puchr) dig; /* Digits incremental dynamic array */
 	pbool negative; /* A bool denoting if the number is negative */
 } pbn;
 
@@ -46,7 +46,7 @@ int pbn_init( pbn* bignum ) {
 		bignum = (pbn*)malloc(sizeof(pbn));
 		if ( bignum == NULL ) return P_BADALLOC;
 	}
-	pidarr_init(bignum->dig);
+	piarr_init(bignum->dig);
 	bignum->negative = P_FALSE;
 
 	return P_SUCCESS;
@@ -117,7 +117,7 @@ int pbn_cmpN( pbn bignum, P_BIGNUM_OP_TYPE num ) {
  * and sets the variables back to NULL and p_false.
  */
 void pbn_clean( pbn bignum ) {
-	pidarr_clean(bignum.dig);
+	piarr_clean(bignum.dig);
 	bignum.negative = P_FALSE;
 }
 
@@ -151,7 +151,7 @@ void pbn_addN( pbn* bignum, P_BIGNUM_OP_TYPE addend ) {
 		for ( i = 0; pAddendIter != 0; i++ ) {
 
 			if ( i == (bignum->dig).size ) {
-				pidarr_add(bignum->dig, 0);
+				piarr_add(bignum->dig, 0);
 				if ( (bignum->dig).data == NULL ) return;
 			}
 
@@ -166,7 +166,7 @@ void pbn_addN( pbn* bignum, P_BIGNUM_OP_TYPE addend ) {
 		}
 
 		if ( pCarry != 0 ) {
-			pidarr_add(bignum->dig, pCarry);
+			piarr_add(bignum->dig, pCarry);
 			if ( (bignum->dig).data == NULL ) return;
 		}
 

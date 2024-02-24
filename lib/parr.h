@@ -1,8 +1,8 @@
-#ifndef PCLIB_DARR
-#define PCLIB_DARR
+#ifndef PCLIB_ARR
+#define PCLIB_ARR
 
 /*
- * pdarr.h
+ * parr.h
  *
  * A simple implementation of a type-generic dynamic array
  *
@@ -22,20 +22,20 @@
 #include <stdlib.h> /* malloc, realloc, free */
 
 /* Used for the for-loop in pDynArrRemove */
-puint _pdarr_iter;
+puint _parr_iter;
 
 /* Used for safely checking realloc successfulness */
-pvptr _pdarr_tmp;
+pvptr _parr_tmp;
 
 /* The dynamic array macro */
-#define pdarr(type) struct { \
+#define parr(type) struct { \
 	type*  data; /* An array of all elements */ \
 	puint size; /* The number of elements currently in the dynamic array */ \
 	puint cap;  /* The number of elements that can fit in the dynamic array */ \
 }
 
 /* Initiazes the array defined with the p_dynarr macro. */
-#define pdarr_init(arr) \
+#define parr_init(arr) \
 	do { \
 		(arr).data = NULL; \
 		(arr).size = 0; \
@@ -46,7 +46,7 @@ pvptr _pdarr_tmp;
  * Clears the memory of the array,
  * and sets the variables back to NULLs and zeros.
  */
-#define pdarr_clean(arr) \
+#define parr_clean(arr) \
 	do { \
 		free((arr).data); \
 		(arr).data = NULL; \
@@ -58,7 +58,7 @@ pvptr _pdarr_tmp;
  * Adds the element 'el' to the end of the dynamic array 'arr'.
  * If needed, doubles the capacity of the array.
  */
-#define pdarr_add(arr, el) \
+#define parr_add(arr, el) \
 	do { \
 		if ( (arr).data == NULL ) { \
 			(arr).data = malloc(sizeof(*((arr).data))); \
@@ -70,9 +70,9 @@ pvptr _pdarr_tmp;
 		} \
 		else { \
 			if ( (arr).size == (arr).cap ) { \
-				_pdarr_tmp = realloc((arr).data, sizeof(*((arr).data)) * (arr).cap * 2); \
-				if ( _pdarr_tmp != NULL ) { (arr).cap *= 2; (arr).data = _pdarr_tmp; } \
-				else pdarr_clean(arr); \
+				_parr_tmp = realloc((arr).data, sizeof(*((arr).data)) * (arr).cap * 2); \
+				if ( _parr_tmp != NULL ) { (arr).cap *= 2; (arr).data = _parr_tmp; } \
+				else parr_clean(arr); \
 			} \
 			((arr).size)++; \
 			((arr).data)[(arr).size - 1] = el; \
@@ -84,18 +84,18 @@ pvptr _pdarr_tmp;
  * If needed, halves the capacity of the array.
  * If the index is not right, nothing is done.
  */
-#define pdarr_rem(arr, index) \
+#define parr_rem(arr, index) \
 	do { \
 		if ( ((arr).data != NULL) && ((index) < (arr).size) && ((index) >= 0) ) { \
-			for (_pdarr_iter = (index); _pdarr_iter < (arr).size - 1; _pdarr_iter++) \
-				((arr).data)[_pdarr_iter] = ((arr).data)[_pdarr_iter + 1]; \
+			for (_parr_iter = (index); _parr_iter < (arr).size - 1; _parr_iter++) \
+				((arr).data)[_parr_iter] = ((arr).data)[_parr_iter + 1]; \
 			((arr).size)--; \
 			if ((arr).size <= (((arr).cap)/2)) { \
-				_pdarr_tmp = realloc((arr).data, sizeof(*((arr).data)) * ((arr).cap / 2)); \
-				if (_pdarr_tmp != NULL) { (arr).cap /= 2; (arr).data = _pdarr_tmp; } \
+				_parr_tmp = realloc((arr).data, sizeof(*((arr).data)) * ((arr).cap / 2)); \
+				if (_parr_tmp != NULL) { (arr).cap /= 2; (arr).data = _parr_tmp; } \
 				else { \
 					if ( (arr).cap == 1 ) (arr).data = NULL; \
-					pdarr_clean(arr); \
+					parr_clean(arr); \
 				} \
 			} \
 		} \

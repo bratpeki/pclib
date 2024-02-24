@@ -8,12 +8,12 @@ Each header file aims to be sufficiently documented and has minimal dependencies
 
 | File | Description |
 | - | - |
-| `pcode.h` | Exit code macros |
-| `pdarr.h` | Dynamic, type-generic array, efficient memory reallocation |
-| `pdbg.h` | Functions for debug output |
-| `pdict.h` | Dynamic, type-generic dictionary/hashmap |
-| `pidarr.h` | Dynamic, type-generic array, incremental memory allocation |
 | `ptype.h` | Custom datatypes |
+| `pcode.h` | Exit code macros |
+| `pdbg.h` | Functions for debug output |
+| `parr.h` | Dynamic, type-generic array, with efficient memory reallocation |
+| `piarr.h` | Dynamic, type-generic array, with incremental memory allocation |
+| `pdict.h` | Dynamic, type-generic dictionary/hashmap |
 
 ## Why ANSI C?
 
@@ -22,6 +22,6 @@ This, in turn, ensures that it is the most supported.
 
 ## Other documents
 
-[`FUTURE.md`](./FUTURE.md) contains all notes relating to future revisions of PCLib.
-
 [`GUIDELINES.md`](./GUIDELINES.md) contains the guidelines to writing and compiling the PCLib code.
+
+[`FUTURE.md`](./FUTURE.md) contains all notes relating to future revisions of PCLib.
