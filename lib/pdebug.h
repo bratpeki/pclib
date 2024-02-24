@@ -22,7 +22,7 @@ p_bool pDebugToggle = p_on;
  * If debugging is enabled,
  * prints the given message to STDOUT, in printf's format
  */
-void pDebugPrintf(const char *format, ...) {
+void pdbg_printf(const char *format, ...) {
 
 	if (pDebugToggle) {
 		va_list args;

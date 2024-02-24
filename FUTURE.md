@@ -5,5 +5,3 @@ If adding features relating to C99, or switching to C99, it is important to note
 - Variadic macros would be useful for pDebugPrintf (preprocessor implementation)
 
 Consider preprocessor functions being capital snake case.
-
-Consider using vprintf for debug printing.
