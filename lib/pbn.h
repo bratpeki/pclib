@@ -34,6 +34,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 
 #include "./piarr.h"
 #include "./ptype.h"
@@ -169,12 +170,98 @@ pnoret pbn_clean( pbn bignum ) {
 }
 
 /*
- * Adds the bignum addend to the bignum
+ * Adds bn1 and bn2 and returns the sum as a bignum pointer
  *
- * The first bignum is changed directly
- * TODO: Is this a good idea?
+ * DO NOT PASS THE RETURN VALUE OF THIS FUNCTION TO AN ALLOCATED BIT OF MEMORY
+ * IT WILL CAUSE A MEMORY LEAK
+ *
+ * If memory can't be allocated for a new bignum, NULL is returned
  */
-void pbn_add( pbn* bignum, pbn* addend ) {
+pbn* pbn_add( pbn* bn1, pbn* bn2 ) {
+
+	pbn* other;
+	puchr carry = 0;
+	pusint i;
+	pbn* ret = NULL;
+
+	/* TODO: Here */
+	if ( pbn_init(ret) == P_BADALLOC ) return NULL;
+
+	if ( (bn1->dig).size >= (bn2->dig).size ) {
+
+		/* Segfault */
+		(ret->dig).size = (bn1->dig).size;
+		(ret->dig).data = (puchr*)calloc((ret->dig).size, sizeof(puchr));
+
+		if ((ret->dig).data == NULL) return NULL;
+
+		for ( i = 0; i < (ret->dig).size; i++) {
+			((ret->dig).data)[i] = ((bn1->dig).data)[i];
+		}
+
+		other = bn2;
+
+	}
+
+	else {
+
+		(ret->dig).size = (bn2->dig).size;
+		(ret->dig).data = (puchr*)calloc((ret->dig).size, sizeof(puchr));
+
+		if ((ret->dig).data == NULL) return NULL;
+
+		for ( i = 0; i < (ret->dig).size; i++) {
+			((ret->dig).data)[i] = ((bn2->dig).data)[i];
+		}
+
+		other = bn1;
+
+	}
+
+	printf("> %p\n> %p\n> %p\n> %p\n",
+		(pvptr)bn1,
+		(pvptr)bn2,
+		(pvptr)other,
+		(pvptr)ret
+	);
+
+	/* Adding the digits of 'other' to 'ret' */
+
+	for ( i = 0; i < (other->dig).size; i++ ) {
+
+		((ret->dig).data)[i] += ((other->dig).data)[i] + carry;
+
+		carry = ((ret->dig).data)[i] / 10;
+
+		((ret->dig).data)[i] %= 10;
+
+	}
+
+	/*
+	 * Now, there might still be numbers to carry
+	 * In that case, we need to keep carrying for as long as it's possible
+	 * If we reach the end of the bignum, we append the carry
+	 */
+
+	for ( ; (carry != 0) && (i < (ret->dig).size) ; i++) {
+
+		((ret->dig).data)[i] += carry;
+
+		carry = ((ret->dig).data)[i] / 10;
+
+		((ret->dig).data)[i] %= 10;
+
+	}
+
+	if ( carry != 0 ) {
+
+		piarr_add(ret->dig, carry);
+		if ((ret->dig).data == NULL)
+			return NULL;
+
+	}
+
+	return ret;
 
 }
 
@@ -185,9 +272,9 @@ void pbn_add( pbn* bignum, pbn* addend ) {
  */
 pnoret pbn_addN( pbn* bignum, P_BIGNUM_OP_TYPE addend ) {
 
-	P_BIGNUM_OP_TYPE pAddendIter = addend;
-	puchr pCarry = 0;
-	puchr pTmp;
+	P_BIGNUM_OP_TYPE add_iter = addend;
+	puchr carry = 0;
+	puchr tmp;
 
 	pusint i;
 
@@ -205,25 +292,25 @@ pnoret pbn_addN( pbn* bignum, P_BIGNUM_OP_TYPE addend ) {
 
 	else {
 
-		for ( i = 0; pAddendIter != 0; i++ ) {
+		for ( i = 0; add_iter != 0; i++ ) {
 
 			if ( i == (bignum->dig).size ) {
 				piarr_add(bignum->dig, 0);
 				if ( (bignum->dig).data == NULL ) return;
 			}
 
-			pTmp = ((bignum->dig).data)[i] + ( pAddendIter % 10 ) + pCarry;
+			tmp = ((bignum->dig).data)[i] + ( add_iter % 10 ) + carry;
 
-			((bignum->dig).data)[i] = pTmp % 10;
+			((bignum->dig).data)[i] = tmp % 10;
 
-			pCarry = pTmp / 10;
+			carry = tmp / 10;
 
-			pAddendIter /= 10;
+			add_iter /= 10;
 
 		}
 
-		if ( pCarry != 0 ) {
-			piarr_add(bignum->dig, pCarry);
+		if ( carry != 0 ) {
+			piarr_add(bignum->dig, carry);
 			if ( (bignum->dig).data == NULL ) return;
 		}
 
