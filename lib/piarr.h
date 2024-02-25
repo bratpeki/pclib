@@ -32,7 +32,7 @@ pvptr _piarr_tmp;
 	puint size; /* The number of elements currently in the incremental dynamic array */ \
 }
 
-/* Initializes the array defined with the p_idynarr macro. */
+/* Initializes the array defined with the piarr macro. */
 #define piarr_init(arr) \
 	do { \
 		(arr).data = NULL; \

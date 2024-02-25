@@ -34,7 +34,7 @@ pvptr _parr_tmp;
 	puint cap;  /* The number of elements that can fit in the dynamic array */ \
 }
 
-/* Initiazes the array defined with the p_dynarr macro. */
+/* Initiazes the array defined with the parr macro. */
 #define parr_init(arr) \
 	do { \
 		(arr).data = NULL; \

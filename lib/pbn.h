@@ -14,6 +14,22 @@
  *
  * The implementation uses my incremental dynamic array, so
  * THERE IS A NEED TO CHECK THE MEMORY REALLOCATION SUCCESS!
+ *
+ * === DEVNOTE ===
+ * - These need to be implemented:
+ *     pbn        DONE
+ *     pbn_init   DONE
+ *     pbn_isnull DONE
+ *     pbn_cmp    DONE
+ *     pbn_cmpN   DONE
+ *     pbn_add
+ *     pbn_addN
+ *     pbn_sub
+ *     pbn_subN
+ * - Consider multiplication and division.
+ * - Also, isn't this a bigint header, then, if there are no floating points?
+ * - A BIGNUM IS ZERO ONLY WHEN THE SIZE OF 'dig' IS ZERO!
+ *   Anything else would break the digit count checkers.
  */
 
 #include <stdlib.h>
@@ -27,7 +43,7 @@
  * This defines what type we are adding, subtracting,
  * and doing all other operations on the bignum.
  *
- * If you need great precision, use p_ulint.
+ * If you need great precision, use pulint.
  */
 #ifndef P_BIGNUM_OP_TYPE
 #define P_BIGNUM_OP_TYPE puint
@@ -40,7 +56,7 @@ typedef struct {
 } pbn;
 
 /* Initializes the bignum to 0 */
-int pbn_init( pbn* bignum ) {
+pcode pbn_init( pbn* bignum ) {
 
 	if ( bignum == NULL ) {
 		bignum = (pbn*)malloc(sizeof(pbn));
@@ -54,12 +70,42 @@ int pbn_init( pbn* bignum ) {
 }
 
 /*
- * Compares the two numbers
+ * Checks if the bignum is zero
  *
- * Returns 0 if they're equal,
- * and the number of the argument which is greater if they're not
+ * This checks that the size of 'dig' is 0
  */
-int pbn_cmpN( pbn bignum, P_BIGNUM_OP_TYPE num ) {
+pbool pbn_isnull( pbn bignum ) {
+	return ( (bignum.dig).size == 0 );
+}
+
+/* Compares the two bignums */
+pcode pbn_cmp( pbn* bignum1, pbn* bignum2 ) {
+
+	psint i;
+
+	/* If both the bignums are of size 0, they're equal */
+	if ( (bignum1->dig).size == 0 && (bignum2->dig).size == 0 ) return P_EQUAL;
+
+	/* If the bignums are of opposite signs, the positive one is bigger */
+	if ( bignum1->negative != bignum2->negative )
+		return ( bignum1->negative ? P_SMALLER : P_GREATER );
+
+	/* The bigger one has more digits */
+	if ( (bignum1->dig).size > (bignum2->dig).size ) return P_GREATER;
+	if ( (bignum1->dig).size < (bignum2->dig).size ) return P_SMALLER;
+
+	/* The last option is to check the values of the digits, greatest to weakest */
+	for ( i = (bignum1->dig).size - 1; i >= 0; i-- ) {
+		if ( ((bignum1->dig).data)[i] > ((bignum2->dig).data)[i] ) return P_GREATER;
+		if ( ((bignum1->dig).data)[i] < ((bignum2->dig).data)[i] ) return P_SMALLER;
+	}
+
+	return P_EQUAL;
+
+}
+
+/* Compares the bignum and number */
+pcode pbn_cmpN( pbn bignum, P_BIGNUM_OP_TYPE num ) {
 
 	psint pNumDigitCount = 0;
 	psint pCompIter;
@@ -114,9 +160,9 @@ int pbn_cmpN( pbn bignum, P_BIGNUM_OP_TYPE num ) {
 
 /*
  * Clears the memory of the bignum,
- * and sets the variables back to NULL and p_false.
+ * and sets the variables back to NULL and P_FALSE.
  */
-void pbn_clean( pbn bignum ) {
+pnoret pbn_clean( pbn bignum ) {
 	piarr_clean(bignum.dig);
 	bignum.negative = P_FALSE;
 }
@@ -126,7 +172,7 @@ void pbn_clean( pbn bignum ) {
  *
  * The bignum is changed directly
  */
-void pbn_addN( pbn* bignum, P_BIGNUM_OP_TYPE addend ) {
+pnoret pbn_addN( pbn* bignum, P_BIGNUM_OP_TYPE addend ) {
 
 	P_BIGNUM_OP_TYPE pAddendIter = addend;
 	puchr pCarry = 0;

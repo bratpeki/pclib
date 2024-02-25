@@ -23,8 +23,10 @@ Code:
 | Function | `pfile_desc()` | |
 | Macro function | `pfile_desc()` | Same as functions |
 | Local variables | `pfile_desc` | |
-| Type | `p_typename` | |
+| Type | `ptypename` | |
 | Header | `pfile.h` | |
 | Test file | `file.c` | Same as headers, but without the `p`, and with the `.c` extension |
+
+<!-- TODO: Ifs, function brackets -->
 
 Any element that shouldn't be accessed by the user is prefixed with a `_`.

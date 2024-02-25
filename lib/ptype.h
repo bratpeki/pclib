@@ -2,7 +2,9 @@
 #define PCLIB_TYPE
 
 /*
- * ptype.h - The definitions of various datatypes
+ * ptype.h
+ *
+ * The definitions of various datatypes
  *
  * Contains:
  * - character types (chr)
