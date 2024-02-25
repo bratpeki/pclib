@@ -4,4 +4,4 @@ If adding features relating to C99, or switching to C99, it is important to note
 - GCC compilation would be done using the `-std=c99` flag instead of `-ansi`
 - Variadic macros would be useful for `pdbg_printf` (preprocessor implementation)
 
-Consider preprocessor functions being capital snake case.
+I doubt I'll ever port this to C99, though.

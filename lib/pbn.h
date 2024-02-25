@@ -73,6 +73,7 @@ pcode pbn_init( pbn* bignum ) {
  * Checks if the bignum is zero
  *
  * This checks that the size of 'dig' is 0
+ * TODO: Should this be a macro?
  */
 pbool pbn_isnull( pbn bignum ) {
 	return ( (bignum.dig).size == 0 );
@@ -168,6 +169,16 @@ pnoret pbn_clean( pbn bignum ) {
 }
 
 /*
+ * Adds the bignum addend to the bignum
+ *
+ * The first bignum is changed directly
+ * TODO: Is this a good idea?
+ */
+void pbn_add( pbn* bignum, pbn* addend ) {
+
+}
+
+/*
  * Adds the integer addend to the bignum
  *
  * The bignum is changed directly
@@ -217,15 +228,6 @@ pnoret pbn_addN( pbn* bignum, P_BIGNUM_OP_TYPE addend ) {
 		}
 
 	}
-
-}
-
-/*
- * Adds the integer bignum addend to the bignum
- *
- * The first bignum is changed directly
- */
-void pbn_add( pbn* bignum, pbn addend ) {
 
 }
 
