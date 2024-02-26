@@ -14,8 +14,7 @@
 
 /* A Boolean value */ typedef enum { P_FALSE = 0, P_TRUE, P_OFF = 0, P_ON } pbool;
 
-/* A C-style string */ typedef unsigned char* pstr;
-/* An ASCII character */ typedef unsigned char pascii;
+/* A C-style string */ typedef char* pstr;
 
 /* A signed character type */ typedef signed char pschr;
 /* A signed double-precision floating-point number */ typedef double pdbl;

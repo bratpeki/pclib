@@ -1,15 +1,14 @@
 CC=gcc
-FLAGS=-ansi -Wall -Wpedantic -Werror -g
-OUT=$(shell find . -name '*.out')
+CFLAGS=-ansi -Wall -Wpedantic -Werror -g
+SRCS=$(wildcard *.c)
+BINS=$(SRCS:.c=.out)
 
-build:
-	$(CC) bn.c   -o bn.out $(FLAGS)
-	$(CC) bool.c -o bool.out $(FLAGS)
-	$(CC) dbg.c  -o dbg.out $(FLAGS)
-	$(CC) dict.c -o dict.out $(FLAGS)
-	$(CC) arr.c  -o arr.out $(FLAGS)
-	$(CC) iarr.c -o iarr.out $(FLAGS)
+.PHONY: all clean
+
+all: $(BINS)
+
+%.out: %.c
+	$(CC) $< -o $@ $(CFLAGS)
 
 clean:
-	rm $(OUT)
-	rm core*
+	rm -f $(BINS) core*
