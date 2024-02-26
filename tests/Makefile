@@ -12,3 +12,4 @@ build:
 
 clean:
 	rm $(OUT)
+	rm core*

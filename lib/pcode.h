@@ -7,7 +7,9 @@
  * Exit codes for common situations
  */
 
-typedef enum {
+#define pcode int
+
+enum {
 
 	P_SUCCESS,     /* Successful exit */
 	P_BADFILE,     /* File error */
@@ -16,8 +18,9 @@ typedef enum {
 	P_EMPTYOUTPUT, /* The function didn't output anything */
 	P_GREATER,     /* Comparison, first is greater */
 	P_SMALLER,     /* Comparison, first is smaller */
-	P_EQUAL        /* Comparison, both equal */
+	P_EQUAL,       /* Comparison, both equal */
+	P_BADARG       /* A passed argument is bad */
 
-} pcode;
+};
 
 #endif

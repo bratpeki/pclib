@@ -12,10 +12,7 @@ void pBigNumPrint( pbn* bignum ) {
 
 	i = (bignum->dig).size - 1;
 
-	if ( (bignum->dig).size == 0 ) {
-		printf("0\n");
-		return;
-	}
+	if (pbn_isnull(bignum) ) { printf("0\n"); return; }
 
 	if ( bignum->negative ) printf("-");
 
@@ -27,50 +24,22 @@ void pBigNumPrint( pbn* bignum ) {
 
 int main() {
 
-	pbn a;
-	pbn b;
-	pbn* c = NULL;
-	pbn_init(&a);
-	pbn_init(&b);
-	pbn_init(c);
+	pbn* bn1;
+	pbn* bn2;
 
-	pbn_addN(&a, 106); /* 106 */
-	pbn_addN(&a, 12); /* 118 */
+	pbn_init(&bn1);
+	printf("%d\n", pbn_isnull(bn1)); /* 1, because any initialized bignum is set to 0 */
+	pBigNumPrint(bn1); /* 0, for the reason stated above */
 
-	printf(
-		"a addr: %p\nb addr: %p\nc addr: %p\n",
-		(pvptr)&a,
-		(pvptr)&b,
-		(pvptr)c
-	);
+	pbn_addN(bn1, 100); pBigNumPrint(bn1);
+	pbn_addN(bn1, 10); pBigNumPrint(bn1);
+	pbn_addN(bn1, 1); pBigNumPrint(bn1);
 
-	pbn_addN(&b, 119); /* 119 */
+	/* TODO: Consider the negative context */
 
-	a.negative = P_TRUE; /* -118 */
+	bn2 = pbn_add(bn1, bn1);
 
-	printf("%d\n", pbn_cmpN(a, 32) ); /* 6, the second arg is bigger */
-
-	a.negative = P_FALSE; /* 118 */
-
-	printf("%d\n", pbn_cmpN(a, 32));  /* 5 */
-	printf("%d\n", pbn_cmpN(a, 117)); /* 5 */
-	printf("%d\n", pbn_cmpN(a, 217)); /* 6 */
-	printf("%d\n", pbn_cmpN(a, 118)); /* 7 */
-
-	printf("%d\n", pbn_cmp(&a, &b)); /* 6 */
-
-	printf("a: "); pBigNumPrint(&a);
-	printf("b: "); pBigNumPrint(&b);
-	printf("c: "); pBigNumPrint(c);
-
-	c = pbn_add(&a, &b);
-	if (c == NULL) return P_BADALLOC;
-
-	printf("a: "); pBigNumPrint(&a);
-	printf("b: "); pBigNumPrint(&b);
-	printf("c: "); pBigNumPrint(c);
-
-	pbn_clean(a);
+	pBigNumPrint(bn2);
 
 	return P_SUCCESS;
 

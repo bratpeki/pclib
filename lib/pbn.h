@@ -50,21 +50,27 @@
 #define P_BIGNUM_OP_TYPE puint
 #endif
 
+/* Incremental dynamic array of unsigned chars, used in 'pbn' */
+typedef piarr(puchr) _pbn_dig;
+
 /* String-like bignum struct */
 typedef struct {
-	piarr(puchr) dig; /* Digits incremental dynamic array */
+	_pbn_dig dig; /* Digits of the bignum */
 	pbool negative; /* A bool denoting if the number is negative */
 } pbn;
 
 /* Initializes the bignum to 0 */
-pcode pbn_init( pbn* bignum ) {
+pcode pbn_init( pbn** bignum ) {
 
-	if ( bignum == NULL ) {
-		bignum = (pbn*)malloc(sizeof(pbn));
-		if ( bignum == NULL ) return P_BADALLOC;
+	if ( *bignum == NULL ) {
+		*bignum = (pbn*)malloc(sizeof(pbn));
+		if ( *bignum == NULL ) return P_BADALLOC;
 	}
-	piarr_init(bignum->dig);
-	bignum->negative = P_FALSE;
+
+	/* piarr_init((*bignum)->dig); */
+	((*bignum)->dig).data = NULL; /* Segfaut */
+	((*bignum)->dig).size = 0;
+	(*bignum)->negative = P_FALSE;
 
 	return P_SUCCESS;
 
@@ -76,8 +82,8 @@ pcode pbn_init( pbn* bignum ) {
  * This checks that the size of 'dig' is 0
  * TODO: Should this be a macro?
  */
-pbool pbn_isnull( pbn bignum ) {
-	return ( (bignum.dig).size == 0 );
+pbool pbn_isnull( pbn* bignum ) {
+	return ( (bignum->dig).size == 0 );
 }
 
 /* Compares the two bignums */
@@ -107,7 +113,7 @@ pcode pbn_cmp( pbn* bignum1, pbn* bignum2 ) {
 }
 
 /* Compares the bignum and number */
-pcode pbn_cmpN( pbn bignum, P_BIGNUM_OP_TYPE num ) {
+pcode pbn_cmpN( pbn* bignum, P_BIGNUM_OP_TYPE num ) {
 
 	psint pNumDigitCount = 0;
 	psint pCompIter;
@@ -115,17 +121,17 @@ pcode pbn_cmpN( pbn bignum, P_BIGNUM_OP_TYPE num ) {
 	P_BIGNUM_OP_TYPE numTmp = num;
 
 	/* If both the bignum and num are 0, return 0 */
-	if ( (bignum.dig).size == 0 && num == 0 ) return P_EQUAL;
+	if ( (bignum->dig).size == 0 && num == 0 ) return P_EQUAL;
 
 	/* If the bignum is negative, it's smaller */
-	if ( bignum.negative ) return P_SMALLER;
+	if ( bignum->negative ) return P_SMALLER;
 
 	/* Counting the number of digits in num */
 	while ( numTmp != 0 ) { pNumDigitCount++; numTmp /= 10; }
 
 	/* If bignum has more digits, it's bigger, and vice-versa */
-	if ( (bignum.dig).size > pNumDigitCount ) return P_GREATER;
-	if ( (bignum.dig).size < pNumDigitCount ) return P_SMALLER;
+	if ( (bignum->dig).size > pNumDigitCount ) return P_GREATER;
+	if ( (bignum->dig).size < pNumDigitCount ) return P_SMALLER;
 
 	numFlipped = (puchr*)calloc(pNumDigitCount, sizeof(puchr));
 	if ( numFlipped == NULL ) return P_BADALLOC;
@@ -141,14 +147,14 @@ pcode pbn_cmpN( pbn bignum, P_BIGNUM_OP_TYPE num ) {
 		numTmp /= 10;
 	}
 
-	for ( pCompIter = (bignum.dig).size - 1; pCompIter >= 0; pCompIter-- ) {
+	for ( pCompIter = (bignum->dig).size - 1; pCompIter >= 0; pCompIter-- ) {
 
-		if ( ((bignum.dig).data)[pCompIter] > numFlipped[pCompIter] ) {
+		if ( ((bignum->dig).data)[pCompIter] > numFlipped[pCompIter] ) {
 			free(numFlipped);
 			return P_GREATER;
 		}
 
-		if ( ((bignum.dig).data)[pCompIter] < numFlipped[pCompIter] ) {
+		if ( ((bignum->dig).data)[pCompIter] < numFlipped[pCompIter] ) {
 			free(numFlipped);
 			return P_SMALLER;
 		}
@@ -184,12 +190,10 @@ pbn* pbn_add( pbn* bn1, pbn* bn2 ) {
 	pusint i;
 	pbn* ret = NULL;
 
-	/* TODO: Here */
-	if ( pbn_init(ret) == P_BADALLOC ) return NULL;
+	if ( pbn_init(&ret) == P_BADALLOC ) return NULL;
 
 	if ( (bn1->dig).size >= (bn2->dig).size ) {
 
-		/* Segfault */
 		(ret->dig).size = (bn1->dig).size;
 		(ret->dig).data = (puchr*)calloc((ret->dig).size, sizeof(puchr));
 
