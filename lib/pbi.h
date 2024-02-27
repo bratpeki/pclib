@@ -15,7 +15,7 @@
  * The implementation uses my incremental dynamic array, so
  * THERE IS A NEED TO CHECK THE MEMORY REALLOCATION SUCCESS!
  *
- * === DEVNOTE ===
+ * === DEVNOTES ===
  * - These need to be implemented:
  *     pbi        DONE
  *     pbi_isnull DONE
@@ -27,6 +27,16 @@
  *     pbi_sub
  *     pbi_subN
  * - Consider multiplication and division.
+ *
+ * pbi_add(N) and pbi_sub(N) should operate their
+ * respective operations only over positive integers.
+ * Any negative number operations can, fundementally,
+ * boil down to the positive number operations!
+ *
+ * For this purpose, it might be smart to allow operations
+ * exclusively over positive numbers, and let the user operate
+ * negative number operations. Or just add a few ifs before the
+ * actual calculations!
  */
 
 #include "ptype.h"
@@ -45,11 +55,56 @@
 	#define P_BI_OP_TYPE puint
 #endif
 
+/* Used for _pbi_dig2chr */
+pstr _pbi_digits = "0123456789";
+
 /*
  * The bigint datatype
  * Essentially, a string
  */
 typedef pstr pbi;
+
+/*
+ * A reliable char-to-digit converter.
+ *
+ * Some compilers don't use ASCII, so I made this!
+ * For ASCII, conversion is as simple as:
+ *
+ * return chr - '0';
+ *
+ * Returns 10 if the digit is wrong
+ */
+pusint _pbi_chr2dig ( pchr chr ) {
+
+	switch ( chr ) {
+
+		case '0': return 0;
+		case '1': return 1;
+		case '2': return 2;
+		case '3': return 3;
+		case '4': return 4;
+		case '5': return 5;
+		case '6': return 6;
+		case '7': return 7;
+		case '8': return 8;
+		case '9': return 9;
+		default:  return 10;
+
+	}
+
+}
+
+/*
+ * A reliable digit-to-char converter.
+ *
+ * Some compilers don't use ASCII, so I made this!
+ *
+ * Return (pchr)0 if the digit is out-of-range.
+ */
+pchr _pbi_dig2chr( pusint dig ) {
+	if ( ( dig < 0 ) || ( dig > 9 ) ) return (pchr)0;
+	return _pbi_digits[dig];
+}
 
 /* Checks if 'bi' is set to "0" */
 pbool pbi_isnull( pbi bi ) { return ( strcmp(bi, "0") == 0 ); }
@@ -182,18 +237,76 @@ pcode pbi_cmpN( pbi bi, P_BI_OP_TYPE val ) {
 
 }
 
-/* TODO: Don't forget the null terminator */
 pbi pbi_add( pbi bi1, pbi bi2 ) {
 
 	pusint carry = 0;
-	psz i;
+	psint i;
+	pstr s;
+	pstr ret;
+	psz l, l1, l2, lbig, lsmall;
+	pusint tmp;
+	pstr bibig;
 
-	psz l1 = strlen(bi1);
-	psz l2 = strlen(bi2);
+	l1 = strlen(bi1);
+	l2 = strlen(bi2);
+
+	printf("l1 = %lu, l2 = %lu\n", l1, l2);
+
 	/* +1 for the carry, +1 for the null terminator */
-	psz l = l1 + l2 + 2;
+	l = l1 + l2 + 2;
 
-	pstr s = (pstr)malloc( l * sizeof(puchr) );
+	if ( l1 > l2 ) { lbig = l1; lsmall = l2; bibig = bi1; }
+	else           { lbig = l2; lsmall = l1; bibig = bi2; }
+
+	printf("lbig = %lu, lsmall = %lu\n", lbig, lsmall);
+
+	s = (pstr)malloc( l * sizeof(puchr) );
+	if ( s == NULL ) return NULL;
+
+	for ( i = 1; i <= lsmall; i++ ) {
+
+		printf("for loop %d\n", i);
+		printf("  tmp = _pbi_chr2dig( bi1[%lu] ) + _pbi_chr2dig(bi2[%lu]) + %d;\n", l1-i, l2-i, carry);
+		printf("  tmp = _pbi_chr2dig( %c ) + _pbi_chr2dig( %c ) + %d;\n", bi1[l1-i], bi2[l2-i], carry);
+		printf("  tmp = %c + %c + %d;\n", bi1[l1-i], bi2[l2-i], carry);
+
+		tmp = _pbi_chr2dig( bi1[l1 - i] ) + _pbi_chr2dig( bi2[l2 - i] ) + carry;
+
+		printf("  tmp = %u;\n", tmp);
+
+		carry = tmp / 10;
+		/* Remember, they're being added in reversei, you gotta flip them! */
+		s[i - 1] = _pbi_dig2chr( tmp % 10 );
+
+	}
+
+	printf("after loop i = %d\n", i);
+
+	/*
+	 * After going across the digits in the smaller number,
+	 * check that there's more digits.
+	 *
+	 * If there aren't, just add the carry to the last slot
+	 */
+	if ( i <= lbig ) {
+		s[i - 1] = bibig[lbig - i] + carry;
+		for ( ; i < lbig; i++ ) s[i] = bibig[lbig - i];
+	}
+	else if ( carry != 0 )  s[i] = carry;
+
+	/*
+	 * 'i' now points to the last index, where '\0' should be.
+	 * We'll make a new string, and add the digits in reverse order!
+	 */
+
+	ret = (pstr)malloc( (i + 1)*sizeof(pchr) );
+	if ( ret == NULL ) { free(s); return NULL; }
+
+	ret[i] = '\0';
+	for ( ; i > 0 ; i-- ) ret[i - 1] = s[lbig - i];
+
+	free(s);
+	return ret;
 
 }
 

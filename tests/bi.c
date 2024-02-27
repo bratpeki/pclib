@@ -10,6 +10,11 @@
 
 pcode main() {
 
+	pbi b1 = "123";
+	pbi b2 = "45"; /* TODO: Not right when 945 */
+	pbi b12; /* 1 + 2 */
+	pbi b112; /* 1 + (1 + 2) */
+
 	/*
 	 * pbi_isvalid
 	 *
@@ -59,6 +64,16 @@ pcode main() {
 	test4("173", 172);
 	test4("172", 172);
 	printf("\n");
+
+	b12 = pbi_add(b1, b2);
+	printf("%s + %s = %s\n", b1, b2, b12);
+	b12 = pbi_add(b1, b2);
+	printf("%s + %s = %s\n", b1, b2, b12);
+	b112 = pbi_add(b1, b12);
+	printf("%s + %s = %s\n", b1, b12, b112);
+
+	free(b12);
+	free(b112);
 
 	return P_SUCCESS;
 
