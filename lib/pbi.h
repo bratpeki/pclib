@@ -17,26 +17,22 @@
  *
  * === DEVNOTE ===
  * - These need to be implemented:
- *     pbi
- *     pbi_isnull
- *     pbi_set
- *     pbi_clean
- *     pbi_isneg
- *     pbi_cmp
- *     pbi_cmpN
+ *     pbi        DONE
+ *     pbi_isnull DONE
+ *     pbi_isneg  DONE
+ *     pbi_cmp    DONE
+ *     pbi_cmpN   DONE
  *     pbi_add
  *     pbi_addN
  *     pbi_sub
  *     pbi_subN
  * - Consider multiplication and division.
- * - Also, isn't this a bigint header, then, if there are no floating points?
- * - A BIGINT IS ZERO ONLY WHEN THE SIZE OF 'dig' IS ZERO!
- *   Anything else would break the digit count checkers.
  */
 
 #include "ptype.h"
 #include "pcode.h"
 
+#include <stdio.h>
 #include <string.h>
 
 /*
@@ -50,20 +46,24 @@
 #endif
 
 /*
- * The bigint
+ * The bigint datatype
  * Essentially, a string
  */
 typedef pstr pbi;
 
 /* Checks if 'bi' is set to "0" */
-pbool pbi_isnull( pbi bi ) { return (pbool)( strcmp(bi, "0") == 0 ); }
+pbool pbi_isnull( pbi bi ) { return ( strcmp(bi, "0") == 0 ); }
 
 /*
  * Returns P_TRUE if 'val' is in a valid format for a bigint,
  * and P_FALSE if it isn't
  *
  * The proper format is:
- * (+, - OR A DIGIT) + (SERIES OF DIGITS) + '\0'
+ * (OPTIONAL '-') + (SERIES OF DIGITS) + '\0'
+ *
+ * Trailing zeros aren't allowed.
+ * 'val' can't be NULL or an empty string
+ * It can't just be a minus.
  */
 pbool pbi_isvalid( pstr val ) {
 
@@ -76,12 +76,19 @@ pbool pbi_isvalid( pstr val ) {
 	if ( val[0] == '\0' ) return P_FALSE;
 
 	/* Obviously! Part 2! */
-	if (
-		(strcmp(val, "+") == 0) ||
-		(strcmp(val, "-") == 0)
-	) return P_FALSE;
+	if ( !strcmp(val, "-") ) return P_FALSE;
 
-	if ( (val[0] == '+') || (val[0] == '-') ) i = 1;
+	i = ( val[0] == '-' ) ? 1 : 0;
+
+	/*
+	 * If there's more than one digit,
+	 * or a minus, followed by digits,
+	 * and the first digit is zero,
+	 * then there's a trailing zero
+	 */
+	if ( strlen(val) > 1 )
+		if ( val[i] == '0' )
+			return P_FALSE;
 
 	for ( ; val[i] != '\0'; i++ ) {
 
@@ -103,23 +110,69 @@ pbool pbi_isvalid( pstr val ) {
 }
 
 /*
- * Sets 'bi' to the literal string 'val', if it is properly formatted
+ * Checks if the bigint is negative,
+ * by checking the sign, as well as the fact
+ * that there's more than 0 digits after the sign
  *
- * 'bi' has to point to NULL
+ * Zero isn't negative!
  */
-pcode pbi_set( pbi bi, pstr val ) {
+pbool pbi_isneg ( pbi bi ) {
+
+	/* Sign and at least one digit */
+	if ( strlen(bi) >= 2 ) return ( bi[0] == '-' );
 
 	/*
-	 * First, we check if 'val' is properly formatted
-	 *
+	 * In any other case,
+	 * there's not enough space for a sign and
+	 * at least one digit,
+	 * so it can't be valid and negative!
 	 */
-	if ( !pbi_isvalid(val) ) return P_BADARG;
+	return P_FALSE;
 
-	if ( bi != NULL ) return P_BADARG;
+}
 
-	strcpy(bi, val);
+pcode pbi_cmp( pbi bi1, pbi bi2 ) {
 
-	return P_SUCCESS;
+	psz l1 = strlen(bi1);
+	psz l2 = strlen(bi2);
+	psz cmp;
+
+	if ( l1 > l2 ) return P_GREATER;
+	if ( l1 < l2 ) return P_SMALLER;
+
+	/*
+	 * This bit below relies on the fact
+	 * that the compiler is using ASCII.
+	 * I *might* generalize the solution
+	 * if a problem arises!
+	 */
+
+	cmp = strcmp(bi1, bi2);
+
+	if ( cmp > 0 ) return P_GREATER;
+	if ( cmp < 0 ) return P_SMALLER;
+	return P_EQUAL;
+
+}
+
+pcode pbi_cmpN( pbi bi, P_BI_OP_TYPE val ) {
+
+	pcode result;
+	pstr val_str;
+	P_BI_OP_TYPE tmp = val;
+	pusint dig = 0;
+
+	while ( tmp != 0 ) { dig++; tmp /= 10; }
+	val_str = (pstr)malloc( ( dig + 1 ) * sizeof(puchr) );
+	if (val_str == NULL) return P_BADALLOC;
+
+	sprintf(val_str, "%u", val);
+
+	result = pbi_cmp(bi, val_str);
+
+	free(val_str);
+
+	return result;
 
 }
 
