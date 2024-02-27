@@ -15,13 +15,20 @@
  *
  * THE USER IS RESPONSIBLE FOR HANDLING THE MEMORY AFTER EACH RE-EVALUATION OF THE CAPACITY!
  * So, every time malloc or realloc is called, the user should check if the pointer isn't NULL.
+ *
+ * Header includes (private elements ommited):
+ *   parr       strcut
+ *   parr_init  function
+ *   parr_clean function
+ *   parr_add   function
+ *   parr_rem   function
  */
 
 #include "ptype.h"
 
 #include <stdlib.h> /* malloc, realloc, free */
 
-/* Used for the for-loop in pDynArrRemove */
+/* Used for the for-loop in parr_rem */
 puint _parr_iter;
 
 /* Used for safely checking realloc successfulness */

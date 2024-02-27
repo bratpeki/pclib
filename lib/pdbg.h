@@ -5,6 +5,10 @@
  * pdbg.h
  *
  * Variables and functions for printf-ing debug messages
+ *
+ * Header includes (private elements ommited):
+ *   pdbg_printf function
+ *   pdbg_set    function
  */
 
 #include "ptype.h"

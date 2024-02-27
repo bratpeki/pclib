@@ -94,6 +94,12 @@ pbool pbi_isvalid( pstr val ) {
 
 		switch ( val[i] ) {
 
+			/*
+			 * This would be easier with an if statement:
+			 * if ( (val[i] >= '0') && (val[i] <= '9') )
+			 * This applies to the ASCII values
+			 */
+
 			case '0': case '1': case '2':
 			case '3': case '4': case '5':
 			case '6': case '7': case '8':
@@ -173,6 +179,21 @@ pcode pbi_cmpN( pbi bi, P_BI_OP_TYPE val ) {
 	free(val_str);
 
 	return result;
+
+}
+
+/* TODO: Don't forget the null terminator */
+pbi pbi_add( pbi bi1, pbi bi2 ) {
+
+	pusint carry = 0;
+	psz i;
+
+	psz l1 = strlen(bi1);
+	psz l2 = strlen(bi2);
+	/* +1 for the carry, +1 for the null terminator */
+	psz l = l1 + l2 + 2;
+
+	pstr s = (pstr)malloc( l * sizeof(puchr) );
 
 }
 

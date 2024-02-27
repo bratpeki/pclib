@@ -15,6 +15,13 @@
  *
  * THE USER IS RESPONSIBLE FOR HANDLING THE MEMORY AFTER EACH RE-EVALUATION OF THE CAPACITY!
  * So, every time malloc or realloc is called, the user should check if the pointer isn't NULL.
+ *
+ * Header includes (private elements ommited):
+ *   pdict       strcut
+ *   pdict_init  function
+ *   pdict_clean function
+ *   pdict_add   function
+ *   pdict_rem   function
  */
 
 #include "ptype.h"
