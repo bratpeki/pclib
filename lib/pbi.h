@@ -202,7 +202,7 @@ pcode pbi_cmp( pbi bi1, pbi bi2 ) {
 	if ( l1 < l2 ) return P_SMALLER;
 
 	/*
-	 * This bit below relies on the fact
+	 * This relies on the fact
 	 * that the compiler is using ASCII.
 	 * I *might* generalize the solution
 	 * if a problem arises!
@@ -242,7 +242,7 @@ pbi pbi_add( pbi bi1, pbi bi2 ) {
 	pusint carry = 0, tmp;
 	psint i;
 	pstr s, ret, bibig;
-	psz l, l1, l2, lbig, lsmall;
+	psz l1, l2, lbig, lsmall;
 
 	l1 = strlen(bi1);
 	l2 = strlen(bi2);
@@ -253,23 +253,21 @@ pbi pbi_add( pbi bi1, pbi bi2 ) {
 	/*
 	 * The largest the new number can be is
 	 * one larger than the bigger of the two numbers
-	 * plus another character for the NULL terminator
 	 *
 	 * As an example: 99 + 99, two largest two-digit integers, result in 198
-	 * Add to that a NULL terminator, and you get 4 characters!
+	 *
+	 * s doesn't allocate space for a null terminator,
+	 * since it's an array of characters,
+	 * rather than a "real" C-style string
 	 */
-	l = lbig + 2;
-
-	s = (pstr)malloc( l * sizeof(puchr) );
+	s = (pstr)malloc( (lbig + 1) * sizeof(puchr) );
 	if ( s == NULL ) return NULL;
 
+	/* String from 1 so that we access the indeces of bi1 and bi2 properly */
 	for ( i = 1; i <= lsmall; i++ ) {
-
 		tmp = _pbi_chr2dig( bi1[l1 - i] ) + _pbi_chr2dig( bi2[l2 - i] ) + carry;
-		carry = tmp / 10;
-
 		s[i - 1] = _pbi_dig2chr( tmp % 10 );
-
+		carry = tmp / 10;
 	}
 
 	/*
@@ -277,6 +275,9 @@ pbi pbi_add( pbi bi1, pbi bi2 ) {
 	 * check that there's more digits.
 	 *
 	 * If there aren't, just add the carry to the last slot
+	 *
+	 * You'll notice this is similar to the for loop above,
+	 * with the exception of it using bibig
 	 */
 
 	for ( ; i <= lbig; i++ ) {
@@ -285,9 +286,14 @@ pbi pbi_add( pbi bi1, pbi bi2 ) {
 		carry = tmp / 10;
 	}
 
+	/*
+	 * Now, that we're at the ending, check for a carry
+	 *
+	 * The 'else' clause sets the variables up for
+	 * the allocation and loop below
+	 */
 	if (carry != 0) { s[i-1] = _pbi_dig2chr(carry); }
 	else            { i--; lbig--; }
-	s[i] = '\0';
 
 	/*
 	 * 'i' now points to the last index, where '\0' should be.
@@ -321,16 +327,27 @@ pbi pbi_addN(pbi bi1, P_BI_OP_TYPE num) {
 	if ( bnum == NULL ) return NULL;
 
 	/*
-	 * TODO: %d is for ints, so this
-	 * might not be the best approach.
+	 * TODO: %u is for unsigned ints,
+	 * so this might not be the best approach,
+	 * since, the user can specify the type used
+	 *
+	 * Maybe force the user to use classic unsigned ints
 	 */
-	sprintf(bnum, "%d", num);
+	sprintf(bnum, "%u", num);
 
 	ret = pbi_add(bi1, bnum);
 
 	free(bnum);
 
 	return ret;
+
+}
+
+pbi pbi_sub(pbi bi1, pbi bi2) {
+
+}
+
+pbi pbi_subN(pbi bi1, P_BI_OP_TYPE num) {
 
 }
 
