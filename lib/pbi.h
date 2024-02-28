@@ -22,8 +22,8 @@
  *     pbi_isneg  DONE
  *     pbi_cmp    DONE
  *     pbi_cmpN   DONE
- *     pbi_add
- *     pbi_addN
+ *     pbi_add    MISSING NEGATIVES
+ *     pbi_addN   UNTESTED
  *     pbi_sub
  *     pbi_subN
  * - Consider multiplication and division.
@@ -239,20 +239,13 @@ pcode pbi_cmpN( pbi bi, P_BI_OP_TYPE val ) {
 
 pbi pbi_add( pbi bi1, pbi bi2 ) {
 
-	pusint carry = 0;
+	pusint carry = 0, tmp;
 	psint i;
-	pstr s;
-	pstr ret;
+	pstr s, ret, bibig;
 	psz l, l1, l2, lbig, lsmall;
-	pusint tmp;
-	pstr bibig;
 
 	l1 = strlen(bi1);
 	l2 = strlen(bi2);
-
-	/* DEBUG
-	printf("l1 = %lu, l2 = %lu\n", l1, l2);
-	*/
 
 	if ( l1 > l2 ) { lbig = l1; lsmall = l2; bibig = bi1; }
 	else           { lbig = l2; lsmall = l1; bibig = bi2; }
@@ -267,30 +260,14 @@ pbi pbi_add( pbi bi1, pbi bi2 ) {
 	 */
 	l = lbig + 2;
 
-	/* DEBUG
-	printf("lbig = %lu, lsmall = %lu\n", lbig, lsmall);
-	*/
-
 	s = (pstr)malloc( l * sizeof(puchr) );
 	if ( s == NULL ) return NULL;
 
 	for ( i = 1; i <= lsmall; i++ ) {
 
-		/* DEBUG
-		printf("for loop %d\n", i);
-		printf("  tmp = _pbi_chr2dig( bi1[%lu] ) + _pbi_chr2dig(bi2[%lu]) + %d;\n", l1-i, l2-i, carry);
-		printf("  tmp = _pbi_chr2dig( %c ) + _pbi_chr2dig( %c ) + %d;\n", bi1[l1-i], bi2[l2-i], carry);
-		printf("  tmp = %c + %c + %d;\n", bi1[l1-i], bi2[l2-i], carry);
-		*/
-
 		tmp = _pbi_chr2dig( bi1[l1 - i] ) + _pbi_chr2dig( bi2[l2 - i] ) + carry;
-
-		/* DEBUG
-		 printf("  tmp = %u;\n", tmp);
-		*/
-
 		carry = tmp / 10;
-		/* Remember, they're being added in reversei, you gotta flip them! */
+
 		s[i - 1] = _pbi_dig2chr( tmp % 10 );
 
 	}
@@ -308,15 +285,9 @@ pbi pbi_add( pbi bi1, pbi bi2 ) {
 		carry = tmp / 10;
 	}
 
-	if (carry != 0) {
-		s[i-1] = _pbi_dig2chr(carry);
-		s[i] = '\0';
-	}
-	else {
-		i--;
-		s[i] = '\0';
-		lbig--;
-	}
+	if (carry != 0) { s[i-1] = _pbi_dig2chr(carry); }
+	else            { i--; lbig--; }
+	s[i] = '\0';
 
 	/*
 	 * 'i' now points to the last index, where '\0' should be.
@@ -327,11 +298,38 @@ pbi pbi_add( pbi bi1, pbi bi2 ) {
 	if ( ret == NULL ) { free(s); return NULL; }
 
 	ret[i] = '\0';
-	for ( i-- ; i >= 0 ; i-- ) {
+	for ( i-- ; i >= 0 ; i-- )
 		ret[i] = s[lbig - i];
-	}
 
 	free(s);
+	return ret;
+
+}
+
+pbi pbi_addN(pbi bi1, P_BI_OP_TYPE num) {
+
+	psz len = 1; /* Gotta account for the null terminal */
+	P_BI_OP_TYPE num_iter = num;
+	pbi ret, bnum;
+
+	while ( num_iter != 0 ) {
+		len++;
+		num_iter /= 10;
+	}
+
+	bnum = (pbi)malloc( sizeof(pchr) * len );
+	if ( bnum == NULL ) return NULL;
+
+	/*
+	 * TODO: %d is for ints, so this
+	 * might not be the best approach.
+	 */
+	sprintf(bnum, "%d", num);
+
+	ret = pbi_add(bi1, bnum);
+
+	free(bnum);
+
 	return ret;
 
 }

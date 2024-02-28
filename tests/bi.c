@@ -13,10 +13,11 @@ pcode main() {
 	pbi b1 = "123";
 	pbi b2 = "945";
 	pbi b3 = "1945";
+	pbi bNULL;
 
-	pbi b12; /* 1 + 2 */
-	pbi b112; /* 1 + (1 + 2) */
-	pbi b13; /* 1 + 3 */
+	pbi b12; /* b1 + b2 */
+	pbi b112; /* b1 + (b1 + b2) */
+	pbi b13; /* b1 + b3 */
 
 	/*
 	 * pbi_isvalid
@@ -74,19 +75,26 @@ pcode main() {
 	test4("172", 172);
 	printf("\n");
 
-	/* TODO: MISSING NULL-CHECKS */
 	b12 = pbi_add(b1, b2);
+	if ( b12 == NULL ) return P_BADALLOC;
 	printf("%s + %s = %s\n", b1, b2, b12);
 
 	b112 = pbi_add(b1, b12);
+	if ( b112 == NULL ) { free(b12); return P_BADALLOC; }
 	printf("%s + %s = %s\n", b1, b12, b112);
 
 	b13 = pbi_add(b1, b3);
+	if ( b13 == NULL ) { free(b12); free(b112); return P_BADALLOC; }
 	printf("%s + %s = %s\n", b1, b3, b13);
+
+	bNULL = pbi_add(b1, "0");
+	if ( bNULL == NULL ) { free(b12); free(b112); free(b13); return P_BADALLOC; }
+	printf( "%s + 0 = %s\n", b1, bNULL );
 
 	free(b12);
 	free(b112);
 	free(b13);
+	free(bNULL);
 
 	return P_SUCCESS;
 
