@@ -308,10 +308,15 @@ pbi pbi_add( pbi bi1, pbi bi2 ) {
 		carry = tmp / 10;
 	}
 
-	s[i-1] = _pbi_dig2chr(carry);
-	s[i] = '\0';
-
-	printf("%s, %d\n", s, i);
+	if (carry != 0) {
+		s[i-1] = _pbi_dig2chr(carry);
+		s[i] = '\0';
+	}
+	else {
+		i--;
+		s[i] = '\0';
+		lbig--;
+	}
 
 	/*
 	 * 'i' now points to the last index, where '\0' should be.
@@ -322,7 +327,9 @@ pbi pbi_add( pbi bi1, pbi bi2 ) {
 	if ( ret == NULL ) { free(s); return NULL; }
 
 	ret[i] = '\0';
-	for ( i-- ; i >= 0 ; i-- ) ret[i] = s[lbig - i];
+	for ( i-- ; i >= 0 ; i-- ) {
+		ret[i] = s[lbig - i];
+	}
 
 	free(s);
 	return ret;

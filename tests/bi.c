@@ -74,15 +74,14 @@ pcode main() {
 	test4("172", 172);
 	printf("\n");
 
+	/* TODO: MISSING NULL-CHECKS */
 	b12 = pbi_add(b1, b2);
 	printf("%s + %s = %s\n", b1, b2, b12);
 
 	b112 = pbi_add(b1, b12);
-	/* TODO: Not right, trailing zero */
 	printf("%s + %s = %s\n", b1, b12, b112);
 
 	b13 = pbi_add(b1, b3);
-	/* TODO: Not right, trailing zero */
 	printf("%s + %s = %s\n", b1, b3, b13);
 
 	free(b12);
