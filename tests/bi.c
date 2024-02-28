@@ -11,9 +11,12 @@
 pcode main() {
 
 	pbi b1 = "123";
-	pbi b2 = "45"; /* TODO: Not right when 945 */
+	pbi b2 = "945";
+	pbi b3 = "1945";
+
 	pbi b12; /* 1 + 2 */
 	pbi b112; /* 1 + (1 + 2) */
+	pbi b13; /* 1 + 3 */
 
 	/*
 	 * pbi_isvalid
@@ -27,6 +30,12 @@ pcode main() {
 	test1("-248");
 	test1("248");
 	test1("24a8");
+	printf("\n");
+
+	/* Expect all ones */
+	test1(b1);
+	test1(b2);
+	test1(b3);
 	printf("\n");
 
 	/*
@@ -67,13 +76,18 @@ pcode main() {
 
 	b12 = pbi_add(b1, b2);
 	printf("%s + %s = %s\n", b1, b2, b12);
-	b12 = pbi_add(b1, b2);
-	printf("%s + %s = %s\n", b1, b2, b12);
+
 	b112 = pbi_add(b1, b12);
+	/* TODO: Not right, trailing zero */
 	printf("%s + %s = %s\n", b1, b12, b112);
+
+	b13 = pbi_add(b1, b3);
+	/* TODO: Not right, trailing zero */
+	printf("%s + %s = %s\n", b1, b3, b13);
 
 	free(b12);
 	free(b112);
+	free(b13);
 
 	return P_SUCCESS;
 
