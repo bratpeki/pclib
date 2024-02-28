@@ -250,29 +250,44 @@ pbi pbi_add( pbi bi1, pbi bi2 ) {
 	l1 = strlen(bi1);
 	l2 = strlen(bi2);
 
+	/* DEBUG
 	printf("l1 = %lu, l2 = %lu\n", l1, l2);
-
-	/* +1 for the carry, +1 for the null terminator */
-	l = l1 + l2 + 2;
+	*/
 
 	if ( l1 > l2 ) { lbig = l1; lsmall = l2; bibig = bi1; }
 	else           { lbig = l2; lsmall = l1; bibig = bi2; }
 
+	/*
+	 * The largest the new number can be is
+	 * one larger than the bigger of the two numbers
+	 * plus another character for the NULL terminator
+	 *
+	 * As an example: 99 + 99, two largest two-digit integers, result in 198
+	 * Add to that a NULL terminator, and you get 4 characters!
+	 */
+	l = lbig + 2;
+
+	/* DEBUG
 	printf("lbig = %lu, lsmall = %lu\n", lbig, lsmall);
+	*/
 
 	s = (pstr)malloc( l * sizeof(puchr) );
 	if ( s == NULL ) return NULL;
 
 	for ( i = 1; i <= lsmall; i++ ) {
 
+		/* DEBUG
 		printf("for loop %d\n", i);
 		printf("  tmp = _pbi_chr2dig( bi1[%lu] ) + _pbi_chr2dig(bi2[%lu]) + %d;\n", l1-i, l2-i, carry);
 		printf("  tmp = _pbi_chr2dig( %c ) + _pbi_chr2dig( %c ) + %d;\n", bi1[l1-i], bi2[l2-i], carry);
 		printf("  tmp = %c + %c + %d;\n", bi1[l1-i], bi2[l2-i], carry);
+		*/
 
 		tmp = _pbi_chr2dig( bi1[l1 - i] ) + _pbi_chr2dig( bi2[l2 - i] ) + carry;
 
-		printf("  tmp = %u;\n", tmp);
+		/* DEBUG
+		 printf("  tmp = %u;\n", tmp);
+		*/
 
 		carry = tmp / 10;
 		/* Remember, they're being added in reversei, you gotta flip them! */
@@ -280,19 +295,23 @@ pbi pbi_add( pbi bi1, pbi bi2 ) {
 
 	}
 
-	printf("after loop i = %d\n", i);
-
 	/*
 	 * After going across the digits in the smaller number,
 	 * check that there's more digits.
 	 *
 	 * If there aren't, just add the carry to the last slot
 	 */
-	if ( i <= lbig ) {
-		s[i - 1] = bibig[lbig - i] + carry;
-		for ( ; i < lbig; i++ ) s[i] = bibig[lbig - i];
+
+	for ( ; i <= lbig; i++ ) {
+		tmp = _pbi_chr2dig(bibig[lbig - i]) + carry;
+		s[i - 1] = _pbi_dig2chr(tmp % 10);
+		carry = tmp / 10;
 	}
-	else if ( carry != 0 )  s[i] = carry;
+
+	s[i-1] = _pbi_dig2chr(carry);
+	s[i] = '\0';
+
+	printf("%s, %d\n", s, i);
 
 	/*
 	 * 'i' now points to the last index, where '\0' should be.
@@ -303,7 +322,7 @@ pbi pbi_add( pbi bi1, pbi bi2 ) {
 	if ( ret == NULL ) { free(s); return NULL; }
 
 	ret[i] = '\0';
-	for ( ; i > 0 ; i-- ) ret[i - 1] = s[lbig - i];
+	for ( i-- ; i >= 0 ; i-- ) ret[i] = s[lbig - i];
 
 	free(s);
 	return ret;
