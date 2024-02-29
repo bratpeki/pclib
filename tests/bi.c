@@ -14,6 +14,7 @@ pcode main() {
 	pbi b2 = "945";
 	pbi b3 = "1945";
 	pbi bNULL;
+	pbi a;
 
 	pbi b12; /* b1 + b2 */
 	pbi b112; /* b1 + (b1 + b2) */
@@ -114,6 +115,85 @@ pcode main() {
 	if (b12 == NULL) return P_BADALLOC;
 	printf("%s - 156 = %s\n", b2, b12);
 	free(b12);
+
+	/* VARIOUS TESTS */
+
+	a = pbi_add("1247", "2342");
+	if (a == NULL) return 1;
+	printf("1247 + 2342 = %s\n", a);
+	free(a);
+
+	a = pbi_sub("2342", "1247");
+	if (a == NULL) return 1;
+	printf("2342 - 1247 = %s\n", a);
+
+	printf("\n");
+
+	printf("The original is: %s\n", a);
+	if (pbi_fs(a) == P_SUCCESS) {
+		printf("The negative is: %s\n", a);
+	}
+	else {
+		printf("Couldn't reallocate memory for 'pbi_fs'\n");
+		a = NULL;
+	}
+
+	printf("\n");
+
+	printf("The original is: %s\n", a);
+	if (pbi_fs(a) == P_SUCCESS) {
+		printf("The negative is: %s\n", a);
+	}
+	else {
+		printf("Couldn't reallocate memory for 'pbi_fs'\n");
+		a = NULL;
+	}
+	free(a);
+
+	printf("\n");
+
+	a = pbi_add("0", "0");
+	printf("%s = 0?\n", a);
+	if ( pbi_fs(a) == P_SUCCESS ) {
+		printf("The negative is: %s\n", a);
+	}
+	else {
+		printf("Couldn't reallocate memory for 'pbi_fs'\n");
+		a = NULL;
+	}
+	free(a);
+
+	printf("\n");
+
+	a = pbi_add("1", "1");
+	printf("1 + 1 = %s\n", a);
+	free(a);
+
+	printf("\n");
+
+	a = (pstr)malloc( 2 * sizeof(pchr) );
+	strcpy(a, "1");
+	if ( pbi_fs(a) == P_SUCCESS ) {
+		printf("Negative of 1 is %s\n", a);
+	}
+	else {
+		printf("Couldn't reallocate memory for 'pbi_fs'\n");
+		a = NULL;
+	}
+	free(a);
+
+	printf("\n");
+
+	a = (pstr)malloc( 3 * sizeof(pchr) );
+	strcpy(a, "-1");
+	if ( pbi_fs(a) == P_SUCCESS ) {
+		printf("Negative of -1 is %s\n", a);
+	}
+	else {
+		printf("Couldn't reallocate memory for 'pbi_fs'\n");
+		a = NULL;
+	}
+	free(a);
 
 	return P_SUCCESS;
 

@@ -20,14 +20,12 @@
  *     pbi        DONE
  *     pbi_isnull DONE
  *     pbi_isval  DONE
- *     pbi_fs
+ *     pbi_fs     DONE
  *     pbi_isneg  DONE
  *     pbi_cmp    DONE
- *     pbi_cmpN   DONE
+ *     pbi_cmpN   DONE, Is this needed?
  *     pbi_add    MISSING NEGATIVES
- *     pbi_addN   UNTESTED
- *     pbi_sub
- *     pbi_subN   UNTESTED
+ *     pbi_sub    MISSING NEGATIVES
  * - Consider multiplication and division.
  *
  * pbi_add(N) and pbi_sub(N) should operate their
@@ -45,6 +43,7 @@
 #include "pcode.h"
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 /*
@@ -109,7 +108,7 @@ pchr _pbi_dig2chr( pusint dig ) {
 }
 
 /* Checks if 'bi' is set to "0" */
-pbool pbi_isnull( pbi bi ) { return ( strcmp(bi, "0") == 0 ); }
+pbool pbi_isnull( pbi bi ) { return (pbool)( strcmp(bi, "0") == 0 ); }
 
 /*
  * Returns P_TRUE if 'val' is in a valid format for a bigint,
@@ -183,7 +182,7 @@ pbool pbi_isval( pstr val ) {
 pbool pbi_isneg ( pbi bi ) {
 
 	/* Sign and at least one digit */
-	if ( strlen(bi) >= 2 ) return ( bi[0] == '-' );
+	if ( strlen(bi) >= 2 ) return (pbool)( bi[0] == '-' );
 
 	/*
 	 * In any other case,
@@ -195,7 +194,72 @@ pbool pbi_isneg ( pbi bi ) {
 
 }
 
+/*
+ * Takes an ALLOCATED BIT OF MEMORY,
+ * reallocates it,
+ * and adds/removes a minus.
+ *
+ * Assumes 'bi' is valid.
+ *
+ * Returns P_BADALLOC if allocation cannot be done.
+ *
+ * If "0" is passed, "0" is returned.
+ */
 pcode pbi_fs( pbi bi ) {
+
+	pbool neg = pbi_isneg(bi);
+	psz l = strlen(bi);
+	psint i;
+	pbi tmp;
+
+	if ( pbi_isnull(bi) ) return P_SUCCESS;
+
+	/*
+	 * If the number is positive,
+	 * reallocate space for one more character,
+	 * and append a minus to the start.
+	 */
+	if ( !neg ) {
+
+		/* l + minus + null terminator */
+		tmp = (pbi)realloc(bi, (l + 2) * sizeof(pchr));
+
+		if ( tmp == NULL ) {
+			free(bi);
+			return P_BADALLOC;
+		}
+
+		bi = tmp;
+
+		for ( i = l + 1; i > 0; i-- ) {
+			bi[i] = bi[i - 1];
+		}
+
+		bi[0] = '-';
+
+		return P_SUCCESS;
+
+	}
+
+	/*
+	 * The code below is what happens when the number is negative
+	 *
+	 * We shift the characters by one,
+	 * deleting the minus
+	 */
+
+	for ( i = 0; i < l; i++ ) {
+		bi[i] = bi[i + 1];
+	}
+
+	tmp = (pbi)realloc(bi, (l + 1) * sizeof(pchr));
+
+	if ( tmp == NULL ) {
+		free(bi);
+		return P_BADALLOC;
+	}
+
+	bi = tmp;
 
 	return P_SUCCESS;
 
@@ -332,46 +396,6 @@ pbi pbi_add( pbi bi1, pbi bi2 ) {
 
 /*
  * Returns a dynamically allocated string
- * containing the sum of the bigint and number.
- *
- * Doesn't check the validity of the bigint.
- *
- * The user is responsible for clearing the memory
- * of the returned string.
- */
-pbi pbi_addN(pbi bi1, P_BI_OP_TYPE num) {
-
-	psz len = 1; /* Gotta account for the null terminal */
-	P_BI_OP_TYPE num_iter = num;
-	pbi ret, bnum;
-
-	while ( num_iter != 0 ) {
-		len++;
-		num_iter /= 10;
-	}
-
-	bnum = (pbi)malloc( sizeof(pchr) * len );
-	if ( bnum == NULL ) return NULL;
-
-	/*
-	 * TODO: %u is for unsigned ints,
-	 * so this might not be the best approach,
-	 * since, the user can specify the type used
-	 *
-	 * Maybe force the user to use classic unsigned ints
-	 */
-	sprintf(bnum, "%u", num);
-
-	ret = pbi_add(bi1, bnum);
-
-	free(bnum);
-
-	return ret;
-
-}
-
-/*
- * Returns a dynamically allocated string
  * containing the difference of the two bigints.
  *
  * Doesn't check the validity of the two bigints.
@@ -402,7 +426,7 @@ pbi pbi_sub(pbi bi1, pbi bi2) {
 		case P_EQUAL:
 			ret = (pbi)malloc(2 * sizeof(pchr));
 			if ( ret == NULL ) return NULL;
-			ret = "0";
+			ret = (pbi)"0";
 			return ret;
 
 	}
@@ -458,46 +482,6 @@ pbi pbi_sub(pbi bi1, pbi bi2) {
 	ret[j+1] = '\0';
 
 	free(s);
-	return ret;
-
-}
-
-/*
- * Returns a dynamically allocated string
- * containing the difference of the bigint and number.
- *
- * Doesn't check the validity of the bigint.
- *
- * The user is responsible for clearing the memory
- * of the returned string.
- */
-pbi pbi_subN(pbi bi1, P_BI_OP_TYPE num) {
-
-	psz len = 1; /* Gotta account for the null terminal */
-	P_BI_OP_TYPE num_iter = num;
-	pbi ret, bnum;
-
-	while ( num_iter != 0 ) {
-		len++;
-		num_iter /= 10;
-	}
-
-	bnum = (pbi)malloc( sizeof(pchr) * len );
-	if ( bnum == NULL ) return NULL;
-
-	/*
-	 * TODO: %u is for unsigned ints,
-	 * so this might not be the best approach,
-	 * since, the user can specify the type used
-	 *
-	 * Maybe force the user to use classic unsigned ints
-	 */
-	sprintf(bnum, "%u", num);
-
-	ret = pbi_sub(bi1, bnum);
-
-	free(bnum);
-
 	return ret;
 
 }
