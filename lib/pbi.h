@@ -19,13 +19,15 @@
  * - These need to be implemented:
  *     pbi        DONE
  *     pbi_isnull DONE
+ *     pbi_isval  DONE
+ *     pbi_fs
  *     pbi_isneg  DONE
  *     pbi_cmp    DONE
  *     pbi_cmpN   DONE
  *     pbi_add    MISSING NEGATIVES
  *     pbi_addN   UNTESTED
  *     pbi_sub
- *     pbi_subN
+ *     pbi_subN   UNTESTED
  * - Consider multiplication and division.
  *
  * pbi_add(N) and pbi_sub(N) should operate their
@@ -70,11 +72,11 @@ typedef pstr pbi;
  * Some compilers don't use ASCII, so I made this!
  * For ASCII, conversion is as simple as:
  *
- * return chr - '0';
+ * return (chr - '0');
  *
- * Returns 10 if the digit is wrong
+ * Returns -1 if the digit is wrong
  */
-pusint _pbi_chr2dig ( pchr chr ) {
+psint _pbi_chr2dig ( pchr chr ) {
 
 	switch ( chr ) {
 
@@ -88,7 +90,7 @@ pusint _pbi_chr2dig ( pchr chr ) {
 		case '7': return 7;
 		case '8': return 8;
 		case '9': return 9;
-		default:  return 10;
+		default:  return -1;
 
 	}
 
@@ -99,7 +101,7 @@ pusint _pbi_chr2dig ( pchr chr ) {
  *
  * Some compilers don't use ASCII, so I made this!
  *
- * Return (pchr)0 if the digit is out-of-range.
+ * Return 0 if the digit is out-of-range.
  */
 pchr _pbi_dig2chr( pusint dig ) {
 	if ( ( dig < 0 ) || ( dig > 9 ) ) return (pchr)0;
@@ -120,7 +122,7 @@ pbool pbi_isnull( pbi bi ) { return ( strcmp(bi, "0") == 0 ); }
  * 'val' can't be NULL or an empty string
  * It can't just be a minus.
  */
-pbool pbi_isvalid( pstr val ) {
+pbool pbi_isval( pstr val ) {
 
 	puint i = 0;
 
@@ -152,7 +154,8 @@ pbool pbi_isvalid( pstr val ) {
 			/*
 			 * This would be easier with an if statement:
 			 * if ( (val[i] >= '0') && (val[i] <= '9') )
-			 * This applies to the ASCII values
+			 * This applies to the ASCII values, so
+			 * I generalized it
 			 */
 
 			case '0': case '1': case '2':
@@ -189,6 +192,12 @@ pbool pbi_isneg ( pbi bi ) {
 	 * so it can't be valid and negative!
 	 */
 	return P_FALSE;
+
+}
+
+pcode pbi_fs( pbi bi ) {
+
+	return P_SUCCESS;
 
 }
 
@@ -237,6 +246,15 @@ pcode pbi_cmpN( pbi bi, P_BI_OP_TYPE val ) {
 
 }
 
+/*
+ * Returns a dynamically allocated string
+ * containing the sum of the two bigints.
+ *
+ * Doesn't check the validity of the two bigints.
+ *
+ * The user is responsible for clearing the memory
+ * of the returned string.
+ */
 pbi pbi_add( pbi bi1, pbi bi2 ) {
 
 	pusint carry = 0, tmp;
@@ -312,6 +330,15 @@ pbi pbi_add( pbi bi1, pbi bi2 ) {
 
 }
 
+/*
+ * Returns a dynamically allocated string
+ * containing the sum of the bigint and number.
+ *
+ * Doesn't check the validity of the bigint.
+ *
+ * The user is responsible for clearing the memory
+ * of the returned string.
+ */
 pbi pbi_addN(pbi bi1, P_BI_OP_TYPE num) {
 
 	psz len = 1; /* Gotta account for the null terminal */
@@ -343,11 +370,135 @@ pbi pbi_addN(pbi bi1, P_BI_OP_TYPE num) {
 
 }
 
+/*
+ * Returns a dynamically allocated string
+ * containing the difference of the two bigints.
+ *
+ * Doesn't check the validity of the two bigints.
+ *
+ * The user is responsible for clearing the memory
+ * of the returned string.
+ */
 pbi pbi_sub(pbi bi1, pbi bi2) {
+
+	pbi ret;
+	psint i, j; /* TODO: Proper datatype? */
+	psz lbig, lsmall;
+	pstr s;
+	pssint tmp;
+	psint carry = 0; /* 1 if we carry, 0 if we don't ? */
+
+	switch ( pbi_cmp( bi1, bi2 ) ) {
+
+		case P_SMALLER:
+			/*
+			 * bi1 is smaller than bi2
+			 * TODO: A function which flips the sign
+			 *
+			 * Return - ( pbi_sub( bi2, bi1 ) )
+			 */
+			break;
+
+		case P_EQUAL:
+			ret = (pbi)malloc(2 * sizeof(pchr));
+			if ( ret == NULL ) return NULL;
+			ret = "0";
+			return ret;
+
+	}
+
+	/*
+	 * Since the two cases above call a return,
+	 * this is what happens when bi1 > bi2
+	 */
+
+	/*
+	 * We know that the bi1 has the same,
+	 * if not more digits than bi2
+	 */
+
+	lbig = strlen(bi1);
+	lsmall = strlen(bi2);
+
+	/* No need to account for the null terminator */
+	s = (pstr)malloc( lbig * sizeof(pchr) );
+	if ( s == NULL ) return NULL;
+
+	for ( i = 1; i <= lsmall; i++ ) {
+
+		tmp = _pbi_chr2dig( bi1[lbig-i] ) - carry - _pbi_chr2dig( bi2[lsmall-i] );
+		if ( tmp < 0 ) { carry = 1; tmp += 10; }
+		else           { carry = 0; }
+
+		s[i-1] = _pbi_dig2chr( tmp );
+
+	}
+
+	s[i-1] = _pbi_dig2chr( _pbi_chr2dig( bi1[lbig-i] ) - carry );
+	i++;
+
+	for ( ; i <= lbig; i++ ) { s[i-1] = bi1[lbig-i]; }
+
+	/* Getting rid of trailing zeros */
+	j = lbig - 1;
+	while ( s[j] == '0' ) j--;
+	/*
+	 * 'j' now points to the index where the first
+	 * index, from the back, which is non-zero
+	 *
+	 * We write from that one!
+	 */
+
+	/* +1 for the index to character count conversion, +1 for the null terminator */
+	ret = (pbi)malloc( (j+2)*sizeof(pchr) );
+	if ( ret == NULL ) { free(s); return NULL; }
+
+	for ( i = 0 ; i <= j ; i++ )
+		ret[i] = s[j - i];
+	ret[j+1] = '\0';
+
+	free(s);
+	return ret;
 
 }
 
+/*
+ * Returns a dynamically allocated string
+ * containing the difference of the bigint and number.
+ *
+ * Doesn't check the validity of the bigint.
+ *
+ * The user is responsible for clearing the memory
+ * of the returned string.
+ */
 pbi pbi_subN(pbi bi1, P_BI_OP_TYPE num) {
+
+	psz len = 1; /* Gotta account for the null terminal */
+	P_BI_OP_TYPE num_iter = num;
+	pbi ret, bnum;
+
+	while ( num_iter != 0 ) {
+		len++;
+		num_iter /= 10;
+	}
+
+	bnum = (pbi)malloc( sizeof(pchr) * len );
+	if ( bnum == NULL ) return NULL;
+
+	/*
+	 * TODO: %u is for unsigned ints,
+	 * so this might not be the best approach,
+	 * since, the user can specify the type used
+	 *
+	 * Maybe force the user to use classic unsigned ints
+	 */
+	sprintf(bnum, "%u", num);
+
+	ret = pbi_sub(bi1, bnum);
+
+	free(bnum);
+
+	return ret;
 
 }
 

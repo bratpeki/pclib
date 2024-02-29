@@ -3,7 +3,7 @@
 
 #include <stdio.h>
 
-#define test1(x) printf("%d", pbi_isvalid(x))
+#define test1(x) printf("%d", pbi_isval(x))
 #define test2(x) printf("%d", pbi_isneg(x))
 #define test3(x, y) printf("%d", pbi_cmp(x, y) )
 #define test4(x, y) printf("%d", pbi_cmpN(x, y) )
@@ -75,6 +75,8 @@ pcode main() {
 	test4("172", 172);
 	printf("\n");
 
+	/* pbi_add testing */
+
 	b12 = pbi_add(b1, b2);
 	if ( b12 == NULL ) return P_BADALLOC;
 	printf("%s + %s = %s\n", b1, b2, b12);
@@ -95,6 +97,23 @@ pcode main() {
 	free(b112);
 	free(b13);
 	free(bNULL);
+
+	/* pbi_sub testing */
+
+	b12 = pbi_sub(b2, "800");
+	if (b12 == NULL) return P_BADALLOC;
+	printf("%s - 800 = %s\n", b2, b12);
+	free(b12);
+
+	b12 = pbi_sub(b2, "900");
+	if (b12 == NULL) return P_BADALLOC;
+	printf("%s - 900 = %s\n", b2, b12);
+	free(b12);
+
+	b12 = pbi_sub(b2, "156");
+	if (b12 == NULL) return P_BADALLOC;
+	printf("%s - 156 = %s\n", b2, b12);
+	free(b12);
 
 	return P_SUCCESS;
 
