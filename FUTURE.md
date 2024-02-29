@@ -5,3 +5,6 @@ If adding features relating to C99, or switching to C99, it is important to note
 - Variadic macros would be useful for `pdbg_printf` (preprocessor implementation)
 
 I doubt I'll ever port this to C99, though.
+
+Maybe I'll just use standard types, without my own typedefs, so that I don't create confusion.
+I'd create typedefs for unsigned, signed and long variants (ex. uint, sint, lint).

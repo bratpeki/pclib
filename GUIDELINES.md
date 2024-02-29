@@ -25,8 +25,8 @@ Code:
 | Local variables | `pfile_desc` | |
 | Type | `ptypename` | |
 | Header | `pfile.h` | |
-| Test file | `file.c` | Same as headers, but without the `p`, and with the `.c` extension |
+| Test file | `file.c` | |
 
 <!-- TODO: Ifs, function brackets -->
 
-Any element that shouldn't be accessed by the user is prefixed with a `_`.
+Any element that __shouldn't be accessed by the user__ is prefixed with a `_`.
