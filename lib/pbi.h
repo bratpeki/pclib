@@ -22,21 +22,30 @@
  *     pbi_isval  DONE
  *     pbi_fs     DONE
  *     pbi_isneg  DONE
- *     pbi_cmp    DONE
- *     pbi_cmpN   DONE, Is this needed?
+ *     pbi_cmp    MISSING NEGATIVES
  *     pbi_add    MISSING NEGATIVES
  *     pbi_sub    MISSING NEGATIVES
  * - Consider multiplication and division.
  *
- * pbi_add(N) and pbi_sub(N) should operate their
+ * pbi_add and pbi_sub should operate their
  * respective operations only over positive integers.
  * Any negative number operations can, fundementally,
  * boil down to the positive number operations!
  *
- * For this purpose, it might be smart to allow operations
- * exclusively over positive numbers, and let the user operate
- * negative number operations. Or just add a few ifs before the
- * actual calculations!
+ * pbi_sub has a lot of cases, that being
+ * positives and negatives, and the first one being
+ * greater, equal or smaller than the second one.
+ *
+ * Also, consider creating a struct like:
+ *
+ * typedef struct {
+ *     pstr digits;
+ *     pbool negative;
+ * } pbi
+ *
+ * to store the PBI. This looks SIGNIFICANTLY
+ * easier to work with, in contrast with the
+ * sign being represented with the '-' in the string!
  */
 
 #include "ptype.h"
@@ -179,7 +188,7 @@ pbool pbi_isval( pstr val ) {
  *
  * Zero isn't negative!
  */
-pbool pbi_isneg ( pbi bi ) {
+pbool pbi_isneg( pbi bi ) {
 
 	/* Sign and at least one digit */
 	if ( strlen(bi) >= 2 ) return (pbool)( bi[0] == '-' );
@@ -203,7 +212,7 @@ pbool pbi_isneg ( pbi bi ) {
  *
  * Returns P_BADALLOC if allocation cannot be done.
  *
- * If "0" is passed, "0" is returned.
+ * If "0" is passed, it isn't changed.
  */
 pcode pbi_fs( pbi bi ) {
 
@@ -286,27 +295,6 @@ pcode pbi_cmp( pbi bi1, pbi bi2 ) {
 	if ( cmp > 0 ) return P_GREATER;
 	if ( cmp < 0 ) return P_SMALLER;
 	return P_EQUAL;
-
-}
-
-pcode pbi_cmpN( pbi bi, P_BI_OP_TYPE val ) {
-
-	pcode result;
-	pstr val_str;
-	P_BI_OP_TYPE tmp = val;
-	pusint dig = 0;
-
-	while ( tmp != 0 ) { dig++; tmp /= 10; }
-	val_str = (pstr)malloc( ( dig + 1 ) * sizeof(puchr) );
-	if (val_str == NULL) return P_BADALLOC;
-
-	sprintf(val_str, "%u", val);
-
-	result = pbi_cmp(bi, val_str);
-
-	free(val_str);
-
-	return result;
 
 }
 
