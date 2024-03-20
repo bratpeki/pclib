@@ -6,18 +6,28 @@
  *
  * A simple implementation of a type-generic dynamic array
  *
- * The dynamic array struct consists of the data array, and size and capacity unsigned
- * integer values.
+ * ===============
+ *
+ * The dynamic array struct consists of:
+ * - the data array,
+ * - the size of the array and
+ * - the capacity of the array
  *
  * The dynamic array uses the following optimization technique:
  *   Once the size of the dynamic array is equal to the capacity, the capacity is doubled
  *   Once the size of the dynamic array is equal to half the capacity, the capacity is halved
  *
- * THE USER IS RESPONSIBLE FOR HANDLING THE MEMORY AFTER EACH RE-EVALUATION OF THE CAPACITY!
- * So, every time malloc or realloc is called, the user should check if the pointer isn't NULL.
+ * ===============
+ *
+ * !!! THE USER IS RESPONSIBLE FOR HANDLING THE MEMORY AFTER EACH RE-EVALUATION OF THE CAPACITY !!!
+ *
+ * So, after every addition or removal, the user should check
+ * that the data pointer in the array struct isn't NULL.
+ *
+ * ===============
  *
  * Header includes (private elements ommited):
- *   parr       strcut
+ *   parr       struct
  *   parr_init  function
  *   parr_clean function
  *   parr_add   function
@@ -97,7 +107,7 @@ pvptr _parr_tmp;
 			for (_parr_iter = (index); _parr_iter < (arr).size - 1; _parr_iter++) \
 				((arr).data)[_parr_iter] = ((arr).data)[_parr_iter + 1]; \
 			((arr).size)--; \
-			if ((arr).size <= (((arr).cap)/2)) { \
+			if ((arr).size == (((arr).cap)/2)) { \
 				_parr_tmp = realloc((arr).data, sizeof(*((arr).data)) * ((arr).cap / 2)); \
 				if (_parr_tmp != NULL) { (arr).cap /= 2; (arr).data = _parr_tmp; } \
 				else { \

@@ -8,12 +8,20 @@
  * the capacity optimization technique, instead incrementing the size each time the array
  * is changed
  *
- * The incremental dynamic array struct consists of the data array and size unsigned integer value.
+ * ===============
  *
- * The incremental dynamic array reallocates memory for each addition and subtraction.
+ * The incremental dynamic array struct consists of:
+ * - the data array and
+ * - the size of the array
  *
- * THE USER IS RESPONSIBLE FOR HANDLING THE MEMORY AFTER EACH OPERATION!
- * So, every time malloc or realloc is called, the user should check if the pointer isn't NULL.
+ * ===============
+ *
+ * !!! THE USER IS RESPONSIBLE FOR HANDLING THE MEMORY AFTER EACH RE-EVALUATION OF THE CAPACITY !!!
+ *
+ * So, after every addition or removal, the user should check
+ * that the data pointer in the array struct isn't NULL.
+ *
+ * ===============
  *
  * Header includes (private elements ommited):
  *   piarr       struct

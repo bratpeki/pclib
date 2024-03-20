@@ -5,6 +5,24 @@
  * pcode.h
  *
  * Exit codes for common situations
+ *
+ * ===============
+ *
+ * Each exit code is described with a comment.
+ *
+ * The header doesn't use:
+ *
+ *   typedef enum { ... } pcode
+ *
+ * since I wanted to enable the user to write the main function as:
+ *
+ *   pcode main( ... ) {
+ *     ...
+ *     return P_SUCCESS;
+ *   }
+ *
+ * A typedef doesn't enable that behaviour in GCC,
+ * since pcode is then a custom type, and not an int.
  */
 
 #define pcode int

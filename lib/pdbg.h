@@ -6,6 +6,8 @@
  *
  * Variables and functions for printf-ing debug messages
  *
+ * ===============
+ *
  * Header includes (private elements ommited):
  *   pdbg_printf function
  *   pdbg_set    function
@@ -18,15 +20,15 @@
 
 /*
  * The Boolean value which enables pdbg_printf output
- * True by default
+ * On by default
  */
 pbool _pdbg_toggle = P_ON;
 
 /*
  * If debugging is enabled,
- * prints the given message to STDOUT, in printf's format
+ * prints the given message out, in printf's format
  */
-void pdbg_printf(const char *format, ...) {
+pnoret pdbg_printf(const char *format, ...) {
 
 	if (_pdbg_toggle) {
 		va_list args;

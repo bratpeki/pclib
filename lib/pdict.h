@@ -4,17 +4,28 @@
 /*
  * pdict.h
  *
- * A simple implementation of a type-generic dictionary/hashmap
+ * A simple implementation of a type-generic dictionary
  *
- * The dictionary struct contains the arrays for keys and values,
- * the size of the dictionary and its capacity
+ * ===============
+ *
+ * The dictionary struct consists of:
+ * - the keys' data array,
+ * - the values' data array,
+ * - the size of the dictionary and
+ * - the capacity of the dictonary
  *
  * The dictonary uses the following optimization technique:
  *   Once the size of the dictonary is equal to the capacity, the capacity is doubled
  *   Once the size of the dictonary is equal to half the capacity, the capacity is halved
  *
- * THE USER IS RESPONSIBLE FOR HANDLING THE MEMORY AFTER EACH RE-EVALUATION OF THE CAPACITY!
- * So, every time malloc or realloc is called, the user should check if the pointer isn't NULL.
+ * ===============
+ *
+ * !!! THE USER IS RESPONSIBLE FOR HANDLING THE MEMORY AFTER EACH RE-EVALUATION OF THE CAPACITY !!!
+ *
+ * So, after every addition or removal, the user should check
+ * that the keys' and values' data pointers in the dictionary struct aren't NULL.
+ *
+ * ===============
  *
  * Header includes (private elements ommited):
  *   pdict       struct
@@ -111,7 +122,7 @@ pvptr _pdict_kp, _pdict_vp;
 				((dict).vals)[_pdict_iter] = ((dict).vals)[_pdict_iter + 1]; \
 			} \
 			((dict).size)--; \
-			if ((dict).size < (((dict).cap)/2)) { \
+			if ((dict).size == (((dict).cap)/2)) { \
 				_pdict_kp = realloc((dict).keys, sizeof(*((dict).keys)) * ((dict).cap / 2)); \
 				_pdict_vp = realloc((dict).vals, sizeof(*((dict).vals)) * ((dict).cap / 2)); \
 				if ( (_pdict_kp != NULL) && (_pdict_vp != NULL) ) { \
