@@ -1,6 +1,6 @@
 Language:
 
-- Write for ANSI C (C89/C90/ISO C)
+- Write for ANSI C (C89/C90)
 - Fully use the standard library, only building upon it where deemed necessary
 - A valid reason to reinvent the wheel is because you don't need the overhead of standard headers
 
