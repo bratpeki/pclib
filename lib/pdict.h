@@ -17,7 +17,7 @@
  * So, every time malloc or realloc is called, the user should check if the pointer isn't NULL.
  *
  * Header includes (private elements ommited):
- *   pdict       strcut
+ *   pdict       struct
  *   pdict_init  function
  *   pdict_clean function
  *   pdict_add   function
@@ -101,7 +101,7 @@ pvptr _pdict_kp, _pdict_vp;
 /*
  * Removes a pair at the given index from the given dictionary.
  * If needed, halves the capacity of the dictionary.
- * If the index is not right, nothing is done.
+ * If the index is out-of-bounds, nothing is done.
  */
 #define pdict_rem(dict, index) \
 	do { \

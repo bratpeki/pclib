@@ -89,7 +89,7 @@ pvptr _parr_tmp;
 /*
  * Removes an element at the given index from the given array.
  * If needed, halves the capacity of the array.
- * If the index is not right, nothing is done.
+ * If the index is out-of-bounds, nothing is done.
  */
 #define parr_rem(arr, index) \
 	do { \

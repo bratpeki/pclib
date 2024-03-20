@@ -16,7 +16,7 @@
  * So, every time malloc or realloc is called, the user should check if the pointer isn't NULL.
  *
  * Header includes (private elements ommited):
- *   piarr       strcut
+ *   piarr       struct
  *   piarr_init  function
  *   piarr_clean function
  *   piarr_add   function
