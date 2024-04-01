@@ -12,19 +12,20 @@
  * size. However, I still wanted to implement something regarding this,
  * and despite being VERY badly optimized for memory, it'll do the job.
  *
- * The implementation uses my incremental dynamic array, so
- * THERE IS A NEED TO CHECK THE MEMORY REALLOCATION SUCCESS!
- *
  * === DEVNOTES ===
  * - These need to be implemented:
- *     pbi        DONE
- *     pbi_isnull DONE
- *     pbi_isval  DONE
- *     pbi_fs     DONE
- *     pbi_isneg  DONE
- *     pbi_cmp    MISSING NEGATIVES
- *     pbi_add    MISSING NEGATIVES
- *     pbi_sub    MISSING NEGATIVES
+ *     _pbi_addb    NOT DONE
+ *     _pbi_subb    NOT DONE
+ *     _pbi_chr2dig DONE
+ *     _pbi_dig2chr DONE
+ *     pbi          DONE
+ *     pbi_isnull   DONE
+ *     pbi_isval    DONE
+ *     pbi_fs       DONE
+ *     pbi_isneg    DONE
+ *     pbi_cmp      MISSING NEGATIVES
+ *     pbi_add      MISSING NEGATIVES
+ *     pbi_sub      MISSING NEGATIVES
  * - Consider multiplication and division.
  *
  * pbi_add and pbi_sub should operate their
@@ -82,7 +83,7 @@ typedef pstr pbi;
  *
  * return (chr - '0');
  *
- * Returns -1 if the digit is wrong
+ * Returns -1 if the digit isn't valid
  */
 psint _pbi_chr2dig ( pchr chr ) {
 
@@ -109,12 +110,18 @@ psint _pbi_chr2dig ( pchr chr ) {
  *
  * Some compilers don't use ASCII, so I made this!
  *
- * Return 0 if the digit is out-of-range.
+ * Return (pchr)0 if the digit is out-of-range.
  */
 pchr _pbi_dig2chr( pusint dig ) {
 	if ( ( dig < 0 ) || ( dig > 9 ) ) return (pchr)0;
 	return _pbi_digits[dig];
 }
+
+/* TODO */
+pbi _pbi_addb() {}
+
+/* TODO */
+pbi _pbi_subb() {}
 
 /* Checks if 'bi' is set to "0" */
 pbool pbi_isnull( pbi bi ) { return (pbool)( strcmp(bi, "0") == 0 ); }
@@ -274,6 +281,7 @@ pcode pbi_fs( pbi bi ) {
 
 }
 
+/* TODO: Doc comment and negatives */
 pcode pbi_cmp( pbi bi1, pbi bi2 ) {
 
 	psz l1 = strlen(bi1);
