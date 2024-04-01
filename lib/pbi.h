@@ -14,18 +14,20 @@
  *
  * === DEVNOTES ===
  * - These need to be implemented:
- *     _pbi_addb    NOT DONE
- *     _pbi_subb    NOT DONE
+ *
+ *     pbi          DONE
  *     _pbi_chr2dig DONE
  *     _pbi_dig2chr DONE
- *     pbi          DONE
  *     pbi_isnull   DONE
- *     pbi_isval    DONE
  *     pbi_fs       DONE
  *     pbi_isneg    DONE
- *     pbi_cmp      MISSING NEGATIVES
+ *     pbi_isval    DONE
+ *     _pbi_addb    NOT DONE
+ *     _pbi_subb    NOT DONE
  *     pbi_add      MISSING NEGATIVES
+ *     pbi_cmp      MISSING NEGATIVES
  *     pbi_sub      MISSING NEGATIVES
+ *
  * - Consider multiplication and division.
  *
  * pbi_add and pbi_sub should operate their
@@ -117,11 +119,152 @@ pchr _pbi_dig2chr( pusint dig ) {
 	return _pbi_digits[dig];
 }
 
-/* TODO */
-pbi _pbi_addb() {}
+/*
+ * Base addition function
+ *
+ * Adds two positive bigints and returns a bigint
+ */
+pbi _pbi_addb( pbi bi1, pbi bi2 ) {
 
-/* TODO */
-pbi _pbi_subb() {}
+	pusint carry = 0, tmp;
+	psint i;
+	pstr s, ret, bibig;
+	psz l1, l2, lbig, lsmall;
+
+	l1 = strlen(bi1);
+	l2 = strlen(bi2);
+
+	if ( l1 > l2 ) { lbig = l1; lsmall = l2; bibig = bi1; }
+	else           { lbig = l2; lsmall = l1; bibig = bi2; }
+
+	/*
+	 * The largest the new number can be is
+	 * one larger than the bigger of the two numbers
+	 *
+	 * As an example: 99 + 99, two largest two-digit integers, result in 198
+	 *
+	 * s doesn't allocate space for a null terminator,
+	 * since it's an array of characters,
+	 * rather than a "real" C-style string
+	 */
+	s = (pstr)malloc( (lbig + 1) * sizeof(puchr) );
+	if ( s == NULL ) return NULL;
+
+	/* String from 1 so that we access the indeces of bi1 and bi2 properly */
+	for ( i = 1; i <= lsmall; i++ ) {
+		tmp = _pbi_chr2dig( bi1[l1 - i] ) + _pbi_chr2dig( bi2[l2 - i] ) + carry;
+		s[i - 1] = _pbi_dig2chr( tmp % 10 );
+		carry = tmp / 10;
+	}
+
+	/*
+	 * After going across the digits in the smaller number,
+	 * check that there's more digits.
+	 *
+	 * If there aren't, just add the carry to the last slot
+	 *
+	 * You'll notice this is similar to the for loop above,
+	 * with the exception of it using bibig
+	 */
+
+	for ( ; i <= lbig; i++ ) {
+		tmp = _pbi_chr2dig(bibig[lbig - i]) + carry;
+		s[i - 1] = _pbi_dig2chr(tmp % 10);
+		carry = tmp / 10;
+	}
+
+	/*
+	 * Now, that we're at the ending, check for a carry
+	 *
+	 * The 'else' clause sets the variables up for
+	 * the allocation and loop below
+	 */
+	if (carry != 0) { s[i-1] = _pbi_dig2chr(carry); }
+	else            { i--; lbig--; }
+
+	/*
+	 * 'i' now points to the last index, where '\0' should be.
+	 * We'll make a new string, and add the digits in reverse order!
+	 */
+
+	ret = (pstr)malloc( (i + 1)*sizeof(pchr) );
+	if ( ret == NULL ) { free(s); return NULL; }
+
+	ret[i] = '\0';
+	for ( i-- ; i >= 0 ; i-- )
+		ret[i] = s[lbig - i];
+
+	free(s);
+	return ret;
+
+}
+
+/*
+ * Base subtraction function
+ *
+ * Subtracts two positive bigints
+ *
+ * The first bigint has to be larger
+ * This is not checked
+ */
+pbi _pbi_subb( pbi bi1, pbi bi2 ) {
+
+	pbi ret;
+	psint i, j; /* TODO: Proper datatype? */
+	psz lbig, lsmall;
+	pstr s;
+	pssint tmp;
+	psint carry = 0; /* 1 if we carry, 0 if we don't ? */
+
+	/*
+	 * We know that the bi1 has the same,
+	 * if not more digits than bi2
+	 */
+
+	lbig = strlen(bi1);
+	lsmall = strlen(bi2);
+
+	/* No need to account for the null terminator */
+	s = (pstr)malloc( lbig * sizeof(pchr) );
+	if ( s == NULL ) return NULL;
+
+	for ( i = 1; i <= lsmall; i++ ) {
+
+		tmp = _pbi_chr2dig( bi1[lbig-i] ) - carry - _pbi_chr2dig( bi2[lsmall-i] );
+		if ( tmp < 0 ) { carry = 1; tmp += 10; }
+		else           { carry = 0; }
+
+		s[i-1] = _pbi_dig2chr( tmp );
+
+	}
+
+	s[i-1] = _pbi_dig2chr( _pbi_chr2dig( bi1[lbig-i] ) - carry );
+	i++;
+
+	for ( ; i <= lbig; i++ ) { s[i-1] = bi1[lbig-i]; }
+
+	/* Getting rid of trailing zeros */
+	j = lbig - 1;
+	while ( s[j] == '0' ) j--;
+	/*
+	 * 'j' now points to the index where the first
+	 * index, from the back, which is non-zero
+	 *
+	 * We write from that one!
+	 */
+
+	/* +1 for the index to character count conversion, +1 for the null terminator */
+	ret = (pbi)malloc( (j+2)*sizeof(pchr) );
+	if ( ret == NULL ) { free(s); return NULL; }
+
+	for ( i = 0 ; i <= j ; i++ )
+		ret[i] = s[j - i];
+	ret[j+1] = '\0';
+
+	free(s);
+	return ret;
+
+}
 
 /* Checks if 'bi' is set to "0" */
 pbool pbi_isnull( pbi bi ) { return (pbool)( strcmp(bi, "0") == 0 ); }
@@ -317,76 +460,7 @@ pcode pbi_cmp( pbi bi1, pbi bi2 ) {
  */
 pbi pbi_add( pbi bi1, pbi bi2 ) {
 
-	pusint carry = 0, tmp;
-	psint i;
-	pstr s, ret, bibig;
-	psz l1, l2, lbig, lsmall;
-
-	l1 = strlen(bi1);
-	l2 = strlen(bi2);
-
-	if ( l1 > l2 ) { lbig = l1; lsmall = l2; bibig = bi1; }
-	else           { lbig = l2; lsmall = l1; bibig = bi2; }
-
-	/*
-	 * The largest the new number can be is
-	 * one larger than the bigger of the two numbers
-	 *
-	 * As an example: 99 + 99, two largest two-digit integers, result in 198
-	 *
-	 * s doesn't allocate space for a null terminator,
-	 * since it's an array of characters,
-	 * rather than a "real" C-style string
-	 */
-	s = (pstr)malloc( (lbig + 1) * sizeof(puchr) );
-	if ( s == NULL ) return NULL;
-
-	/* String from 1 so that we access the indeces of bi1 and bi2 properly */
-	for ( i = 1; i <= lsmall; i++ ) {
-		tmp = _pbi_chr2dig( bi1[l1 - i] ) + _pbi_chr2dig( bi2[l2 - i] ) + carry;
-		s[i - 1] = _pbi_dig2chr( tmp % 10 );
-		carry = tmp / 10;
-	}
-
-	/*
-	 * After going across the digits in the smaller number,
-	 * check that there's more digits.
-	 *
-	 * If there aren't, just add the carry to the last slot
-	 *
-	 * You'll notice this is similar to the for loop above,
-	 * with the exception of it using bibig
-	 */
-
-	for ( ; i <= lbig; i++ ) {
-		tmp = _pbi_chr2dig(bibig[lbig - i]) + carry;
-		s[i - 1] = _pbi_dig2chr(tmp % 10);
-		carry = tmp / 10;
-	}
-
-	/*
-	 * Now, that we're at the ending, check for a carry
-	 *
-	 * The 'else' clause sets the variables up for
-	 * the allocation and loop below
-	 */
-	if (carry != 0) { s[i-1] = _pbi_dig2chr(carry); }
-	else            { i--; lbig--; }
-
-	/*
-	 * 'i' now points to the last index, where '\0' should be.
-	 * We'll make a new string, and add the digits in reverse order!
-	 */
-
-	ret = (pstr)malloc( (i + 1)*sizeof(pchr) );
-	if ( ret == NULL ) { free(s); return NULL; }
-
-	ret[i] = '\0';
-	for ( i-- ; i >= 0 ; i-- )
-		ret[i] = s[lbig - i];
-
-	free(s);
-	return ret;
+	return "";
 
 }
 
@@ -401,84 +475,7 @@ pbi pbi_add( pbi bi1, pbi bi2 ) {
  */
 pbi pbi_sub(pbi bi1, pbi bi2) {
 
-	pbi ret;
-	psint i, j; /* TODO: Proper datatype? */
-	psz lbig, lsmall;
-	pstr s;
-	pssint tmp;
-	psint carry = 0; /* 1 if we carry, 0 if we don't ? */
-
-	switch ( pbi_cmp( bi1, bi2 ) ) {
-
-		case P_SMALLER:
-			/*
-			 * bi1 is smaller than bi2
-			 * TODO: A function which flips the sign
-			 *
-			 * Return - ( pbi_sub( bi2, bi1 ) )
-			 */
-			break;
-
-		case P_EQUAL:
-			ret = (pbi)malloc(2 * sizeof(pchr));
-			if ( ret == NULL ) return NULL;
-			ret = (pbi)"0";
-			return ret;
-
-	}
-
-	/*
-	 * Since the two cases above call a return,
-	 * this is what happens when bi1 > bi2
-	 */
-
-	/*
-	 * We know that the bi1 has the same,
-	 * if not more digits than bi2
-	 */
-
-	lbig = strlen(bi1);
-	lsmall = strlen(bi2);
-
-	/* No need to account for the null terminator */
-	s = (pstr)malloc( lbig * sizeof(pchr) );
-	if ( s == NULL ) return NULL;
-
-	for ( i = 1; i <= lsmall; i++ ) {
-
-		tmp = _pbi_chr2dig( bi1[lbig-i] ) - carry - _pbi_chr2dig( bi2[lsmall-i] );
-		if ( tmp < 0 ) { carry = 1; tmp += 10; }
-		else           { carry = 0; }
-
-		s[i-1] = _pbi_dig2chr( tmp );
-
-	}
-
-	s[i-1] = _pbi_dig2chr( _pbi_chr2dig( bi1[lbig-i] ) - carry );
-	i++;
-
-	for ( ; i <= lbig; i++ ) { s[i-1] = bi1[lbig-i]; }
-
-	/* Getting rid of trailing zeros */
-	j = lbig - 1;
-	while ( s[j] == '0' ) j--;
-	/*
-	 * 'j' now points to the index where the first
-	 * index, from the back, which is non-zero
-	 *
-	 * We write from that one!
-	 */
-
-	/* +1 for the index to character count conversion, +1 for the null terminator */
-	ret = (pbi)malloc( (j+2)*sizeof(pchr) );
-	if ( ret == NULL ) { free(s); return NULL; }
-
-	for ( i = 0 ; i <= j ; i++ )
-		ret[i] = s[j - i];
-	ret[j+1] = '\0';
-
-	free(s);
-	return ret;
+	return "";
 
 }
 
