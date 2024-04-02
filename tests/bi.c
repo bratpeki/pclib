@@ -59,6 +59,15 @@ pcode main() {
 	br2 = _pbi_addb(b1, br1);
 	br3 = _pbi_addb(b1, b3);
 
+	if (
+		( br1 == NULL ) ||
+		( br2 == NULL ) ||
+		( br3 == NULL )
+	) {
+		printf("_pbi_addb: Not enough memory.\n");
+		return P_BADALLOC;
+	}
+
 	test3(br1, "1068");
 	test3(br2, "1191");
 	test3(br3, "2068");
@@ -73,6 +82,15 @@ pcode main() {
 	br1 = _pbi_subb(b2, b1);
 	br2 = _pbi_subb(b3, b1);
 	br3 = _pbi_subb(b3, b2);
+
+	if (
+		( br1 == NULL ) ||
+		( br2 == NULL ) ||
+		( br3 == NULL )
+	) {
+		printf("_pbi_subb: Not enough memory.\n");
+		return P_BADALLOC;
+	}
 
 	test3(br1, "822");
 	test3(br2, "1822");

@@ -28,6 +28,9 @@
  *     pbi_cmp      MISSING NEGATIVES
  *     pbi_sub      MISSING NEGATIVES
  *
+ * TODO: Don't accomodate solutions for ASCII,
+ * make everything universal
+ *
  * - Consider multiplication and division.
  *
  * pbi_add and pbi_sub should operate their
@@ -63,6 +66,8 @@
  * and doing all other operations on the bigint.
  *
  * If you need great precision, use pulint.
+ *
+ * TODO: Needed?
  */
 #ifndef P_BI_OP_TYPE
 	#define P_BI_OP_TYPE puint
@@ -122,13 +127,15 @@ pchr _pbi_dig2chr( pusint dig ) {
 /*
  * Base addition function
  *
- * Adds two positive bigints and returns a bigint
+ * Adds two positive bigints and returns the result.
+ * If memory cannot be allocated, returns NULL.
  */
 pbi _pbi_addb( pbi bi1, pbi bi2 ) {
 
 	pusint carry = 0, tmp;
 	psint i;
-	pstr s, ret, bibig;
+	pstr s, ret;
+	pbi bibig;
 	psz l1, l2, lbig, lsmall;
 
 	l1 = strlen(bi1);
@@ -139,18 +146,20 @@ pbi _pbi_addb( pbi bi1, pbi bi2 ) {
 
 	/*
 	 * The largest the new number can be is
-	 * one larger than the bigger of the two numbers
+	 * one larger than the bigger of the two numbers.
 	 *
 	 * As an example: 99 + 99, two largest two-digit integers, result in 198
 	 *
-	 * s doesn't allocate space for a null terminator,
+	 * 's' doesn't allocate space for a null terminator,
 	 * since it's an array of characters,
-	 * rather than a "real" C-style string
+	 * rather than a "real" C-style string.
+	 * Later down the line, a proper C-style
+	 * string is generated.
 	 */
-	s = (pstr)malloc( (lbig + 1) * sizeof(puchr) );
+	s = (pstr)malloc( (lbig + 1) * sizeof(pchr) );
 	if ( s == NULL ) return NULL;
 
-	/* String from 1 so that we access the indeces of bi1 and bi2 properly */
+	/* Addition over the common indeces */
 	for ( i = 1; i <= lsmall; i++ ) {
 		tmp = _pbi_chr2dig( bi1[l1 - i] ) + _pbi_chr2dig( bi2[l2 - i] ) + carry;
 		s[i - 1] = _pbi_dig2chr( tmp % 10 );
@@ -158,13 +167,8 @@ pbi _pbi_addb( pbi bi1, pbi bi2 ) {
 	}
 
 	/*
-	 * After going across the digits in the smaller number,
-	 * check that there's more digits.
-	 *
-	 * If there aren't, just add the carry to the last slot
-	 *
-	 * You'll notice this is similar to the for loop above,
-	 * with the exception of it using bibig
+	 * After going across the common indeces,
+	 * handle the indeces of the larger bigint.
 	 */
 
 	for ( ; i <= lbig; i++ ) {
@@ -174,7 +178,7 @@ pbi _pbi_addb( pbi bi1, pbi bi2 ) {
 	}
 
 	/*
-	 * Now, that we're at the ending, check for a carry
+	 * Now that we're at the ending, check for a carry.
 	 *
 	 * The 'else' clause sets the variables up for
 	 * the allocation and loop below
@@ -202,10 +206,11 @@ pbi _pbi_addb( pbi bi1, pbi bi2 ) {
 /*
  * Base subtraction function
  *
- * Subtracts two positive bigints
+ * Subtracts two positive bigints and returns the result.
+ * If memory cannot be allocated, returns NULL.
  *
  * The first bigint has to be larger
- * This is not checked
+ * This is not checked.
  */
 pbi _pbi_subb( pbi bi1, pbi bi2 ) {
 
@@ -217,17 +222,27 @@ pbi _pbi_subb( pbi bi1, pbi bi2 ) {
 	psint carry = 0; /* 1 if we carry, 0 if we don't ? */
 
 	/*
-	 * We know that the bi1 has the same,
+	 * We know that the bi1 has
+	 * the same number of,
 	 * if not more digits than bi2
 	 */
 
 	lbig = strlen(bi1);
 	lsmall = strlen(bi2);
 
-	/* No need to account for the null terminator */
+	/*
+	 * No need to account for
+	 * the string terminator,
+	 * much like in _pbi_addb.
+	 */
 	s = (pstr)malloc( lbig * sizeof(pchr) );
 	if ( s == NULL ) return NULL;
 
+	/*
+	 * Similarly to _pbi_addb,
+	 * we go through common indeces,
+	 * and then handle the rest.
+	 */
 	for ( i = 1; i <= lsmall; i++ ) {
 
 		tmp = _pbi_chr2dig( bi1[lbig-i] ) - carry - _pbi_chr2dig( bi2[lsmall-i] );
@@ -246,6 +261,7 @@ pbi _pbi_subb( pbi bi1, pbi bi2 ) {
 	/* Getting rid of trailing zeros */
 	j = lbig - 1;
 	while ( s[j] == '0' ) j--;
+
 	/*
 	 * 'j' now points to the index where the first
 	 * index, from the back, which is non-zero
@@ -268,6 +284,8 @@ pbi _pbi_subb( pbi bi1, pbi bi2 ) {
 
 /* Checks if 'bi' is set to "0" */
 pbool pbi_isnull( pbi bi ) { return (pbool)( strcmp(bi, "0") == 0 ); }
+
+/* TODO: Try changing the code above with a !strcmp */
 
 /*
  * Returns P_TRUE if 'val' is in a valid format for a bigint,
