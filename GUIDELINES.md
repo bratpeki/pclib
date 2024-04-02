@@ -13,6 +13,7 @@ Code:
 - Don't write lines over 100 characters, unless deemed absolutely necessary
 - The naming convention is as follows:
 
+<!-- TODO: Ifs, function brackets -->
 | Element | Example | Description |
 | - | - | - |
 | Single-line comment | `/* Example comment */` | Classic C-Style comment |
@@ -27,6 +28,5 @@ Code:
 | Header | `pfile.h` | |
 | Test file | `file.c` | |
 
-<!-- TODO: Ifs, function brackets -->
-
+<!-- TODO: Make this more apparent! -->
 Any element that __shouldn't be accessed by the user__ is prefixed with a `_`.
