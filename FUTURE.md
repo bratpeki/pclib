@@ -10,3 +10,5 @@ Maybe I'll just use standard types, without my own typedefs, so that I don't cre
 If kept, the signed type would be standard, and the unsigned would a "u" added to them
 (eg. psrt for a signed short int, and pusrt for an unsigned short int).
 It is clearly visible how this creates confusion.
+
+Function pointers are currently not supported in the dynamic arrays, due to their syntax.

@@ -43,7 +43,7 @@ pvptr _piarr_tmp;
 
 /* The incremental dynamic array macro */
 #define piarr(type) struct { \
-	type*  data; /* An array of all elements */ \
+	type* data; /* An array of all elements */ \
 	puint size; /* The number of elements currently in the incremental dynamic array */ \
 }
 
