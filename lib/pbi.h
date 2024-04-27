@@ -31,7 +31,7 @@
  * TODO: Don't accomodate solutions for ASCII,
  * make everything universal
  *
- * - Consider multiplication and division.
+ * - Consider multiplication, mod and division.
  *
  * pbi_add and pbi_sub should operate their
  * respective operations only over positive integers.
@@ -457,6 +457,8 @@ pcode pbi_cmp( pbi bi1, pbi bi2 ) {
 	 * that the compiler is using ASCII.
 	 * I *might* generalize the solution
 	 * if a problem arises!
+	 *
+	 * TODO: Generalize this
 	 */
 
 	cmp = strcmp(bi1, bi2);

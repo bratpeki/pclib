@@ -2,6 +2,7 @@
 #include "../lib/ptype.h"
 #include "../lib/pcode.h"
 
+#include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 
@@ -53,6 +54,27 @@ pcode main() {
 	test2("172", "172", pbi_cmp, P_EQUAL);
 	printf("\n");
 
+	/* pbi_fs */
+
+	br1 = calloc(strlen(b1) + 1, sizeof(pchr));
+	strcpy(br1, b1);
+	pbi_fs(br1);
+
+	br2 = calloc(2, sizeof(pchr));
+	strcpy(br2, "0");
+	pbi_fs(br2);
+
+	test3(br1, "-123");
+	pbi_fs(br1);
+	test3(br1, "123");
+
+	test3(br2, "0");
+
+	printf("\n");
+
+	free(br1);
+	free(br2);
+
 	/* _pbi_addb testing */
 
 	br1 = _pbi_addb(b1, b2);
@@ -68,9 +90,9 @@ pcode main() {
 		return P_BADALLOC;
 	}
 
-	test3(br1, "1068");
-	test3(br2, "1191");
-	test3(br3, "2068");
+	test3(br1, "1068"); /* 123 + 945 = 1068 */
+	test3(br2, "1191"); /* 123 + 1068 = 1191 */
+	test3(br3, "2068"); /* 123 + 1945 = 2068 */
 	printf("\n");
 
 	free(br1);
@@ -92,10 +114,12 @@ pcode main() {
 		return P_BADALLOC;
 	}
 
-	test3(br1, "822");
-	test3(br2, "1822");
-	test3(br3, "1000");
+	test3(br1, "822"); /* 945 - 123 = 822 */
+	test3(br2, "1822"); /* 1945 - 123 = 1822 */
+	test3(br3, "1000"); /* 1945 - 945 = 1000 */
 	printf("\n");
+
+	/* TODO: Test the addition and subtraction over negative numbers */
 
 	free(br1);
 	free(br2);
