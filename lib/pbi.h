@@ -31,6 +31,7 @@
  * TODO: Don't accomodate solutions for ASCII,
  * make everything universal
  *
+ * - Negatives might be bad?
  * - Consider multiplication, mod and division.
  *
  * pbi_add and pbi_sub should operate their
@@ -476,11 +477,36 @@ pcode pbi_cmp( pbi bi1, pbi bi2 ) {
  * Doesn't check the validity of the two bigints.
  *
  * The user is responsible for clearing the memory
- * of the returned string.
+ * of the returned string, as well as the NULL-check.
  */
 pbi pbi_add( pbi bi1, pbi bi2 ) {
 
-	return "";
+	pbi ret;
+	pbool neg1, neg2;
+	pbi pabs;
+
+	neg1 = pbi_isneg(bi1);
+	neg2 = pbi_isneg(bi2);
+
+	if ( !neg1 && !neg2 ) {
+		ret = _pbi_addb(bi1, bi2);
+	}
+
+	if ( neg1 && neg2 ) {
+		ret = _pbi_addb( bi1 + sizeof(pchr) , bi2 + sizeof(pchr));
+		if ( ret != NULL ) pbi_fs(ret);
+	}
+
+	/* TODO */
+	if ( neg1 && !neg2 ) {
+		ret = "";
+	}
+
+	if ( !neg1 && neg2 ) {
+		ret = "";
+	}
+
+	return ret;
 
 }
 
