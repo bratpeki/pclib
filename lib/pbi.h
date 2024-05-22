@@ -16,8 +16,8 @@
  * - These need to be implemented:
  *
  *     pbi          DONE
- *     _pbi_chr2dig DONE
- *     _pbi_dig2chr DONE
+ *     _pbi_c2d DONE
+ *     _pbi_d2c DONE
  *     pbi_isnull   DONE
  *     pbi_fs       DONE
  *     pbi_isneg    DONE
@@ -42,7 +42,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-/* Used for _pbi_dig2chr */
+/* Used for _pbi_d2c */
 pstr _pbi_digits = "0123456789";
 
 /*
@@ -61,7 +61,7 @@ typedef pstr pbi;
  *
  * Returns -1 if the digit isn't valid
  */
-psint _pbi_chr2dig ( pchr chr ) {
+psint _pbi_c2d ( pchr chr ) {
 
 	switch ( chr ) {
 
@@ -88,7 +88,7 @@ psint _pbi_chr2dig ( pchr chr ) {
  *
  * Return (pchr)0 if the digit is out-of-range.
  */
-pchr _pbi_dig2chr( pusint dig ) {
+pchr _pbi_d2c( pusint dig ) {
 	if ( ( dig < 0 ) || ( dig > 9 ) ) return (pchr)0;
 	return _pbi_digits[dig];
 }
@@ -130,8 +130,8 @@ pbi _pbi_addb( pbi bi1, pbi bi2 ) {
 
 	/* Addition over the common indeces */
 	for ( i = 1; i <= lsmall; i++ ) {
-		tmp = _pbi_chr2dig( bi1[l1 - i] ) + _pbi_chr2dig( bi2[l2 - i] ) + carry;
-		s[i - 1] = _pbi_dig2chr( tmp % 10 );
+		tmp = _pbi_c2d( bi1[l1 - i] ) + _pbi_c2d( bi2[l2 - i] ) + carry;
+		s[i - 1] = _pbi_d2c( tmp % 10 );
 		carry = tmp / 10;
 	}
 
@@ -141,8 +141,8 @@ pbi _pbi_addb( pbi bi1, pbi bi2 ) {
 	 */
 
 	for ( ; i <= lbig; i++ ) {
-		tmp = _pbi_chr2dig(bibig[lbig - i]) + carry;
-		s[i - 1] = _pbi_dig2chr(tmp % 10);
+		tmp = _pbi_c2d(bibig[lbig - i]) + carry;
+		s[i - 1] = _pbi_d2c(tmp % 10);
 		carry = tmp / 10;
 	}
 
@@ -152,7 +152,7 @@ pbi _pbi_addb( pbi bi1, pbi bi2 ) {
 	 * The 'else' clause sets the variables up for
 	 * the allocation and loop below
 	 */
-	if (carry != 0) { s[i-1] = _pbi_dig2chr(carry); }
+	if (carry != 0) { s[i-1] = _pbi_d2c(carry); }
 	else            { i--; lbig--; }
 
 	/*
@@ -214,15 +214,15 @@ pbi _pbi_subb( pbi bi1, pbi bi2 ) {
 	 */
 	for ( i = 1; i <= lsmall; i++ ) {
 
-		tmp = _pbi_chr2dig( bi1[lbig-i] ) - carry - _pbi_chr2dig( bi2[lsmall-i] );
+		tmp = _pbi_c2d( bi1[lbig-i] ) - carry - _pbi_c2d( bi2[lsmall-i] );
 		if ( tmp < 0 ) { carry = 1; tmp += 10; }
 		else           { carry = 0; }
 
-		s[i-1] = _pbi_dig2chr( tmp );
+		s[i-1] = _pbi_d2c( tmp );
 
 	}
 
-	s[i-1] = _pbi_dig2chr( _pbi_chr2dig( bi1[lbig-i] ) - carry );
+	s[i-1] = _pbi_d2c( _pbi_c2d( bi1[lbig-i] ) - carry );
 	i++;
 
 	for ( ; i <= lbig; i++ ) { s[i-1] = bi1[lbig-i]; }
@@ -418,7 +418,6 @@ pcode pbi_cmp( pbi bi1, pbi bi2 ) {
 	psz l1 = strlen(bi1);
 	psz l2 = strlen(bi2);
 	pbi bi1abs, bi2abs;
-	psz cmp;
 	psint i;
 
 	bi1neg = pbi_isneg(bi1);
@@ -435,7 +434,7 @@ pcode pbi_cmp( pbi bi1, pbi bi2 ) {
 		for ( i = 0; i < l1 ; i++ )
 			if ( bi1[i] != bi2[i] )
 				return (
-					( _pbi_chr2dig(bi1[i]) > _pbi_chr2dig(bi2[i]) )
+					( _pbi_c2d(bi1[i]) > _pbi_c2d(bi2[i]) )
 					? P_GREATER : P_SMALLER
 				);
 
@@ -452,7 +451,7 @@ pcode pbi_cmp( pbi bi1, pbi bi2 ) {
 		for ( i = 0; i < l1 - 1 ; i++ )
 			if ( bi1abs[i] != bi2abs[i] )
 				return (
-					( _pbi_chr2dig(bi1abs[i]) < _pbi_chr2dig(bi2abs[i]) )
+					( _pbi_c2d(bi1abs[i]) < _pbi_c2d(bi2abs[i]) )
 					? P_GREATER : P_SMALLER
 				);
 
