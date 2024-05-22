@@ -15,18 +15,18 @@
  * === DEVNOTES ===
  * - These need to be implemented:
  *
- *     pbi          DONE
- *     _pbi_c2d DONE
- *     _pbi_d2c DONE
- *     pbi_isnull   DONE
- *     pbi_fs       DONE
- *     pbi_isneg    DONE
- *     pbi_isval    DONE
- *     _pbi_addb    DONE
- *     _pbi_subb    DONE
- *     pbi_add      DONE
- *     pbi_cmp      DONE
- *     pbi_sub      DONE
+ *     pbi        DONE
+ *     _pbi_c2d   DONE
+ *     _pbi_d2c   DONE
+ *     pbi_isnull DONE
+ *     pbi_fs     DONE
+ *     pbi_isneg  DONE
+ *     pbi_isval  DONE
+ *     _pbi_addb  DONE
+ *     _pbi_subb  DONE
+ *     pbi_add    DONE
+ *     pbi_cmp    DONE
+ *     pbi_sub    DONE
  *
  * TODO: Don't accomodate solutions for ASCII,
  * make everything universal
@@ -50,6 +50,12 @@ pstr _pbi_digits = "0123456789";
  * Essentially, a string
  */
 typedef pstr pbi;
+
+/*
+ * A single digit in the bigint
+ * Essentially, a char
+ */
+typedef pchr pbid;
 
 /*
  * A reliable char-to-digit converter.
