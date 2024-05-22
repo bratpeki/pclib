@@ -478,12 +478,15 @@ pcode pbi_cmp( pbi bi1, pbi bi2 ) {
  *
  * The user is responsible for clearing the memory
  * of the returned string, as well as the NULL-check.
+ *
+ * TODO: Returning "0" doesn't require a NULL-check.
  */
 pbi pbi_add( pbi bi1, pbi bi2 ) {
 
 	pbi ret;
 	pbool neg1, neg2;
-	pbi pabs;
+	pbi biabs;
+	pbi biother;
 
 	neg1 = pbi_isneg(bi1);
 	neg2 = pbi_isneg(bi2);
@@ -492,17 +495,48 @@ pbi pbi_add( pbi bi1, pbi bi2 ) {
 		ret = _pbi_addb(bi1, bi2);
 	}
 
-	if ( neg1 && neg2 ) {
+	else if ( neg1 && neg2 ) {
 		ret = _pbi_addb( bi1 + sizeof(pchr) , bi2 + sizeof(pchr));
 		if ( ret != NULL ) pbi_fs(ret);
 	}
 
+	/*
+	else if ( neg1 && !neg2 ) {
+		biabs = bi1 + sizeof(pchr);
+		biother = bi2;
+	}
+	*/
+
 	/* TODO */
-	if ( neg1 && !neg2 ) {
-		ret = "";
+	else if ( neg1 && !neg2 ) {
+
+		/* This gets us the absolute value, by removing the '-' */
+		biabs = bi1 + sizeof(pchr);
+
+		switch (pbi_cmp(biabs, bi2) ) {
+
+			/* TODO: This */
+			case P_EQUAL:
+				ret = (pbi)calloc(2, sizeof(pchr));
+				if (ret != NULL) ret = "0";
+				break;
+
+			case P_GREATER:
+				/* -a + b = -(a-b) */
+				ret = _pbi_subb(biabs, bi2);
+				pbi_fs(ret);
+				break;
+
+			case P_SMALLER:
+				/* -a + b = b-a */
+				ret = _pbi_subb(bi2, biabs);
+				break;
+
+		}
+
 	}
 
-	if ( !neg1 && neg2 ) {
+	else if ( !neg1 && neg2 ) {
 		ret = "";
 	}
 
