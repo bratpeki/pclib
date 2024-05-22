@@ -23,36 +23,16 @@
  *     pbi_isneg    DONE
  *     pbi_isval    DONE
  *     _pbi_addb    DONE
- *     _pbi_subb    NOT DONE
- *     pbi_add      MISSING NEGATIVES
- *     pbi_cmp      MISSING NEGATIVES
- *     pbi_sub      MISSING NEGATIVES
+ *     _pbi_subb    DONE
+ *     pbi_add      DONE
+ *     pbi_cmp      DONE
+ *     pbi_sub      DONE
  *
  * TODO: Don't accomodate solutions for ASCII,
  * make everything universal
  *
- * - Negatives might be bad?
+ * - Move from allocated memory to data memory
  * - Consider multiplication, mod and division.
- *
- * pbi_add and pbi_sub should operate their
- * respective operations only over positive integers.
- * Any negative number operations can, fundementally,
- * boil down to the positive number operations!
- *
- * pbi_sub has a lot of cases, that being
- * positives and negatives, and the first one being
- * greater, equal or smaller than the second one.
- *
- * Also, consider creating a struct like:
- *
- * typedef struct {
- *     pstr digits;
- *     pbool negative;
- * } pbi
- *
- * to store the PBI. This looks SIGNIFICANTLY
- * easier to work with, in contrast with the
- * sign being represented with the '-' in the string!
  */
 
 #include "ptype.h"
@@ -61,18 +41,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
-/*
- * This defines what type we are adding, subtracting,
- * and doing all other operations on the bigint.
- *
- * If you need great precision, use pulint.
- *
- * TODO: Needed?
- */
-#ifndef P_BI_OP_TYPE
-	#define P_BI_OP_TYPE puint
-#endif
 
 /* Used for _pbi_dig2chr */
 pstr _pbi_digits = "0123456789";
@@ -443,23 +411,52 @@ pcode pbi_fs( pbi bi ) {
 
 }
 
-/* TODO: Doc comment and negatives */
+/* TODO: Doc comment */
 pcode pbi_cmp( pbi bi1, pbi bi2 ) {
 
+	pbool bi1neg, bi2neg;
 	psz l1 = strlen(bi1);
 	psz l2 = strlen(bi2);
+	pbi bi1abs, bi2abs;
 	psz cmp;
 	psint i;
 
-	if ( l1 > l2 ) { return P_GREATER; }
-	if ( l1 < l2 ) { return P_SMALLER; }
+	bi1neg = pbi_isneg(bi1);
+	bi2neg = pbi_isneg(bi2);
 
-	for ( i = 0; i < l1 ; i++ )
-		if ( bi1[i] != bi2[i] )
-			return (
-				( _pbi_chr2dig(bi1[i]) > _pbi_chr2dig(bi2[i]) )
-				? P_GREATER : P_SMALLER
-			);
+	if ( bi1neg && !bi2neg ) return P_SMALLER;
+	if ( !bi1neg && bi2neg ) return P_GREATER;
+
+	if ( !bi1neg && !bi2neg ) {
+
+		if ( l1 > l2 ) { return P_GREATER; }
+		if ( l1 < l2 ) { return P_SMALLER; }
+
+		for ( i = 0; i < l1 ; i++ )
+			if ( bi1[i] != bi2[i] )
+				return (
+					( _pbi_chr2dig(bi1[i]) > _pbi_chr2dig(bi2[i]) )
+					? P_GREATER : P_SMALLER
+				);
+
+	}
+
+	else if ( bi1neg && bi2neg ) {
+
+		if ( l1 < l2 ) { return P_GREATER; }
+		if ( l1 > l2 ) { return P_SMALLER; }
+
+		bi1abs = bi1 + sizeof(pchr);
+		bi2abs = bi2 + sizeof(pchr);
+
+		for ( i = 0; i < l1 - 1 ; i++ )
+			if ( bi1abs[i] != bi2abs[i] )
+				return (
+					( _pbi_chr2dig(bi1abs[i]) < _pbi_chr2dig(bi2abs[i]) )
+					? P_GREATER : P_SMALLER
+				);
+
+	}
 
 	return P_EQUAL;
 
