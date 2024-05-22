@@ -22,7 +22,7 @@
  *     pbi_fs       DONE
  *     pbi_isneg    DONE
  *     pbi_isval    DONE
- *     _pbi_addb    NOT DONE
+ *     _pbi_addb    DONE
  *     _pbi_subb    NOT DONE
  *     pbi_add      MISSING NEGATIVES
  *     pbi_cmp      MISSING NEGATIVES
@@ -449,23 +449,18 @@ pcode pbi_cmp( pbi bi1, pbi bi2 ) {
 	psz l1 = strlen(bi1);
 	psz l2 = strlen(bi2);
 	psz cmp;
+	psint i;
 
-	if ( l1 > l2 ) return P_GREATER;
-	if ( l1 < l2 ) return P_SMALLER;
+	if ( l1 > l2 ) { return P_GREATER; }
+	if ( l1 < l2 ) { return P_SMALLER; }
 
-	/*
-	 * This relies on the fact
-	 * that the compiler is using ASCII.
-	 * I *might* generalize the solution
-	 * if a problem arises!
-	 *
-	 * TODO: Generalize this
-	 */
+	for ( i = 0; i < l1 ; i++ )
+		if ( bi1[i] != bi2[i] )
+			return (
+				( _pbi_chr2dig(bi1[i]) > _pbi_chr2dig(bi2[i]) )
+				? P_GREATER : P_SMALLER
+			);
 
-	cmp = strcmp(bi1, bi2);
-
-	if ( cmp > 0 ) return P_GREATER;
-	if ( cmp < 0 ) return P_SMALLER;
 	return P_EQUAL;
 
 }
@@ -500,44 +495,34 @@ pbi pbi_add( pbi bi1, pbi bi2 ) {
 		if ( ret != NULL ) pbi_fs(ret);
 	}
 
-	/*
 	else if ( neg1 && !neg2 ) {
 		biabs = bi1 + sizeof(pchr);
 		biother = bi2;
 	}
-	*/
-
-	/* TODO */
-	else if ( neg1 && !neg2 ) {
-
-		/* This gets us the absolute value, by removing the '-' */
-		biabs = bi1 + sizeof(pchr);
-
-		switch (pbi_cmp(biabs, bi2) ) {
-
-			/* TODO: This */
-			case P_EQUAL:
-				ret = (pbi)calloc(2, sizeof(pchr));
-				if (ret != NULL) ret = "0";
-				break;
-
-			case P_GREATER:
-				/* -a + b = -(a-b) */
-				ret = _pbi_subb(biabs, bi2);
-				pbi_fs(ret);
-				break;
-
-			case P_SMALLER:
-				/* -a + b = b-a */
-				ret = _pbi_subb(bi2, biabs);
-				break;
-
-		}
-
+	else if ( !neg1 && neg2 ) {
+		biother = bi1;
+		biabs = bi2 + sizeof(pchr);
 	}
 
-	else if ( !neg1 && neg2 ) {
-		ret = "";
+	switch (pbi_cmp(biabs, biother) ) {
+
+		/* TODO: This */
+		case P_EQUAL:
+			ret = (pbi)calloc(2, sizeof(pchr));
+			if (ret != NULL) strcpy(ret, "0");
+			break;
+
+		case P_GREATER:
+			/* -a + b = -(a-b) */
+			ret = _pbi_subb(biabs, biother);
+			pbi_fs(ret);
+			break;
+
+		case P_SMALLER:
+			/* -a + b = b-a */
+			ret = _pbi_subb(biother, biabs);
+			break;
+
 	}
 
 	return ret;
@@ -552,10 +537,23 @@ pbi pbi_add( pbi bi1, pbi bi2 ) {
  *
  * The user is responsible for clearing the memory
  * of the returned string.
+ *
+ * TODO: This fails for constant strings.
+ *       Consider using exclusively const char* strings.
  */
 pbi pbi_sub(pbi bi1, pbi bi2) {
 
-	return "";
+	pbi ret;
+
+	pbi_fs(bi2);
+	if ( bi2 == NULL ) return NULL;
+
+	ret = pbi_add(bi1, bi2);
+
+	pbi_fs(bi2);
+	if ( bi2 == NULL ) return NULL;
+
+	return ret;
 
 }
 
