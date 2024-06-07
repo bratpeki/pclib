@@ -12,6 +12,10 @@
  * size. However, I still wanted to implement something regarding this,
  * and despite being VERY badly optimized for memory, it'll do the job.
  *
+ * This was once made with dynamic allocation in mind. However, doing
+ * memchecks after each operations is, needless to say, not pleasant.
+ * So a bigint is now a fixed-size array.
+ *
  * === DEVNOTES ===
  * - These need to be implemented:
  *
@@ -37,6 +41,7 @@
 
 #include "ptype.h"
 #include "pcode.h"
+#include "pstr.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -47,15 +52,17 @@ pstr _pbi_digits = "0123456789";
 
 /*
  * The bigint datatype
- * Essentially, a string
- */
-typedef pstr pbi;
-
-/*
- * A single digit in the bigint
  * Essentially, a char
+ *
+ * A bigint is defined with:
+ * pbi num[100];
+ *
+ * When passed to functions, it's passed as
+ * type name( pbi* num, int numsize )
+ *
+ * In the case above, 'numsize' is 100
  */
-typedef pchr pbid;
+typedef pchr pbi;
 
 /*
  * A reliable char-to-digit converter.
@@ -104,40 +111,28 @@ pchr _pbi_d2c( pusint dig ) {
  *
  * Adds two positive bigints and returns the result.
  * If memory cannot be allocated, returns NULL.
+ *
+ * TODO: If errors arise during testing, consider returning escape codes
  */
-pbi _pbi_addb( pbi bi1, pbi bi2 ) {
+pnoret _pbi_addb( pbi* op1, pbi* op2, pbi* sum, puint bisize ) {
 
 	pusint carry = 0, tmp;
 	psint i;
-	pstr s, ret;
-	pbi bibig;
+	pbi* bibig;
 	psz l1, l2, lbig, lsmall;
 
-	l1 = strlen(bi1);
-	l2 = strlen(bi2);
+	l1 = strlen(op1);
+	l2 = strlen(op2);
 
-	if ( l1 > l2 ) { lbig = l1; lsmall = l2; bibig = bi1; }
-	else           { lbig = l2; lsmall = l1; bibig = bi2; }
+	memset(sum, 0, bisize);
 
-	/*
-	 * The largest the new number can be is
-	 * one larger than the bigger of the two numbers.
-	 *
-	 * As an example: 99 + 99, two largest two-digit integers, result in 198
-	 *
-	 * 's' doesn't allocate space for a null terminator,
-	 * since it's an array of characters,
-	 * rather than a "real" C-style string.
-	 * Later down the line, a proper C-style
-	 * string is generated.
-	 */
-	s = (pstr)malloc( (lbig + 1) * sizeof(pchr) );
-	if ( s == NULL ) return NULL;
+	if ( l1 > l2 ) { lbig = l1; lsmall = l2; bibig = op1; }
+	else           { lbig = l2; lsmall = l1; bibig = op2; }
 
 	/* Addition over the common indeces */
 	for ( i = 1; i <= lsmall; i++ ) {
-		tmp = _pbi_c2d( bi1[l1 - i] ) + _pbi_c2d( bi2[l2 - i] ) + carry;
-		s[i - 1] = _pbi_d2c( tmp % 10 );
+		tmp = _pbi_c2d( op1[l1 - i] ) + _pbi_c2d( op2[l2 - i] ) + carry;
+		sum[i - 1] = _pbi_d2c( tmp % 10 );
 		carry = tmp / 10;
 	}
 
@@ -148,7 +143,7 @@ pbi _pbi_addb( pbi bi1, pbi bi2 ) {
 
 	for ( ; i <= lbig; i++ ) {
 		tmp = _pbi_c2d(bibig[lbig - i]) + carry;
-		s[i - 1] = _pbi_d2c(tmp % 10);
+		sum[i - 1] = _pbi_d2c(tmp % 10);
 		carry = tmp / 10;
 	}
 
@@ -158,23 +153,10 @@ pbi _pbi_addb( pbi bi1, pbi bi2 ) {
 	 * The 'else' clause sets the variables up for
 	 * the allocation and loop below
 	 */
-	if (carry != 0) { s[i-1] = _pbi_d2c(carry); }
+	if (carry != 0) { sum[i-1] = _pbi_d2c(carry); }
 	else            { i--; lbig--; }
 
-	/*
-	 * 'i' now points to the last index, where '\0' should be.
-	 * We'll make a new string, and add the digits in reverse order!
-	 */
-
-	ret = (pstr)malloc( (i + 1)*sizeof(pchr) );
-	if ( ret == NULL ) { free(s); return NULL; }
-
-	ret[i] = '\0';
-	for ( i-- ; i >= 0 ; i-- )
-		ret[i] = s[lbig - i];
-
-	free(s);
-	return ret;
+	pstr_flip(sum);
 
 }
 
@@ -187,12 +169,10 @@ pbi _pbi_addb( pbi bi1, pbi bi2 ) {
  * The first bigint has to be larger
  * This is not checked.
  */
-pbi _pbi_subb( pbi bi1, pbi bi2 ) {
+pnoret _pbi_subb( pbi* op1, pbi* op2, pbi* diff, psz bisize ) {
 
-	pbi ret;
-	psint i, j; /* TODO: Proper datatype? */
+	psint i; /* TODO: Proper datatype? */
 	psz lbig, lsmall;
-	pstr s;
 	pssint tmp;
 	psint carry = 0; /* 1 if we carry, 0 if we don't ? */
 
@@ -202,16 +182,10 @@ pbi _pbi_subb( pbi bi1, pbi bi2 ) {
 	 * if not more digits than bi2
 	 */
 
-	lbig = strlen(bi1);
-	lsmall = strlen(bi2);
+	lbig = strlen(op1);
+	lsmall = strlen(op2);
 
-	/*
-	 * No need to account for
-	 * the string terminator,
-	 * much like in _pbi_addb.
-	 */
-	s = (pstr)malloc( lbig * sizeof(pchr) );
-	if ( s == NULL ) return NULL;
+	memset(diff, 0, bisize);
 
 	/*
 	 * Similarly to _pbi_addb,
@@ -220,45 +194,25 @@ pbi _pbi_subb( pbi bi1, pbi bi2 ) {
 	 */
 	for ( i = 1; i <= lsmall; i++ ) {
 
-		tmp = _pbi_c2d( bi1[lbig-i] ) - carry - _pbi_c2d( bi2[lsmall-i] );
+		tmp = _pbi_c2d( op1[lbig-i] ) - carry - _pbi_c2d( op2[lsmall-i] );
 		if ( tmp < 0 ) { carry = 1; tmp += 10; }
 		else           { carry = 0; }
 
-		s[i-1] = _pbi_d2c( tmp );
+		diff[i-1] = _pbi_d2c( tmp );
 
 	}
 
-	s[i-1] = _pbi_d2c( _pbi_c2d( bi1[lbig-i] ) - carry );
+	diff[i-1] = _pbi_d2c( _pbi_c2d( op1[lbig-i] ) - carry );
 	i++;
 
-	for ( ; i <= lbig; i++ ) { s[i-1] = bi1[lbig-i]; }
+	for ( ; i <= lbig; i++ ) { diff[i-1] = op1[lbig-i]; }
 
-	/* Getting rid of trailing zeros */
-	j = lbig - 1;
-	while ( s[j] == '0' ) j--;
-
-	/*
-	 * 'j' now points to the index where the first
-	 * index, from the back, which is non-zero
-	 *
-	 * We write from that one!
-	 */
-
-	/* +1 for the index to character count conversion, +1 for the null terminator */
-	ret = (pbi)malloc( (j+2)*sizeof(pchr) );
-	if ( ret == NULL ) { free(s); return NULL; }
-
-	for ( i = 0 ; i <= j ; i++ )
-		ret[i] = s[j - i];
-	ret[j+1] = '\0';
-
-	free(s);
-	return ret;
+	pstr_flip(diff);
 
 }
 
 /* Checks if 'bi' is set to "0" */
-pbool pbi_isnull( pbi bi ) { return (pbool)( strcmp(bi, "0") == 0 ); }
+pbool pbi_isnull( pbi* bi ) { return (pbool)( strcmp(bi, "0") == 0 ); }
 
 /* TODO: Try changing the code above with a !strcmp */
 
@@ -272,6 +226,8 @@ pbool pbi_isnull( pbi bi ) { return (pbool)( strcmp(bi, "0") == 0 ); }
  * Trailing zeros aren't allowed.
  * 'val' can't be NULL or an empty string
  * It can't just be a minus.
+ *
+ * TODO: Deprecate this, honestly.
  */
 pbool pbi_isval( pstr val ) {
 
@@ -331,7 +287,7 @@ pbool pbi_isval( pstr val ) {
  *
  * Zero isn't negative!
  */
-pbool pbi_isneg( pbi bi ) {
+pbool pbi_isneg( pbi* bi ) {
 
 	/* Sign and at least one digit */
 	if ( strlen(bi) >= 2 ) return (pbool)( bi[0] == '-' );
@@ -347,77 +303,51 @@ pbool pbi_isneg( pbi bi ) {
 }
 
 /*
- * Takes an ALLOCATED BIT OF MEMORY,
- * reallocates it,
- * and adds/removes a minus.
+ * Flips the sign of the bigint.
  *
- * Assumes 'bi' is valid.
- *
- * Returns P_BADALLOC if allocation cannot be done.
- *
- * If "0" is passed, it isn't changed.
+ * If the array is filled to the brim with digits,
+ * and a minus cannot be added to the positive bignum,
+ * return P_OUTOFBOUNDS. Otherwise, returns P_SUCCESS;
  */
-pcode pbi_fs( pbi bi ) {
+pcode pbi_fs( pbi* bi, psz bisize ) {
 
-	pbool neg = pbi_isneg(bi);
 	psz l = strlen(bi);
 	psint i;
-	pbi tmp;
 
 	if ( pbi_isnull(bi) ) return P_SUCCESS;
 
-	/*
-	 * If the number is positive,
-	 * reallocate space for one more character,
-	 * and append a minus to the start.
-	 */
-	if ( !neg ) {
+	if ( bi[0] != '-' ) { /* Positive */
 
-		/* l + minus + null terminator */
-		tmp = (pbi)realloc(bi, (l + 2) * sizeof(pchr));
+		/*
+		 * We can't add a minus to
+		 *   pbi a[5] = "1234"
+		 */
+		if ( l == bisize - 1 ) return P_OUTOFBOUNDS;
 
-		if ( tmp == NULL ) {
-			free(bi);
-			return P_BADALLOC;
-		}
-
-		bi = tmp;
-
-		for ( i = l + 1; i > 0; i-- ) {
-			bi[i] = bi[i - 1];
-		}
-
+		for ( i = 0; i < l; i++ )
+			bi[ i+1 ] = bi[i];
 		bi[0] = '-';
 
-		return P_SUCCESS;
-
 	}
 
-	/*
-	 * The code below is what happens when the number is negative
-	 *
-	 * We shift the characters by one,
-	 * deleting the minus
-	 */
+	else { /* Negative */
 
-	for ( i = 0; i < l; i++ ) {
-		bi[i] = bi[i + 1];
+		i = 0;
+
+		while ( i < l-1 ) {
+			bi[i+1] = bi[i];
+			i++;
+		}
+
 	}
-
-	tmp = (pbi)realloc(bi, (l + 1) * sizeof(pchr));
-
-	if ( tmp == NULL ) {
-		free(bi);
-		return P_BADALLOC;
-	}
-
-	bi = tmp;
 
 	return P_SUCCESS;
 
 }
 
 /* TODO: Doc comment */
+/* TODO: THIS */
+/*
 pcode pbi_cmp( pbi bi1, pbi bi2 ) {
 
 	pbool bi1neg, bi2neg;
@@ -466,6 +396,7 @@ pcode pbi_cmp( pbi bi1, pbi bi2 ) {
 	return P_EQUAL;
 
 }
+*/
 
 /*
  * Returns a dynamically allocated string
@@ -478,6 +409,7 @@ pcode pbi_cmp( pbi bi1, pbi bi2 ) {
  *
  * TODO: Returning "0" doesn't require a NULL-check.
  */
+/*
 pbi pbi_add( pbi bi1, pbi bi2 ) {
 
 	pbi ret;
@@ -508,20 +440,20 @@ pbi pbi_add( pbi bi1, pbi bi2 ) {
 
 	switch (pbi_cmp(biabs, biother) ) {
 
-		/* TODO: This */
+		TODO: This
 		case P_EQUAL:
 			ret = (pbi)calloc(2, sizeof(pchr));
 			if (ret != NULL) strcpy(ret, "0");
 			break;
 
 		case P_GREATER:
-			/* -a + b = -(a-b) */
+			-a + b = -(a-b)
 			ret = _pbi_subb(biabs, biother);
 			pbi_fs(ret);
 			break;
 
 		case P_SMALLER:
-			/* -a + b = b-a */
+			-a + b = b-a
 			ret = _pbi_subb(biother, biabs);
 			break;
 
@@ -530,6 +462,7 @@ pbi pbi_add( pbi bi1, pbi bi2 ) {
 	return ret;
 
 }
+*/
 
 /*
  * Returns a dynamically allocated string
@@ -543,6 +476,7 @@ pbi pbi_add( pbi bi1, pbi bi2 ) {
  * TODO: This fails for constant strings.
  *       Consider using exclusively const char* strings.
  */
+/*
 pbi pbi_sub(pbi bi1, pbi bi2) {
 
 	pbi ret;
@@ -558,5 +492,6 @@ pbi pbi_sub(pbi bi1, pbi bi2) {
 	return ret;
 
 }
+*/
 
 #endif
