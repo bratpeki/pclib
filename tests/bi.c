@@ -20,6 +20,28 @@ pcode main() {
 	_pbi_subb(bi1, bi2, bi3, BISIZE);
 	printf("%s - %s = %s\n", bi1, bi2, bi3);
 
+	/* 1 1 1 1 */
+	printf(
+		"%d %d %d %d\n",
+		pbi_cmp("0", "0", BISIZE) == P_EQUAL,
+		pbi_cmp("10", "-10", BISIZE) == P_GREATER,
+		pbi_cmp("-10", "-5", BISIZE) == P_SMALLER,
+		pbi_cmp("10", "55", BISIZE) == P_SMALLER
+	);
+
+	/* TODO: Proper code checks */
+	pbi_add("3", "-3", bi3, BISIZE);
+	printf("3 + (-3) = %s\n", bi3);
+
+	pbi_add("5", "-3", bi3, BISIZE);
+	printf("5 + (-3) = %s\n", bi3);
+
+	pbi_add("-5", "-3", bi3, BISIZE);
+	printf("(-5) + (-3) = %s\n", bi3);
+
+	pbi_add("5", "3434", bi3, BISIZE);
+	printf("5 + 3434 = %s\n", bi3);
+
 	return P_SUCCESS;
 
 }

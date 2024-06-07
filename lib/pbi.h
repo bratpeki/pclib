@@ -32,6 +32,8 @@
  *     pbi_cmp    DONE
  *     pbi_sub    DONE
  *
+ * TODO: LET THE USER KNOW THEY SHOULDN'T USE CONST STRINGS AS PARAMS!
+ *
  * TODO: Don't accomodate solutions for ASCII,
  * make everything universal
  *
@@ -74,7 +76,7 @@ typedef pchr pbi;
  *
  * Returns -1 if the digit isn't valid
  */
-psint _pbi_c2d ( pchr chr ) {
+psint _pbi_c2d( pchr chr ) {
 
 	switch ( chr ) {
 
@@ -112,9 +114,9 @@ pchr _pbi_d2c( pusint dig ) {
  * Adds two positive bigints and returns the result.
  * If memory cannot be allocated, returns NULL.
  *
- * TODO: If errors arise during testing, consider returning escape codes
+ * TODO: Implement escape codes for array overflows
  */
-pnoret _pbi_addb( pbi* op1, pbi* op2, pbi* sum, puint bisize ) {
+pcode _pbi_addb( pbi* op1, pbi* op2, pbi* sum, psz bisize ) {
 
 	pusint carry = 0, tmp;
 	psint i;
@@ -147,16 +149,13 @@ pnoret _pbi_addb( pbi* op1, pbi* op2, pbi* sum, puint bisize ) {
 		carry = tmp / 10;
 	}
 
-	/*
-	 * Now that we're at the ending, check for a carry.
-	 *
-	 * The 'else' clause sets the variables up for
-	 * the allocation and loop below
-	 */
-	if (carry != 0) { sum[i-1] = _pbi_d2c(carry); }
-	else            { i--; lbig--; }
+	/* Now that we're at the ending, check for a carry. */
+	if (carry != 0)
+		sum[i-1] = _pbi_d2c(carry);
 
 	pstr_flip(sum);
+
+	return P_SUCCESS;
 
 }
 
@@ -346,14 +345,12 @@ pcode pbi_fs( pbi* bi, psz bisize ) {
 }
 
 /* TODO: Doc comment */
-/* TODO: THIS */
-/*
-pcode pbi_cmp( pbi bi1, pbi bi2 ) {
+pcode pbi_cmp( pbi* bi1, pbi* bi2, psz bisize ) {
 
 	pbool bi1neg, bi2neg;
 	psz l1 = strlen(bi1);
 	psz l2 = strlen(bi2);
-	pbi bi1abs, bi2abs;
+	pbi *bi1abs, *bi2abs;
 	psint i;
 
 	bi1neg = pbi_isneg(bi1);
@@ -396,7 +393,6 @@ pcode pbi_cmp( pbi bi1, pbi bi2 ) {
 	return P_EQUAL;
 
 }
-*/
 
 /*
  * Returns a dynamically allocated string
@@ -407,62 +403,68 @@ pcode pbi_cmp( pbi bi1, pbi bi2 ) {
  * The user is responsible for clearing the memory
  * of the returned string, as well as the NULL-check.
  *
- * TODO: Returning "0" doesn't require a NULL-check.
+ * TODO: Update this comment
  */
-/*
-pbi pbi_add( pbi bi1, pbi bi2 ) {
+pcode pbi_add( pbi* op1, pbi* op2, pbi* sum, psz bisize ) {
 
-	pbi ret;
 	pbool neg1, neg2;
-	pbi biabs;
-	pbi biother;
+	pbi *biabs, *biother, *biabs2;
+	pcode ret;
 
-	neg1 = pbi_isneg(bi1);
-	neg2 = pbi_isneg(bi2);
+	neg1 = pbi_isneg(op1);
+	neg2 = pbi_isneg(op2);
 
-	if ( !neg1 && !neg2 ) {
-		ret = _pbi_addb(bi1, bi2);
-	}
+	if ( !neg1 && !neg2 )
+		return _pbi_addb(op1, op2, sum, bisize);
 
-	else if ( neg1 && neg2 ) {
-		ret = _pbi_addb( bi1 + sizeof(pchr) , bi2 + sizeof(pchr));
-		if ( ret != NULL ) pbi_fs(ret);
+	if ( neg1 && neg2 ) {
+
+		/* Can't flip signs on constants */
+		biabs = op1 + sizeof(pchr);
+		biabs2 = op2 + sizeof(pchr);
+
+		ret = _pbi_addb(biabs, biabs2, sum, bisize);
+		/* TODO: Handle 'ret' and 'pbi_fs' return value */
+		pbi_fs(sum, bisize);
+		return ret;
+
 	}
 
 	else if ( neg1 && !neg2 ) {
-		biabs = bi1 + sizeof(pchr);
-		biother = bi2;
+		biabs = op1 + sizeof(pchr);
+		biother = op2;
 	}
+
 	else if ( !neg1 && neg2 ) {
-		biother = bi1;
-		biabs = bi2 + sizeof(pchr);
+		biother = op1;
+		biabs = op2 + sizeof(pchr);
 	}
 
-	switch (pbi_cmp(biabs, biother) ) {
+	switch ( pbi_cmp(biabs, biother, bisize) ) {
 
-		TODO: This
+		/* TODO: This */
 		case P_EQUAL:
-			ret = (pbi)calloc(2, sizeof(pchr));
-			if (ret != NULL) strcpy(ret, "0");
+			memcpy(sum, "0", 2);
 			break;
 
 		case P_GREATER:
-			-a + b = -(a-b)
-			ret = _pbi_subb(biabs, biother);
-			pbi_fs(ret);
+			/* -a + b = -(a-b) */
+			_pbi_subb(biabs, biother, sum, bisize);
+			if ( pbi_fs(sum, bisize) )
+				return P_OUTOFBOUNDS;
+
 			break;
 
 		case P_SMALLER:
-			-a + b = b-a
-			ret = _pbi_subb(biother, biabs);
+			/* -a + b = b-a */
+			_pbi_subb(biother, biabs, sum, bisize);
 			break;
 
 	}
 
-	return ret;
+	return P_SUCCESS;
 
 }
-*/
 
 /*
  * Returns a dynamically allocated string
