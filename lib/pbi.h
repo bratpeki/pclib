@@ -17,22 +17,8 @@
  * So a bigint is now a fixed-size array.
  *
  * === DEVNOTES ===
- * - These need to be implemented:
  *
- *     pbi        DONE
- *     _pbi_c2d   DONE
- *     _pbi_d2c   DONE
- *     pbi_isnull DONE
- *     pbi_fs     DONE
- *     pbi_isneg  DONE
- *     pbi_isval  DONE
- *     _pbi_addb  DONE
- *     _pbi_subb  DONE
- *     pbi_add    DONE
- *     pbi_cmp    DONE
- *     pbi_sub    DONE
- *
- * TODO: LET THE USER KNOW THEY SHOULDN'T USE CONST STRINGS AS PARAMS!
+ * TODO: LET THE USER KNOW THEY (maybe) SHOULDN'T USE CONST STRINGS AS PARAMS!
  *
  * TODO: Don't accomodate solutions for ASCII,
  * make everything universal
@@ -478,9 +464,13 @@ pcode pbi_add( pbi* op1, pbi* op2, pbi* sum, psz bisize ) {
  * TODO: This fails for constant strings.
  *       Consider using exclusively const char* strings.
  */
-/*
-pbi pbi_sub(pbi bi1, pbi bi2) {
+pcode pbi_sub( pbi* op1, pbi* op2, pbi* diff, psz bisize ) {
 
+	/*
+	 * Use isnull checks and +sizeof(pchr) to make it work for constant strings
+	 */
+
+	/*
 	pbi ret;
 
 	pbi_fs(bi2);
@@ -492,8 +482,10 @@ pbi pbi_sub(pbi bi1, pbi bi2) {
 	if ( bi2 == NULL ) return NULL;
 
 	return ret;
+	*/
+
+	return P_SUCCESS;
 
 }
-*/
 
 #endif

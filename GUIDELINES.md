@@ -30,3 +30,19 @@ Code:
 
 <!-- TODO: Make this more apparent! -->
 Any element that __shouldn't be accessed by the user__ is prefixed with a `_`.
+
+Function comments look like this:
+
+```c
+/*
+ * This function does this and that.
+ *
+ * Here, the return values are explained.
+ *
+ * Here, there might be more information about the function or params.
+ *
+ * Params:
+ * 1. (const) type t1 - Can but doesn't have to be constant
+ * 2. type* t2 - Cannot be constant, is a pointer or an array
+ */
+```

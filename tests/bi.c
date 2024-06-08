@@ -42,6 +42,9 @@ pcode main() {
 	pbi_add("5", "3434", bi3, BISIZE);
 	printf("5 + 3434 = %s\n", bi3);
 
+	pbi_add(bi3, bi1, bi2, BISIZE);
+	printf("%s + %s = %s\n", bi3, bi1, bi2);
+
 	return P_SUCCESS;
 
 }
