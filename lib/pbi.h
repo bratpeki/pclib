@@ -25,6 +25,8 @@
  *
  * - Move from allocated memory to data memory
  * - Consider multiplication, mod and division.
+ *
+ * TODO: Are zeros at the start of the bignum valid?
  */
 
 #include "ptype.h"
@@ -309,8 +311,8 @@ pcode pbi_fs( pbi* bi, psz bisize ) {
 		 */
 		if ( l == bisize - 1 ) return P_OUTOFBOUNDS;
 
-		for ( i = 0; i < l; i++ )
-			bi[ i+1 ] = bi[i];
+		for ( i = l; i > 0; i-- )
+			bi[i] = bi[i-1];
 		bi[0] = '-';
 
 	}
@@ -436,6 +438,7 @@ pcode pbi_add( pbi* op1, pbi* op2, pbi* sum, psz bisize ) {
 		case P_GREATER:
 			/* -a + b = -(a-b) */
 			_pbi_subb(biabs, biother, sum, bisize);
+			/* TODO: Ambigous */
 			if ( pbi_fs(sum, bisize) )
 				return P_OUTOFBOUNDS;
 
@@ -463,26 +466,82 @@ pcode pbi_add( pbi* op1, pbi* op2, pbi* sum, psz bisize ) {
  *
  * TODO: This fails for constant strings.
  *       Consider using exclusively const char* strings.
+ *
+ * TODO: Identify edge cases
  */
 pcode pbi_sub( pbi* op1, pbi* op2, pbi* diff, psz bisize ) {
 
+	pbool neg1, neg2;
+
+	if ( pbi_cmp(op1, op2, bisize) == P_EQUAL ) {
+		memcpy(diff, "0", 2);
+		return P_SUCCESS;
+	}
+
+	neg1 = pbi_isneg(op1);
+	neg2 = pbi_isneg(op2);
+
 	/*
-	 * Use isnull checks and +sizeof(pchr) to make it work for constant strings
+	 * bibig now stores the absolute value of the bigger number
+	 * bismall stores the absolute of the smaller one
+	 *
+	 * negbig and negsmall works the same way, but for negativity bools
 	 */
 
+	/* |a|-|b| = a-b */
+	if ( !neg1 && !neg2 ) {
+
+		/* 5 - 3 = 2 */
+		if ( pbi_cmp(op1, op2, bisize) == P_GREATER ) {
+			_pbi_subb(op1, op2, diff, bisize);
+		}
+
+		/* 3 - 5 = -(5-3) = -2 */
+		else {
+			_pbi_subb(op2, op1, diff, bisize);
+			pbi_fs(diff, bisize);
+		}
+
+	}
+
+	/* |a|-|b| = a + b */
+	else if ( !neg1 && neg2 ) {
+
+		/* TODO: Ignored return value */
+		pbi_add(op1, op2+sizeof(pchr), diff, bisize);
+
+	}
+
+	/* |a|-|b| = -a - b = -(a+b) */
+	else if ( neg1 && !neg2 ) {
+
+		/* TODO: Ignored return values */
+		pbi_add(op1+sizeof(pchr), op2, diff, bisize);
+		pbi_fs(diff, bisize);
+
+	}
+
 	/*
-	pbi ret;
+	 * Both negative
+	 *
+	 * |a|-|b| = -a + b = b-a
+	 */
+	else {
 
-	pbi_fs(bi2);
-	if ( bi2 == NULL ) return NULL;
+		/* -5 - (-3) = 3 - 5 */
+		if ( pbi_cmp(op1+sizeof(pchr), op2+sizeof(pchr), bisize) == P_GREATER ) {
+			/* TODO: Ignored return values */
+			_pbi_subb(op1+sizeof(pchr), op2+sizeof(pchr), diff, bisize);
+			pbi_fs(diff, bisize);
+		}
 
-	ret = pbi_add(bi1, bi2);
+		/* -3 - (-5) = -3 + 5 = 5 - 3 = -2 */
+		else {
+			/* TODO: Ignored return value */
+			_pbi_subb(op2, op1, diff, bisize);
+		}
 
-	pbi_fs(bi2);
-	if ( bi2 == NULL ) return NULL;
-
-	return ret;
-	*/
+	}
 
 	return P_SUCCESS;
 

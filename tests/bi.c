@@ -20,6 +20,11 @@ pcode main() {
 	_pbi_subb(bi1, bi2, bi3, BISIZE);
 	printf("%s - %s = %s\n", bi1, bi2, bi3);
 
+	memcpy(bi1, "1203", 5);
+	memcpy(bi2, "0", 2);
+	_pbi_subb(bi1, bi2, bi3, BISIZE);
+	printf("%s - %s = %s\n", bi1, bi2, bi3);
+
 	/* 1 1 1 1 */
 	printf(
 		"%d %d %d %d\n",
@@ -44,6 +49,21 @@ pcode main() {
 
 	pbi_add(bi3, bi1, bi2, BISIZE);
 	printf("%s + %s = %s\n", bi3, bi1, bi2);
+
+	_pbi_subb("0", "0", bi3, BISIZE);
+	printf("0 - 0 = %s\n", bi3);
+
+	pbi_sub("-100", "-100", bi3, BISIZE);
+	printf("-100 - (-100) = %s\n", bi3);
+
+	pbi_sub("-100", "100", bi3, BISIZE);
+	printf("-100 - 100 = %s\n", bi3);
+
+	pbi_sub("5", "3", bi3, BISIZE);
+	printf("5 - 3 = %s\n", bi3);
+
+	pbi_sub("3", "5", bi3, BISIZE);
+	printf("3 - 5 = %s\n", bi3);
 
 	return P_SUCCESS;
 
