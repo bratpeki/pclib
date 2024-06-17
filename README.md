@@ -15,6 +15,7 @@ Each header file aims to be sufficiently documented and has minimal dependencies
 | `piarr.h` | Dynamic, type-generic array, with incremental memory allocation |
 | `pdict.h` | Dynamic, type-generic dictionary/hashmap |
 | `pstr.h` | Various string functions |
+| `pmac.h` | Useful macros |
 
 ## Why ANSI C?
 

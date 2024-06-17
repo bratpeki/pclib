@@ -9,7 +9,9 @@
 
 #include "ptype.h"
 
-#include <string.h> /* strlen */
+#include <string.h> /* strlen, memcpy */
+#include <stdlib.h> /* calloc */
+#include <stdio.h> /* TODO */
 
 /*
  * Reverse the order of the characters in 's'
@@ -29,6 +31,55 @@ pnoret pstr_flip( pstr s ) {
 		i++;
 
 	}
+
+}
+
+/*
+ * Trim the string "in", storing the result in the string "out"
+ * "target" is the target character to trim
+ * "len" is the length of BOTH of the string arrays
+ */
+pnoret pstr_trim( pstr in, pstr out, pchr target, psz len ) {
+
+	psz l, r;
+
+	l = r = 0;
+
+	while ( in[r] != '\0' ) r++;
+	r--;
+
+	while ( in[l] == target ) l++;
+	while ( in[r] == target ) r--;
+
+	memcpy(out, in + l*sizeof(pchr), r-l+1);
+	out[r-l+2] = '\0';
+
+}
+
+/*
+ * Trim the string "in" and return a dynamically allocated string
+ * "target" is the target character to trim
+ *
+ * Returns NULL if the memory cannot be allocated
+ */
+pstr pstr_trimd( pstr in, pchr target ) {
+
+	psz l, r;
+	pstr ret;
+
+	l = 0;
+	r = strlen(in);
+
+	while ( in[l] == target ) l++;
+	while ( in[r] == target ) r--;
+
+	ret = calloc(r-l+1, sizeof(pchr));
+	if ( ret == NULL ) return NULL;
+
+	memcpy(ret, in + l*sizeof(pchr), r-l);
+	ret[r+1] = '\0';
+
+	return NULL;
 
 }
 

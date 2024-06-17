@@ -11,6 +11,8 @@ pcode main() {
 
 	pchr abc[30] = "This is the first example!";
 	pstr def = calloc(30, sizeof(pchr));
+	pchr t1[20] = "  trim example  ";
+	pchr t2[20];
 
 	printf("%s\n", abc);
 	pstr_flip(abc);
@@ -22,6 +24,9 @@ pcode main() {
 	printf("%s\n", def);
 	pstr_flip(def);
 	printf("%s\n", def);
+
+	pstr_trim(t1, t2, ' ', 20);
+	printf("ORIGINAL: '%s'\nTRIMMED: '%s'\n", t1, t2);
 
 	free(def);
 
