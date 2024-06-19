@@ -138,8 +138,10 @@ pcode _pbi_addb( pbi* op1, pbi* op2, pbi* sum, psz bisize ) {
 	}
 
 	/* Now that we're at the ending, check for a carry. */
-	if (carry != 0)
+	if (carry != 0) {
+		/* TODO: AN OVERFLOW CAN HAPPEN HERE */
 		sum[i-1] = _pbi_d2c(carry);
+	}
 
 	pstr_flip(sum);
 
@@ -200,72 +202,6 @@ pnoret _pbi_subb( pbi* op1, pbi* op2, pbi* diff, psz bisize ) {
 
 /* Checks if 'bi' is set to "0" */
 pbool pbi_isnull( pbi* bi ) { return (pbool)( strcmp(bi, "0") == 0 ); }
-
-/* TODO: Try changing the code above with a !strcmp */
-
-/*
- * Returns P_TRUE if 'val' is in a valid format for a bigint,
- * and P_FALSE if it isn't
- *
- * The proper format is:
- * (OPTIONAL '-') + (SERIES OF DIGITS) + '\0'
- *
- * Trailing zeros aren't allowed.
- * 'val' can't be NULL or an empty string
- * It can't just be a minus.
- *
- * TODO: Deprecate this, honestly.
- */
-pbool pbi_isval( pstr val ) {
-
-	puint i = 0;
-
-	/* Obviously! */
-	if ( val == NULL ) return P_FALSE;
-
-	/* An empty string isn't a bigint */
-	if ( val[0] == '\0' ) return P_FALSE;
-
-	/* Obviously! Part 2! */
-	if ( !strcmp(val, "-") ) return P_FALSE;
-
-	i = ( val[0] == '-' ) ? 1 : 0;
-
-	/*
-	 * If there's more than one digit,
-	 * or a minus, followed by digits,
-	 * and the first digit is zero,
-	 * then there's a trailing zero
-	 */
-	if ( strlen(val) > 1 )
-		if ( val[i] == '0' )
-			return P_FALSE;
-
-	for ( ; val[i] != '\0'; i++ ) {
-
-		switch ( val[i] ) {
-
-			/*
-			 * This would be easier with an if statement:
-			 * if ( (val[i] >= '0') && (val[i] <= '9') )
-			 * This applies to the ASCII values, so
-			 * I generalized it
-			 */
-
-			case '0': case '1': case '2':
-			case '3': case '4': case '5':
-			case '6': case '7': case '8':
-			case '9': break;
-
-			default: return P_FALSE;
-
-		}
-
-	}
-
-	return P_TRUE;
-
-}
 
 /*
  * Checks if the bigint is negative,

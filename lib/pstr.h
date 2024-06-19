@@ -73,13 +73,40 @@ pstr pstr_trimd( pstr in, pchr target ) {
 	while ( in[l] == target ) l++;
 	while ( in[r] == target ) r--;
 
-	ret = calloc(r-l+1, sizeof(pchr));
+	ret = (pstr)calloc(r-l+1, sizeof(pchr));
 	if ( ret == NULL ) return NULL;
 
 	memcpy(ret, in + l*sizeof(pchr), r-l);
 	ret[r+1] = '\0';
 
 	return NULL;
+
+}
+
+/*
+ * Counts how many times a character appears in a string
+ */
+psz pstr_countc( pstr haystack, pchr needle ) {
+
+	psz count = 0;
+	psz idx = 0;
+
+	while ( haystack[idx] )
+		count += ( haystack[idx] == needle);
+
+	return count;
+
+}
+
+/*
+ * Counts how many times a substring appears in a string
+ * TODO
+ */
+psz pstr_counts( pstr haystack, pchr needle ) {
+
+	psz count = 0;
+
+	return count;
 
 }
 
