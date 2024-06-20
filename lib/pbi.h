@@ -160,7 +160,7 @@ pcode _pbi_addb( pbi* op1, pbi* op2, pbi* sum, psz bisize ) {
  */
 pnoret _pbi_subb( pbi* op1, pbi* op2, pbi* diff, psz bisize ) {
 
-	psint i; /* TODO: Proper datatype? */
+	psz i;
 	psz lbig, lsmall;
 	pssint tmp;
 	psint carry = 0; /* 1 if we carry, 0 if we don't ? */
@@ -366,7 +366,6 @@ pcode pbi_add( pbi* op1, pbi* op2, pbi* sum, psz bisize ) {
 
 	switch ( pbi_cmp(biabs, biother, bisize) ) {
 
-		/* TODO: This */
 		case P_EQUAL:
 			memcpy(sum, "0", 2);
 			break;
@@ -374,8 +373,8 @@ pcode pbi_add( pbi* op1, pbi* op2, pbi* sum, psz bisize ) {
 		case P_GREATER:
 			/* -a + b = -(a-b) */
 			_pbi_subb(biabs, biother, sum, bisize);
-			/* TODO: Ambigous */
-			if ( pbi_fs(sum, bisize) )
+			/* TODO: Test this */
+			if ( pbi_fs(sum, bisize) == P_OUTOFBOUNDS )
 				return P_OUTOFBOUNDS;
 
 			break;

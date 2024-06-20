@@ -88,11 +88,10 @@ pstr pstr_trimd( pstr in, pchr target ) {
  */
 psz pstr_countc( pstr haystack, pchr needle ) {
 
-	psz count = 0;
-	psz idx = 0;
+	psz count = 0, idx = 0;
 
 	while ( haystack[idx] )
-		count += ( haystack[idx] == needle);
+		count += ( haystack[idx++] == needle);
 
 	return count;
 
@@ -100,11 +99,22 @@ psz pstr_countc( pstr haystack, pchr needle ) {
 
 /*
  * Counts how many times a substring appears in a string
- * TODO
+ * Accounts for overlaps
  */
-psz pstr_counts( pstr haystack, pchr needle ) {
+psz pstr_counts( pstr haystack, pstr needle ) {
 
-	psz count = 0;
+	psz count = 0, lenh = strlen(haystack), lenn = strlen(needle);
+	psz i, j;
+	pbool verify;
+
+	for ( i = 0; i < lenh-lenn; i++ ) {
+
+		verify = P_TRUE;
+		for ( j = 0; verify && (j < lenn); j++ )
+			verify = (pbool)(haystack[i+j] == needle[j]);
+		count += verify;
+
+	}
 
 	return count;
 

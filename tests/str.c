@@ -28,6 +28,9 @@ pcode main() {
 	pstr_trim(t1, t2, ' ', 20);
 	printf("ORIGINAL: '%s'\nTRIMMED: '%s'\n", t1, t2);
 
+	printf( "COUNT S: ababab -> aba -> %lu\n", pstr_counts("ababab", "aba"));
+	printf( "COUNT C: ababab -> a -> %lu\n", pstr_countc("ababab", 'a'));
+
 	free(def);
 
 	return P_SUCCESS;
