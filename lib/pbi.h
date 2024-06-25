@@ -27,6 +27,8 @@
  * - Consider multiplication, mod and division.
  *
  * TODO: Are zeros at the start of the bignum valid?
+ *
+ * TODO: bisize must always be at least 2
  */
 
 #include "ptype.h"
@@ -102,12 +104,13 @@ pchr _pbi_d2c( pusint dig ) {
  * Adds two positive bigints and returns the result.
  * If memory cannot be allocated, returns NULL.
  *
- * TODO: Implement escape codes for array overflows
+ * Returns P_SUCCESS if all goes well.
+ * Returns P_OUTOFBOUNDS if the 'sum' array isn't large enough to house the sum.
  */
 pcode _pbi_addb( pbi* op1, pbi* op2, pbi* sum, psz bisize ) {
 
 	pusint carry = 0, tmp;
-	psint i;
+	psz i;
 	pbi* bibig;
 	psz l1, l2, lbig, lsmall;
 
@@ -138,8 +141,8 @@ pcode _pbi_addb( pbi* op1, pbi* op2, pbi* sum, psz bisize ) {
 	}
 
 	/* Now that we're at the ending, check for a carry. */
-	if (carry != 0) {
-		/* TODO: AN OVERFLOW CAN HAPPEN HERE */
+	if ( carry != 0 ) {
+		if ( lbig + 1 == bisize ) return P_OUTOFBOUNDS;
 		sum[i-1] = _pbi_d2c(carry);
 	}
 
@@ -155,7 +158,7 @@ pcode _pbi_addb( pbi* op1, pbi* op2, pbi* sum, psz bisize ) {
  * Subtracts two positive bigints and returns the result.
  * If memory cannot be allocated, returns NULL.
  *
- * The first bigint has to be larger
+ * The first bigint has to be larger.
  * This is not checked.
  */
 pnoret _pbi_subb( pbi* op1, pbi* op2, pbi* diff, psz bisize ) {
@@ -268,7 +271,13 @@ pcode pbi_fs( pbi* bi, psz bisize ) {
 
 }
 
-/* TODO: Doc comment */
+/*
+ * Compares two numbers and returns the following:
+ *
+ * P_GREATER if bi1 is greater,
+ * P_SMALLER if bi1 is smaller and
+ * P_EQUAL if they're equal.
+ */
 pcode pbi_cmp( pbi* bi1, pbi* bi2, psz bisize ) {
 
 	pbool bi1neg, bi2neg;
@@ -319,38 +328,31 @@ pcode pbi_cmp( pbi* bi1, pbi* bi2, psz bisize ) {
 }
 
 /*
- * Returns a dynamically allocated string
- * containing the sum of the two bigints.
- *
- * Doesn't check the validity of the two bigints.
- *
- * The user is responsible for clearing the memory
- * of the returned string, as well as the NULL-check.
- *
- * TODO: Update this comment
+ * Adds 'op1' and 'op2' together and adds the result to 'sum'.
+ * TODO: Exit codes
  */
 pcode pbi_add( pbi* op1, pbi* op2, pbi* sum, psz bisize ) {
 
 	pbool neg1, neg2;
 	pbi *biabs, *biother, *biabs2;
-	pcode ret;
+	/* pcode ret; */
 
 	neg1 = pbi_isneg(op1);
 	neg2 = pbi_isneg(op2);
 
-	if ( !neg1 && !neg2 )
-		return _pbi_addb(op1, op2, sum, bisize);
+	if ( !neg1 && !neg2 ) return _pbi_addb(op1, op2, sum, bisize);
 
 	if ( neg1 && neg2 ) {
 
-		/* Can't flip signs on constants */
+		/* Absolute values */
 		biabs = op1 + sizeof(pchr);
 		biabs2 = op2 + sizeof(pchr);
 
-		ret = _pbi_addb(biabs, biabs2, sum, bisize);
-		/* TODO: Handle 'ret' and 'pbi_fs' return value */
-		pbi_fs(sum, bisize);
-		return ret;
+		if ( _pbi_addb(biabs, biabs2, sum, bisize) == P_OUTOFBOUNDS ) return P_OUTOFBOUNDS;
+		if ( pbi_fs(sum, bisize) == P_OUTOFBOUNDS ) return P_OUTOFBOUNDS;
+
+		/* pbi_fs(sum, bisize); */
+		return P_SUCCESS;
 
 	}
 

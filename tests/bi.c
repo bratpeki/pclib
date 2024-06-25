@@ -14,8 +14,15 @@ pcode main() {
 	pbi bi2[BISIZE] = "124";
 	pbi bi3[BISIZE];
 
+	/* pbi bi4[4] = "333"; */
+	/* pbi bi5[4] = "666"; */
+
 	_pbi_addb(bi1, bi2, bi3, BISIZE);
 	printf("%s + %s = %s\n", bi1, bi2, bi3);
+
+	/* Checking overflow detection */
+	printf("%d -> %s\n", _pbi_addb("333", "666", bi3, 4), bi3);
+	printf("%d -> %s\n", _pbi_addb("333", "667", bi3, 4), bi3);
 
 	_pbi_subb(bi1, bi2, bi3, BISIZE);
 	printf("%s - %s = %s\n", bi1, bi2, bi3);

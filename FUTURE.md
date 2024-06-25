@@ -14,3 +14,6 @@ It is clearly visible how this creates confusion.
 Function pointers are currently not supported in the dynamic arrays, due to their syntax.
 
 Use `pstr` and `pchr*` to denote the difference between constant and array strings.
+
+Maybe I shouldn't use my own types in place of the standard C types.
+That makes the library headers more "individual", so you can easily copy it over.
