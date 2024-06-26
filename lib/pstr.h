@@ -22,7 +22,7 @@ pnoret pstr_flip( pstr s ) {
 	psz i = 0;
 	psz ss = strlen(s) - 1;
 
-	while ( i < ss/2 ) {
+	while ( i <= ss/2 ) {
 
 		c = s[i];
 		s[i] = s[ss-i];

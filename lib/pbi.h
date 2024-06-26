@@ -35,7 +35,7 @@
 #include "pcode.h"
 #include "pstr.h"
 
-#include <stdio.h>
+#include <stdio.h> /* TODO */
 #include <stdlib.h>
 #include <string.h>
 
@@ -122,6 +122,9 @@ pcode _pbi_addb( pbi* op1, pbi* op2, pbi* sum, psz bisize ) {
 	if ( l1 > l2 ) { lbig = l1; lsmall = l2; bibig = op1; }
 	else           { lbig = l2; lsmall = l1; bibig = op2; }
 
+	/* bisize includes the null terminator, the max length is that minus 1 */
+	if ( bisize - 1 < lbig ) return P_OUTOFBOUNDS;
+
 	/* Addition over the common indeces */
 	for ( i = 1; i <= lsmall; i++ ) {
 		tmp = _pbi_c2d( op1[l1 - i] ) + _pbi_c2d( op2[l2 - i] ) + carry;
@@ -142,10 +145,11 @@ pcode _pbi_addb( pbi* op1, pbi* op2, pbi* sum, psz bisize ) {
 
 	/* Now that we're at the ending, check for a carry. */
 	if ( carry != 0 ) {
-		if ( lbig + 1 == bisize ) return P_OUTOFBOUNDS;
+		if ( lbig + 1 <= bisize ) return P_OUTOFBOUNDS;
 		sum[i-1] = _pbi_d2c(carry);
 	}
 
+	/* We filled everything to zeros before, we can flip this safely */
 	pstr_flip(sum);
 
 	return P_SUCCESS;
@@ -187,6 +191,7 @@ pnoret _pbi_subb( pbi* op1, pbi* op2, pbi* diff, psz bisize ) {
 	for ( i = 1; i <= lsmall; i++ ) {
 
 		tmp = _pbi_c2d( op1[lbig-i] ) - carry - _pbi_c2d( op2[lsmall-i] );
+
 		if ( tmp < 0 ) { carry = 1; tmp += 10; }
 		else           { carry = 0; }
 
