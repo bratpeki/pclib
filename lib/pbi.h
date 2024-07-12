@@ -17,10 +17,6 @@
  * So a bigint is now a fixed-size array.
  *
  * TODO: Consider multiplication, mod and division.
- *
- * TODO: Are zeros at the start of the bignum valid?
- *
- * TODO: bisize must always be at least 2
  */
 
 #include "ptype.h"
@@ -136,7 +132,7 @@ pcode _pbi_addb( pbi* op1, pbi* op2, pbi* sum, psz bisize ) {
 
 	/* Now that we're at the ending, check for a carry. */
 	if ( carry != 0 ) {
-		if ( lbig + 1 <= bisize ) return P_OUTOFBOUNDS;
+		if ( lbig + 1 >= bisize ) return P_OUTOFBOUNDS;
 		sum[i-1] = _pbi_d2c(carry);
 	}
 
@@ -329,8 +325,6 @@ pcode pbi_cmp( pbi* bi1, pbi* bi2, psz bisize ) {
  * Adds 'op1' and 'op2' together and adds the result to 'sum'.
  *
  * All bigints must be of the same size, bisize.
- *
- * TODO: Exit codes
  */
 pcode pbi_add( pbi* op1, pbi* op2, pbi* sum, psz bisize ) {
 
@@ -339,6 +333,9 @@ pcode pbi_add( pbi* op1, pbi* op2, pbi* sum, psz bisize ) {
 
 	neg1 = pbi_isneg(op1);
 	neg2 = pbi_isneg(op2);
+
+	/* We run "memcpy" later and need this just to catch that potential error */
+	if ( bisize < 2 ) return P_BADARG;
 
 	if ( !neg1 && !neg2 ) return _pbi_addb(op1, op2, sum, bisize);
 
@@ -369,7 +366,6 @@ pcode pbi_add( pbi* op1, pbi* op2, pbi* sum, psz bisize ) {
 	switch ( pbi_cmp(biabs, biother, bisize) ) {
 
 		case P_EQUAL:
-			/* TODO bisize >= 2 */
 			memcpy(sum, "0", 2);
 			break;
 
@@ -405,8 +401,10 @@ pcode pbi_sub( pbi* op1, pbi* op2, pbi* diff, psz bisize ) {
 
 	pbool neg1, neg2;
 
+	/* We run "memcpy" later and need this just to catch that potential error */
+	if ( bisize < 2 ) return P_BADARG;
+
 	if ( pbi_cmp(op1, op2, bisize) == P_EQUAL ) {
-		/* TODO: bisize >= 2 */
 		memcpy(diff, "0", 2);
 		return P_SUCCESS;
 	}

@@ -14,6 +14,8 @@ pcode main() {
 	pbi bi2[BISIZE] = "124";
 	pbi bi3[BISIZE];
 
+	pbi bismall[2];
+
 	/* pbi bi4[4] = "333"; */
 	/* pbi bi5[4] = "666"; */
 
@@ -70,6 +72,16 @@ pcode main() {
 	printf("5 - 3 = %s\n", bi3);
 
 	pbi_sub("3", "5", bi3, BISIZE);
+	printf("3 - 5 = %s\n", bi3);
+
+	/* Testing edge cases */
+
+	memcpy(bismall, "0", 2);
+
+	pbi_sub("3", "5", bismall, 2);
+	printf("3 - 5 = %s\n", bi3);
+
+	pbi_add("3", "-5", bismall, 2);
 	printf("3 - 5 = %s\n", bi3);
 
 	return P_SUCCESS;

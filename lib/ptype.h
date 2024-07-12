@@ -10,6 +10,8 @@
  *   p + SIGN + S(HORT)/L(ONG) + BASE TYPE
  */
 
+/* TODO: Make an iter datatype that is a signed int */
+
 #include <stdlib.h>
 
 /* A Boolean value */ typedef enum { P_FALSE = 0, P_TRUE, P_OFF = 0, P_ON } pbool;
