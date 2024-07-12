@@ -16,15 +16,7 @@
  * memchecks after each operations is, needless to say, not pleasant.
  * So a bigint is now a fixed-size array.
  *
- * === DEVNOTES ===
- *
- * TODO: LET THE USER KNOW THEY (maybe) SHOULDN'T USE CONST STRINGS AS PARAMS!
- *
- * TODO: Don't accomodate solutions for ASCII,
- * make everything universal
- *
- * - Move from allocated memory to data memory
- * - Consider multiplication, mod and division.
+ * TODO: Consider multiplication, mod and division.
  *
  * TODO: Are zeros at the start of the bignum valid?
  *
@@ -35,7 +27,6 @@
 #include "pcode.h"
 #include "pstr.h"
 
-#include <stdio.h> /* TODO */
 #include <stdlib.h>
 #include <string.h>
 
@@ -164,6 +155,8 @@ pcode _pbi_addb( pbi* op1, pbi* op2, pbi* sum, psz bisize ) {
  *
  * The first bigint has to be larger.
  * This is not checked.
+ *
+ * All three bigints must be of the same size, bisize
  */
 pnoret _pbi_subb( pbi* op1, pbi* op2, pbi* diff, psz bisize ) {
 
@@ -334,13 +327,15 @@ pcode pbi_cmp( pbi* bi1, pbi* bi2, psz bisize ) {
 
 /*
  * Adds 'op1' and 'op2' together and adds the result to 'sum'.
+ *
+ * All bigints must be of the same size, bisize.
+ *
  * TODO: Exit codes
  */
 pcode pbi_add( pbi* op1, pbi* op2, pbi* sum, psz bisize ) {
 
 	pbool neg1, neg2;
 	pbi *biabs, *biother, *biabs2;
-	/* pcode ret; */
 
 	neg1 = pbi_isneg(op1);
 	neg2 = pbi_isneg(op2);
@@ -356,7 +351,6 @@ pcode pbi_add( pbi* op1, pbi* op2, pbi* sum, psz bisize ) {
 		if ( _pbi_addb(biabs, biabs2, sum, bisize) == P_OUTOFBOUNDS ) return P_OUTOFBOUNDS;
 		if ( pbi_fs(sum, bisize) == P_OUTOFBOUNDS ) return P_OUTOFBOUNDS;
 
-		/* pbi_fs(sum, bisize); */
 		return P_SUCCESS;
 
 	}
@@ -371,19 +365,18 @@ pcode pbi_add( pbi* op1, pbi* op2, pbi* sum, psz bisize ) {
 		biabs = op2 + sizeof(pchr);
 	}
 
+	/*               a      b                 */
 	switch ( pbi_cmp(biabs, biother, bisize) ) {
 
 		case P_EQUAL:
+			/* TODO bisize >= 2 */
 			memcpy(sum, "0", 2);
 			break;
 
 		case P_GREATER:
 			/* -a + b = -(a-b) */
 			_pbi_subb(biabs, biother, sum, bisize);
-			/* TODO: Test this */
-			if ( pbi_fs(sum, bisize) == P_OUTOFBOUNDS )
-				return P_OUTOFBOUNDS;
-
+			if ( pbi_fs(sum, bisize) == P_OUTOFBOUNDS ) return P_OUTOFBOUNDS;
 			break;
 
 		case P_SMALLER:
@@ -401,34 +394,25 @@ pcode pbi_add( pbi* op1, pbi* op2, pbi* sum, psz bisize ) {
  * Returns a dynamically allocated string
  * containing the difference of the two bigints.
  *
- * Doesn't check the validity of the two bigints.
+ * Doesn't check the validity of the two input bigints.
+ *
+ * All bigints must be of the same size, bisize.
  *
  * The user is responsible for clearing the memory
  * of the returned string.
- *
- * TODO: This fails for constant strings.
- *       Consider using exclusively const char* strings.
- *
- * TODO: Identify edge cases
  */
 pcode pbi_sub( pbi* op1, pbi* op2, pbi* diff, psz bisize ) {
 
 	pbool neg1, neg2;
 
 	if ( pbi_cmp(op1, op2, bisize) == P_EQUAL ) {
+		/* TODO: bisize >= 2 */
 		memcpy(diff, "0", 2);
 		return P_SUCCESS;
 	}
 
 	neg1 = pbi_isneg(op1);
 	neg2 = pbi_isneg(op2);
-
-	/*
-	 * bibig now stores the absolute value of the bigger number
-	 * bismall stores the absolute of the smaller one
-	 *
-	 * negbig and negsmall works the same way, but for negativity bools
-	 */
 
 	/* |a|-|b| = a-b */
 	if ( !neg1 && !neg2 ) {
@@ -441,26 +425,21 @@ pcode pbi_sub( pbi* op1, pbi* op2, pbi* diff, psz bisize ) {
 		/* 3 - 5 = -(5-3) = -2 */
 		else {
 			_pbi_subb(op2, op1, diff, bisize);
-			pbi_fs(diff, bisize);
+			if ( pbi_fs(diff, bisize) == P_OUTOFBOUNDS ) return P_OUTOFBOUNDS;
 		}
 
 	}
 
 	/* |a|-|b| = a + b */
 	else if ( !neg1 && neg2 ) {
-
-		/* TODO: Ignored return value */
-		pbi_add(op1, op2+sizeof(pchr), diff, bisize);
-
+		if ( pbi_add(op1, op2+sizeof(pchr), diff, bisize) == P_OUTOFBOUNDS )
+			return P_OUTOFBOUNDS;
 	}
 
 	/* |a|-|b| = -a - b = -(a+b) */
 	else if ( neg1 && !neg2 ) {
-
-		/* TODO: Ignored return values */
-		pbi_add(op1+sizeof(pchr), op2, diff, bisize);
-		pbi_fs(diff, bisize);
-
+		if ( pbi_add(op1+sizeof(pchr), op2, diff, bisize) == P_OUTOFBOUNDS ) return P_OUTOFBOUNDS;
+		if ( pbi_fs(diff, bisize) == P_OUTOFBOUNDS ) return P_OUTOFBOUNDS;
 	}
 
 	/*
@@ -472,16 +451,12 @@ pcode pbi_sub( pbi* op1, pbi* op2, pbi* diff, psz bisize ) {
 
 		/* -5 - (-3) = 3 - 5 */
 		if ( pbi_cmp(op1+sizeof(pchr), op2+sizeof(pchr), bisize) == P_GREATER ) {
-			/* TODO: Ignored return values */
 			_pbi_subb(op1+sizeof(pchr), op2+sizeof(pchr), diff, bisize);
-			pbi_fs(diff, bisize);
+			if ( pbi_fs(diff, bisize) == P_OUTOFBOUNDS ) return P_OUTOFBOUNDS;
 		}
 
-		/* -3 - (-5) = -3 + 5 = 5 - 3 = -2 */
-		else {
-			/* TODO: Ignored return value */
-			_pbi_subb(op2, op1, diff, bisize);
-		}
+		/* -3 - (-5) = 5 - 3 */
+		else _pbi_subb(op2, op1, diff, bisize);
 
 	}
 
