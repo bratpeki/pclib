@@ -1,7 +1,7 @@
 
 #include "../lib/pstr.h"
-#include "../lib/ptype.h"
 #include "../lib/pcode.h"
+#include "../lib/ptype.h"
 
 #include <stdio.h>
 #include <stdlib.h>
