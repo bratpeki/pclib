@@ -41,7 +41,7 @@ pstr _pbi_digits = "0123456789";
  *
  * In the case above, 'numsize' is 100
  */
-typedef pchr pbi;
+typedef char pbi;
 
 /*
  * A reliable char-to-digit converter.
@@ -53,7 +53,7 @@ typedef pchr pbi;
  *
  * Returns -1 if the digit isn't valid
  */
-psint _pbi_c2d( pchr chr ) {
+signed int _pbi_c2d( char chr ) {
 
 	switch ( chr ) {
 
@@ -78,10 +78,10 @@ psint _pbi_c2d( pchr chr ) {
  *
  * Some compilers don't use ASCII, so I made this!
  *
- * Return (pchr)0 if the digit is out-of-range.
+ * Return (char)0 if the digit is out-of-range.
  */
-pchr _pbi_d2c( pusint dig ) {
-	if ( ( dig < 0 ) || ( dig > 9 ) ) return (pchr)0;
+char _pbi_d2c( unsigned short int dig ) {
+	if ( ( dig < 0 ) || ( dig > 9 ) ) return (char)0;
 	return _pbi_digits[dig];
 }
 
@@ -94,12 +94,12 @@ pchr _pbi_d2c( pusint dig ) {
  * Returns P_SUCCESS if all goes well.
  * Returns P_OUTOFBOUNDS if the 'sum' array isn't large enough to house the sum.
  */
-pcode _pbi_addb( pbi* op1, pbi* op2, pbi* sum, psz bisize ) {
+pcode _pbi_addb( pbi* op1, pbi* op2, pbi* sum, size_t bisize ) {
 
-	pusint carry = 0, tmp;
-	psz i;
+	unsigned short int carry = 0, tmp;
+	size_t i;
 	pbi* bibig;
-	psz l1, l2, lbig, lsmall;
+	size_t l1, l2, lbig, lsmall;
 
 	l1 = strlen(op1);
 	l2 = strlen(op2);
@@ -154,12 +154,12 @@ pcode _pbi_addb( pbi* op1, pbi* op2, pbi* sum, psz bisize ) {
  *
  * All three bigints must be of the same size, bisize
  */
-pnoret _pbi_subb( pbi* op1, pbi* op2, pbi* diff, psz bisize ) {
+void _pbi_subb( pbi* op1, pbi* op2, pbi* diff, size_t bisize ) {
 
-	psz i;
-	psz lbig, lsmall;
-	pssint tmp;
-	psint carry = 0; /* 1 if we carry, 0 if we don't ? */
+	size_t i;
+	size_t lbig, lsmall;
+	signed short int tmp;
+	signed int carry = 0; /* 1 if we carry, 0 if we don't ? */
 
 	/*
 	 * We know that the bi1 has
@@ -229,10 +229,10 @@ pbool pbi_isneg( pbi* bi ) {
  * and a minus cannot be added to the positive bignum,
  * return P_OUTOFBOUNDS. Otherwise, returns P_SUCCESS;
  */
-pcode pbi_fs( pbi* bi, psz bisize ) {
+pcode pbi_fs( pbi* bi, size_t bisize ) {
 
-	psz l = strlen(bi);
-	psint i;
+	size_t l = strlen(bi);
+	signed int i;
 
 	if ( pbi_isnull(bi) ) return P_SUCCESS;
 
@@ -272,13 +272,13 @@ pcode pbi_fs( pbi* bi, psz bisize ) {
  * P_SMALLER if bi1 is smaller and
  * P_EQUAL if they're equal.
  */
-pcode pbi_cmp( pbi* bi1, pbi* bi2, psz bisize ) {
+pcode pbi_cmp( pbi* bi1, pbi* bi2, size_t bisize ) {
 
 	pbool bi1neg, bi2neg;
-	psz l1 = strlen(bi1);
-	psz l2 = strlen(bi2);
+	size_t l1 = strlen(bi1);
+	size_t l2 = strlen(bi2);
 	pbi *bi1abs, *bi2abs;
-	psint i;
+	signed int i;
 
 	bi1neg = pbi_isneg(bi1);
 	bi2neg = pbi_isneg(bi2);
@@ -305,8 +305,8 @@ pcode pbi_cmp( pbi* bi1, pbi* bi2, psz bisize ) {
 		if ( l1 < l2 ) { return P_GREATER; }
 		if ( l1 > l2 ) { return P_SMALLER; }
 
-		bi1abs = bi1 + sizeof(pchr);
-		bi2abs = bi2 + sizeof(pchr);
+		bi1abs = bi1 + sizeof(char);
+		bi2abs = bi2 + sizeof(char);
 
 		for ( i = 0; i < l1 - 1 ; i++ )
 			if ( bi1abs[i] != bi2abs[i] )
@@ -326,7 +326,7 @@ pcode pbi_cmp( pbi* bi1, pbi* bi2, psz bisize ) {
  *
  * All bigints must be of the same size, bisize.
  */
-pcode pbi_add( pbi* op1, pbi* op2, pbi* sum, psz bisize ) {
+pcode pbi_add( pbi* op1, pbi* op2, pbi* sum, size_t bisize ) {
 
 	pbool neg1, neg2;
 	pbi *biabs, *biother, *biabs2;
@@ -342,8 +342,8 @@ pcode pbi_add( pbi* op1, pbi* op2, pbi* sum, psz bisize ) {
 	if ( neg1 && neg2 ) {
 
 		/* Absolute values */
-		biabs = op1 + sizeof(pchr);
-		biabs2 = op2 + sizeof(pchr);
+		biabs = op1 + sizeof(char);
+		biabs2 = op2 + sizeof(char);
 
 		if ( _pbi_addb(biabs, biabs2, sum, bisize) == P_OUTOFBOUNDS ) return P_OUTOFBOUNDS;
 		if ( pbi_fs(sum, bisize) == P_OUTOFBOUNDS ) return P_OUTOFBOUNDS;
@@ -353,13 +353,13 @@ pcode pbi_add( pbi* op1, pbi* op2, pbi* sum, psz bisize ) {
 	}
 
 	else if ( neg1 && !neg2 ) {
-		biabs = op1 + sizeof(pchr);
+		biabs = op1 + sizeof(char);
 		biother = op2;
 	}
 
 	else if ( !neg1 && neg2 ) {
 		biother = op1;
-		biabs = op2 + sizeof(pchr);
+		biabs = op2 + sizeof(char);
 	}
 
 	/*               a      b                 */
@@ -397,7 +397,7 @@ pcode pbi_add( pbi* op1, pbi* op2, pbi* sum, psz bisize ) {
  * The user is responsible for clearing the memory
  * of the returned string.
  */
-pcode pbi_sub( pbi* op1, pbi* op2, pbi* diff, psz bisize ) {
+pcode pbi_sub( pbi* op1, pbi* op2, pbi* diff, size_t bisize ) {
 
 	pbool neg1, neg2;
 
@@ -430,13 +430,13 @@ pcode pbi_sub( pbi* op1, pbi* op2, pbi* diff, psz bisize ) {
 
 	/* |a|-|b| = a + b */
 	else if ( !neg1 && neg2 ) {
-		if ( pbi_add(op1, op2+sizeof(pchr), diff, bisize) == P_OUTOFBOUNDS )
+		if ( pbi_add(op1, op2+sizeof(char), diff, bisize) == P_OUTOFBOUNDS )
 			return P_OUTOFBOUNDS;
 	}
 
 	/* |a|-|b| = -a - b = -(a+b) */
 	else if ( neg1 && !neg2 ) {
-		if ( pbi_add(op1+sizeof(pchr), op2, diff, bisize) == P_OUTOFBOUNDS ) return P_OUTOFBOUNDS;
+		if ( pbi_add(op1+sizeof(char), op2, diff, bisize) == P_OUTOFBOUNDS ) return P_OUTOFBOUNDS;
 		if ( pbi_fs(diff, bisize) == P_OUTOFBOUNDS ) return P_OUTOFBOUNDS;
 	}
 
@@ -448,8 +448,8 @@ pcode pbi_sub( pbi* op1, pbi* op2, pbi* diff, psz bisize ) {
 	else {
 
 		/* -5 - (-3) = 3 - 5 */
-		if ( pbi_cmp(op1+sizeof(pchr), op2+sizeof(pchr), bisize) == P_GREATER ) {
-			_pbi_subb(op1+sizeof(pchr), op2+sizeof(pchr), diff, bisize);
+		if ( pbi_cmp(op1+sizeof(char), op2+sizeof(char), bisize) == P_GREATER ) {
+			_pbi_subb(op1+sizeof(char), op2+sizeof(char), diff, bisize);
 			if ( pbi_fs(diff, bisize) == P_OUTOFBOUNDS ) return P_OUTOFBOUNDS;
 		}
 

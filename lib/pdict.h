@@ -40,17 +40,17 @@
 #include <stdlib.h> /* malloc, realloc, free */
 
 /* Used for the for-loop in pdict_rem */
-puint _pdict_iter;
+unsigned int _pdict_iter;
 
 /* Used for safely checking realloc successfulness */
-pvptr _pdict_kp, _pdict_vp;
+void *_pdict_kp, *_pdict_vp;
 
 /* The dictonary macro */
 #define pdict(ktype, vtype) struct { \
 	ktype* keys; /* An array of all keys */ \
 	vtype* vals; /* An array of all values */ \
-	puint size; /* The number of elements currently in the dictionary */ \
-	puint cap;  /* The number of elements that can fit in the dictionary */ \
+	unsigned int size; /* The number of elements currently in the dictionary */ \
+	unsigned int cap;  /* The number of elements that can fit in the dictionary */ \
 }
 
 /* Initiazes the array defined with the pdict macro. */

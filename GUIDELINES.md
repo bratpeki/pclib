@@ -27,6 +27,7 @@ Code:
 | Type | `ptypename` | |
 | Header | `pfile.h` | |
 | Test file | `file.c` | |
+| Pointer declaration | `type *var` | I don't like it, but it makes more sense |
 
 <!-- TODO: Make this more apparent! -->
 Any element that __shouldn't be accessed by the user__ is prefixed with a `_`.

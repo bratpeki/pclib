@@ -13,8 +13,8 @@ int main() {
 
 	int i;
 
-	parr(psint) arrInt;
-	parr(pssint) arrSrt;
+	parr(signed int) arrInt;
+	parr(signed short int) arrSrt;
 	parr_init(arrInt);
 	parr_init(arrSrt);
 
@@ -29,8 +29,8 @@ int main() {
 	addNCheck(arrSrt, 50);
 	addNCheck(arrSrt, 60);
 
-	printf("Size of one psint: %lu\n", sizeof(*arrInt.data));
-	printf("Size of one pssint: %lu\n", sizeof(*arrSrt.data));
+	printf("Size of one signed int: %lu\n", sizeof(*arrInt.data));
+	printf("Size of one signed short int: %lu\n", sizeof(*arrSrt.data));
 
 	printf("arrInt: ");
 	for (i = 0; i < arrInt.size; i++)

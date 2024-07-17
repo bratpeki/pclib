@@ -6,7 +6,7 @@
 
 int main() {
 
-	psint a = 2;
+	signed int a = 2;
 
 	/* Not actually necessary */
 	pdbg_set(P_ON);

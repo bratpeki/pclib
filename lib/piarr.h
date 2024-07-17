@@ -36,15 +36,15 @@
 #include <stdlib.h> /* malloc, realloc, free */
 
 /* Used for the for-loop in piarr_rem */
-puint _piarr_iter;
+unsigned int _piarr_iter;
 
 /* Used for safely checking realloc successfulness */
-pvptr _piarr_tmp;
+void *_piarr_tmp;
 
 /* The incremental dynamic array macro */
 #define piarr(type) struct { \
 	type* data; /* An array of all elements */ \
-	puint size; /* The number of elements currently in the incremental dynamic array */ \
+	unsigned int size; /* The number of elements currently in the incremental dynamic array */ \
 }
 
 /* Initializes the array defined with the piarr macro. */

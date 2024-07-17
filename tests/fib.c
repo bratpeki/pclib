@@ -8,8 +8,8 @@
 #define N 1000 /* Must be greater than 2 */
 #define BISIZE 250 /* Must be greater than or equal to 2 */
 
-pnoret bisplit( pbi* bi ) {
-	psint len = strlen(bi), i;
+void bisplit( pbi* bi ) {
+	signed int len = strlen(bi), i;
 	for ( i = 0; i < len; i++ ) {
 		if ( (i != 0) && (len-i) % 3 == 0 ) printf(",");
 		printf("%c", bi[i]);
@@ -18,7 +18,7 @@ pnoret bisplit( pbi* bi ) {
 
 int main() {
 
-	pusint i;
+	unsigned short int i;
 
 	pbi a[BISIZE], b[BISIZE], c[BISIZE];
 	memcpy(a, "0", 2);
@@ -37,7 +37,7 @@ int main() {
 		 * I added it to show an example of checking for error codes
 		 */
 		if ( pbi_add(a, b, c, BISIZE) == P_OUTOFBOUNDS ) {
-			printf("Error on iteration with index %hu, try making the bignum larger\n", i);
+			printf("Error on iteration with index %hu, try making the bigint larger\n", i);
 			return P_OUTOFBOUNDS;
 		}
 

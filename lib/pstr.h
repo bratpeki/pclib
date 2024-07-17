@@ -11,16 +11,15 @@
 
 #include <string.h> /* strlen, memcpy */
 #include <stdlib.h> /* calloc */
-#include <stdio.h> /* TODO */
 
 /*
  * Reverse the order of the characters in 's'
  */
-pnoret pstr_flip( pstr s ) {
+void pstr_flip( pstr s ) {
 
-	pchr c;
-	psz i = 0;
-	psz ss = strlen(s) - 1;
+	char c;
+	size_t i = 0;
+	size_t ss = strlen(s) - 1;
 
 	while ( i <= ss/2 ) {
 
@@ -39,9 +38,9 @@ pnoret pstr_flip( pstr s ) {
  * "target" is the target character to trim
  * "len" is the length of BOTH of the string arrays
  */
-pnoret pstr_trim( pstr in, pstr out, pchr target, psz len ) {
+void pstr_trim( pstr in, pstr out, char target, size_t len ) {
 
-	psz l, r;
+	size_t l, r;
 
 	l = r = 0;
 
@@ -51,7 +50,7 @@ pnoret pstr_trim( pstr in, pstr out, pchr target, psz len ) {
 	while ( in[l] == target ) l++;
 	while ( in[r] == target ) r--;
 
-	memcpy(out, in + l*sizeof(pchr), r-l+1);
+	memcpy(out, in + l*sizeof(char), r-l+1);
 	out[r-l+2] = '\0';
 
 }
@@ -62,9 +61,9 @@ pnoret pstr_trim( pstr in, pstr out, pchr target, psz len ) {
  *
  * Returns NULL if the memory cannot be allocated
  */
-pstr pstr_trimd( pstr in, pchr target ) {
+pstr pstr_trimd( pstr in, char target ) {
 
-	psz l, r;
+	size_t l, r;
 	pstr ret;
 
 	l = 0;
@@ -73,10 +72,10 @@ pstr pstr_trimd( pstr in, pchr target ) {
 	while ( in[l] == target ) l++;
 	while ( in[r] == target ) r--;
 
-	ret = (pstr)calloc(r-l+1, sizeof(pchr));
+	ret = (pstr)calloc(r-l+1, sizeof(char));
 	if ( ret == NULL ) return NULL;
 
-	memcpy(ret, in + l*sizeof(pchr), r-l);
+	memcpy(ret, in + l*sizeof(char), r-l);
 	ret[r+1] = '\0';
 
 	return NULL;
@@ -86,9 +85,9 @@ pstr pstr_trimd( pstr in, pchr target ) {
 /*
  * Counts how many times a character appears in a string
  */
-psz pstr_countc( pstr haystack, pchr needle ) {
+size_t pstr_countc( pstr haystack, char needle ) {
 
-	psz count = 0, idx = 0;
+	size_t count = 0, idx = 0;
 
 	while ( haystack[idx] )
 		count += ( haystack[idx++] == needle);
@@ -101,10 +100,10 @@ psz pstr_countc( pstr haystack, pchr needle ) {
  * Counts how many times a substring appears in a string
  * Accounts for overlaps
  */
-psz pstr_counts( pstr haystack, pstr needle ) {
+size_t pstr_counts( pstr haystack, pstr needle ) {
 
-	psz count = 0, lenh = strlen(haystack), lenn = strlen(needle);
-	psz i, j;
+	size_t count = 0, lenh = strlen(haystack), lenn = strlen(needle);
+	size_t i, j;
 	pbool verify;
 
 	for ( i = 0; i < lenh-lenn; i++ ) {

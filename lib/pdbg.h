@@ -28,7 +28,7 @@ pbool _pdbg_toggle = P_ON;
  * If debugging is enabled,
  * prints the given message out, in printf's format
  */
-pnoret pdbg_printf(const char *format, ...) {
+void pdbg_printf(const char *format, ...) {
 
 	if (_pdbg_toggle) {
 		va_list args;

@@ -39,16 +39,16 @@
 #include <stdlib.h> /* malloc, realloc, free */
 
 /* Used for the for-loop in parr_rem */
-puint _parr_iter;
+unsigned int _parr_iter;
 
 /* Used for safely checking realloc successfulness */
-pvptr _parr_tmp;
+void* _parr_tmp;
 
 /* The dynamic array macro */
 #define parr(type) struct { \
 	type*  data; /* An array of all elements */ \
-	puint size; /* The number of elements currently in the dynamic array */ \
-	puint cap;  /* The number of elements that can fit in the dynamic array */ \
+	unsigned int size; /* The number of elements currently in the dynamic array */ \
+	unsigned int cap;  /* The number of elements that can fit in the dynamic array */ \
 }
 
 /* Initiazes the array defined with the parr macro. */
