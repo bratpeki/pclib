@@ -4,18 +4,29 @@ An ANSI C library aiming to implement modular, simple, fast and hackable tools f
 
 Each header file aims to be sufficiently documented and has minimal dependencies.
 
-## Headers
+## The library
 
-| File | Description |
-| - | - |
-| `ptype.h` | Custom datatypes |
-| `pcode.h` | Exit code macros |
-| `pdbg.h` | Functions for debug output |
-| `parr.h` | Dynamic, type-generic array, with efficient memory reallocation |
-| `piarr.h` | Dynamic, type-generic array, with incremental memory allocation |
-| `pdict.h` | Dynamic, type-generic dictionary/hashmap |
-| `pstr.h` | Various string functions |
-| `pmac.h` | Useful macros |
+The entire library is, promptly, located in `lib`, with the structure detailed below:
+
+- `ds`
+  - `*tree`
+  - `*stack`
+  - `*ring`
+  - `*llist1`
+  - `*llist2`
+- `etc`
+  - `*dbg`
+- `num`
+  - `*complex`
+  - `*bigint`
+- `parse`
+  - `*csv`
+  - `*xml`
+- `type`
+  - `*bool`
+  - `*str`
+  
+Items marked with `*` aren't implemented.
 
 ## Why ANSI C?
 
