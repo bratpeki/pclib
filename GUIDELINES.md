@@ -37,11 +37,11 @@ Function comments look like this:
 
 ```c
 /*
- * This function does this and that.
+ * Brief desctiption
  *
- * Here, there might be more information about the function or params.
+ * If needed, a longer description
  *
- * Here, we name known restrictions.
+ * Known restrictions
  *
  * Params:
  * 1. (const) type t1 - Can but doesn't have to be constant
@@ -51,3 +51,8 @@ Function comments look like this:
  * Here, you can type "Nothing" or make a list that looks like "... if ..."
  */
 ```
+
+The code and function definitions are split using a C-style comment
+that consists of 80 equals signs.
+There are also three white spaces above and below.
+Why? Cause it looks nice and is a good separator! :)
