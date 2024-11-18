@@ -6,14 +6,10 @@ If adding features relating to C99, or switching to C99, it is important to note
 
 I doubt I'll ever port this to C99, though.
 
-Maybe I'll just use standard types, without my own typedefs, so that I don't create confusion.
-If kept, the signed type would be standard, and the unsigned would a "u" added to them
-(eg. psrt for a signed short int, and pusrt for an unsigned short int).
-It is clearly visible how this creates confusion.
-
 Function pointers are currently not supported in the dynamic arrays, due to their syntax.
 
-Use `pstr` and `pchr*` to denote the difference between constant and array strings.
+---
 
-Maybe I shouldn't use my own types in place of the standard C types.
-That makes the library headers more "individual", so you can easily copy it over.
+- Encryption
+- Hashing
+- Regular expressions

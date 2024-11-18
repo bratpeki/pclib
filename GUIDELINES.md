@@ -1,8 +1,9 @@
 Language:
 
-- Write for ANSI C (C89/C90)
-- Fully use the standard library, only building upon it where deemed necessary
-- A valid reason to reinvent the wheel is because you don't need the overhead of standard headers
+- Write for ANSI C (C89/C90).
+- Fully use the standard library, only building upon it where deemed necessary.
+- A valid reason to reinvent the wheel is because you don't need the overhead of standard headers.
+- No typedefs. Use the standard types.
 
 Compiler:
 
@@ -38,12 +39,15 @@ Function comments look like this:
 /*
  * This function does this and that.
  *
- * Here, the return values are explained.
- *
  * Here, there might be more information about the function or params.
+ *
+ * Here, we name known restrictions.
  *
  * Params:
  * 1. (const) type t1 - Can but doesn't have to be constant
  * 2. type* t2 - Cannot be constant, is a pointer or an array
+ *
+ * Returns:
+ * Here, you can type "Nothing" or make a list that looks like "... if ..."
  */
 ```
